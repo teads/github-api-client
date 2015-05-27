@@ -1,2 +1,2 @@
-# giuthub-api-client
+# github-api-client
 Scala Github API Client
