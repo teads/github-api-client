@@ -1,0 +1,218 @@
+{
+  "ref": "refs/heads/master",
+  "before": "dcfb43654a1a0c8b30e1f57c8018790fed6e6255",
+  "after": "ca92b4f91bb06c804f2863a692a5340931659fb6",
+  "created": false,
+  "deleted": false,
+  "forced": false,
+  "base_ref": null,
+  "compare": "https://github.com/ebuzzing/github-hooks/compare/dcfb43654a1a...ca92b4f91bb0",
+  "commits": [
+    {
+      "id": "edb95d6b85aa436641fa0cfd944891601bdc690f",
+      "distinct": true,
+      "message": "Handle GHOwner can be GHUser or GHOrga",
+      "timestamp": "2015-01-29T14:30:50+01:00",
+      "url": "https://github.com/ebuzzing/github-hooks/commit/edb95d6b85aa436641fa0cfd944891601bdc690f",
+      "author": {
+        "name": "Greg Bougeard",
+        "email": "gregory.bougeard@teads.tv"
+      },
+      "committer": {
+        "name": "Greg Bougeard",
+        "email": "gregory.bougeard@teads.tv"
+      },
+      "added": ["test/push_orga.json"],
+      "removed": [],
+      "modified": [
+        "app/models/GHModel.scala",
+        "app/models/GHModelJson.scala",
+        "app/services/GHHandler.scala",
+        "test/RuleSpec.scala",
+        "test/pr.json"
+      ]
+    },
+    {
+      "id": "44525a7dff73a8cd9b87d81bd273c440588d0fa6",
+      "distinct": true,
+      "message": "Unhandle created_at and updated_at for GHRepo",
+      "timestamp": "2015-01-29T15:57:35+01:00",
+      "url": "https://github.com/ebuzzing/github-hooks/commit/44525a7dff73a8cd9b87d81bd273c440588d0fa6",
+      "author": {
+        "name": "Greg Bougeard",
+        "email": "gregory.bougeard@teads.tv"
+      },
+      "committer": {
+        "name": "Greg Bougeard",
+        "email": "gregory.bougeard@teads.tv"
+      },
+      "added": [],
+      "removed": [],
+      "modified": [
+        "app/models/GHModel.scala",
+        "app/models/GHModelJson.scala"
+      ]
+    },
+    {
+      "id": "ca92b4f91bb06c804f2863a692a5340931659fb6",
+      "distinct": true,
+      "message": "Merge pull request #5 from gbougeard/master\n\nWIP",
+      "timestamp": "2015-01-29T06:59:45-08:00",
+      "url": "https://github.com/ebuzzing/github-hooks/commit/ca92b4f91bb06c804f2863a692a5340931659fb6",
+      "author": {
+        "name": "Greg BOUGEARD",
+        "email": "gbougeard@gmail.com",
+        "username": "gbougeard"
+      },
+      "committer": {
+        "name": "Greg BOUGEARD",
+        "email": "gbougeard@gmail.com",
+        "username": "gbougeard"
+      },
+      "added": ["test/push_orga.json"],
+      "removed": [],
+      "modified": [
+        "app/models/GHModel.scala",
+        "app/models/GHModelJson.scala",
+        "app/services/GHHandler.scala",
+        "test/RuleSpec.scala",
+        "test/pr.json"
+      ]
+    }
+  ],
+  "head_commit": {
+    "id": "ca92b4f91bb06c804f2863a692a5340931659fb6",
+    "distinct": true,
+    "message": "Merge pull request #5 from gbougeard/master\n\nWIP",
+    "timestamp": "2015-01-29T06:59:45-08:00",
+    "url": "https://github.com/ebuzzing/github-hooks/commit/ca92b4f91bb06c804f2863a692a5340931659fb6",
+    "author": {
+      "name": "Greg BOUGEARD",
+      "email": "gbougeard@gmail.com",
+      "username": "gbougeard"
+    },
+    "committer": {
+      "name": "Greg BOUGEARD",
+      "email": "gbougeard@gmail.com",
+      "username": "gbougeard"
+    },
+    "added": ["test/push_orga.json"],
+    "removed": [],
+    "modified": [
+      "app/models/GHModel.scala",
+      "app/models/GHModelJson.scala",
+      "app/services/GHHandler.scala",
+      "test/RuleSpec.scala",
+      "test/pr.json"
+    ]
+  },
+  "repository": {
+    "id": 29915914,
+    "name": "github-hooks",
+    "full_name": "ebuzzing/github-hooks",
+    "owner": {
+      "name": "ebuzzing",
+      "email": ""
+    },
+    "private": true,
+    "html_url": "https://github.com/ebuzzing/github-hooks",
+    "description": "Play app to handle github hooks",
+    "fork": false,
+    "url": "https://github.com/ebuzzing/github-hooks",
+    "forks_url": "https://api.github.com/repos/ebuzzing/github-hooks/forks",
+    "keys_url": "https://api.github.com/repos/ebuzzing/github-hooks/keys{/key_id}",
+    "collaborators_url": "https://api.github.com/repos/ebuzzing/github-hooks/collaborators{/collaborator}",
+    "teams_url": "https://api.github.com/repos/ebuzzing/github-hooks/teams",
+    "hooks_url": "https://api.github.com/repos/ebuzzing/github-hooks/hooks",
+    "issue_events_url": "https://api.github.com/repos/ebuzzing/github-hooks/issues/events{/number}",
+    "events_url": "https://api.github.com/repos/ebuzzing/github-hooks/events",
+    "assignees_url": "https://api.github.com/repos/ebuzzing/github-hooks/assignees{/user}",
+    "branches_url": "https://api.github.com/repos/ebuzzing/github-hooks/branches{/branch}",
+    "tags_url": "https://api.github.com/repos/ebuzzing/github-hooks/tags",
+    "blobs_url": "https://api.github.com/repos/ebuzzing/github-hooks/git/blobs{/sha}",
+    "git_tags_url": "https://api.github.com/repos/ebuzzing/github-hooks/git/tags{/sha}",
+    "git_refs_url": "https://api.github.com/repos/ebuzzing/github-hooks/git/refs{/sha}",
+    "trees_url": "https://api.github.com/repos/ebuzzing/github-hooks/git/trees{/sha}",
+    "statuses_url": "https://api.github.com/repos/ebuzzing/github-hooks/statuses/{sha}",
+    "languages_url": "https://api.github.com/repos/ebuzzing/github-hooks/languages",
+    "stargazers_url": "https://api.github.com/repos/ebuzzing/github-hooks/stargazers",
+    "contributors_url": "https://api.github.com/repos/ebuzzing/github-hooks/contributors",
+    "subscribers_url": "https://api.github.com/repos/ebuzzing/github-hooks/subscribers",
+    "subscription_url": "https://api.github.com/repos/ebuzzing/github-hooks/subscription",
+    "commits_url": "https://api.github.com/repos/ebuzzing/github-hooks/commits{/sha}",
+    "git_commits_url": "https://api.github.com/repos/ebuzzing/github-hooks/git/commits{/sha}",
+    "comments_url": "https://api.github.com/repos/ebuzzing/github-hooks/comments{/number}",
+    "issue_comment_url": "https://api.github.com/repos/ebuzzing/github-hooks/issues/comments/{number}",
+    "contents_url": "https://api.github.com/repos/ebuzzing/github-hooks/contents/{+path}",
+    "compare_url": "https://api.github.com/repos/ebuzzing/github-hooks/compare/{base}...{head}",
+    "merges_url": "https://api.github.com/repos/ebuzzing/github-hooks/merges",
+    "archive_url": "https://api.github.com/repos/ebuzzing/github-hooks/{archive_format}{/ref}",
+    "downloads_url": "https://api.github.com/repos/ebuzzing/github-hooks/downloads",
+    "issues_url": "https://api.github.com/repos/ebuzzing/github-hooks/issues{/number}",
+    "pulls_url": "https://api.github.com/repos/ebuzzing/github-hooks/pulls{/number}",
+    "milestones_url": "https://api.github.com/repos/ebuzzing/github-hooks/milestones{/number}",
+    "notifications_url": "https://api.github.com/repos/ebuzzing/github-hooks/notifications{?since,all,participating}",
+    "labels_url": "https://api.github.com/repos/ebuzzing/github-hooks/labels{/name}",
+    "releases_url": "https://api.github.com/repos/ebuzzing/github-hooks/releases{/id}",
+    "created_at": 1422366306,
+    "updated_at": "2015-01-29T11:03:15Z",
+    "pushed_at": 1422543585,
+    "git_url": "git://github.com/ebuzzing/github-hooks.git",
+    "ssh_url": "git@github.com:ebuzzing/github-hooks.git",
+    "clone_url": "https://github.com/ebuzzing/github-hooks.git",
+    "svn_url": "https://github.com/ebuzzing/github-hooks",
+    "homepage": null,
+    "size": 0,
+    "stargazers_count": 0,
+    "watchers_count": 0,
+    "language": "Scala",
+    "has_issues": true,
+    "has_downloads": true,
+    "has_wiki": true,
+    "has_pages": false,
+    "forks_count": 1,
+    "mirror_url": null,
+    "open_issues_count": 0,
+    "forks": 1,
+    "open_issues": 0,
+    "watchers": 0,
+    "default_branch": "master",
+    "stargazers": 0,
+    "master_branch": "master",
+    "organization": "ebuzzing"
+  },
+  "pusher": {
+    "name": "gbougeard",
+    "email": "gbougeard@gmail.com"
+  },
+  "organization": {
+    "login": "ebuzzing",
+    "id": 1137752,
+    "url": "https://api.github.com/orgs/ebuzzing",
+    "repos_url": "https://api.github.com/orgs/ebuzzing/repos",
+    "events_url": "https://api.github.com/orgs/ebuzzing/events",
+    "members_url": "https://api.github.com/orgs/ebuzzing/members{/member}",
+    "public_members_url": "https://api.github.com/orgs/ebuzzing/public_members{/member}",
+    "avatar_url": "https://avatars.githubusercontent.com/u/1137752?v=3",
+    "description": "Reinventing video advertising"
+  },
+  "sender": {
+    "login": "gbougeard",
+    "id": 728814,
+    "avatar_url": "https://avatars.githubusercontent.com/u/728814?v=3",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/gbougeard",
+    "html_url": "https://github.com/gbougeard",
+    "followers_url": "https://api.github.com/users/gbougeard/followers",
+    "following_url": "https://api.github.com/users/gbougeard/following{/other_user}",
+    "gists_url": "https://api.github.com/users/gbougeard/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/gbougeard/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/gbougeard/subscriptions",
+    "organizations_url": "https://api.github.com/users/gbougeard/orgs",
+    "repos_url": "https://api.github.com/users/gbougeard/repos",
+    "events_url": "https://api.github.com/users/gbougeard/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/gbougeard/received_events",
+    "type": "User",
+    "site_admin": false
+  }
+}

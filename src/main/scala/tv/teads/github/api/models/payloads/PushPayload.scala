@@ -22,7 +22,7 @@ case class PushPayload(
                           ref: String,
                           before: String,
                           after: String,
-                          pushd: Boolean,
+                          created: Boolean,
                           deleted: Boolean,
                           forced: Boolean,
                           base_ref: Option[String],

@@ -1,15 +1,16 @@
 package tv.teads.github.api.models
+
 import play.api.data.mapping._
 import play.api.libs.json.{JsObject, JsValue}
 
-trait HeadFormats  {
-  self :UserFormats with RepositoryFormats =>
-  implicit lazy val  headJsonWrite: Write[Head, JsValue] = {
+trait HeadFormats {
+  self: UserFormats with RepositoryFormats =>
+  implicit lazy val headJsonWrite: Write[Head, JsValue] = {
     import play.api.data.mapping.json.Writes._
     Write.gen[Head, JsObject]
   }
 
-  implicit lazy val  headJsonRead = {
+  implicit lazy val headJsonRead = {
     import play.api.data.mapping.json.Rules._
     Rule.gen[JsValue, Head]
   }
@@ -23,120 +24,99 @@ case class Head(
                  repo: Option[Repository]
                  )
 
-trait SelfFormats  {
-  implicit lazy val  selfJsonWrite: Write[Self, JsValue] = {
+trait HRefFormats {
+  implicit lazy val selfJsonWrite: Write[HRef, JsValue] = {
     import play.api.data.mapping.json.Writes._
-    Write.gen[Self, JsObject]
+    Write.gen[HRef, JsObject]
   }
 
-  implicit lazy val  selfJsonRead = {
+  implicit lazy val selfJsonRead = {
     import play.api.data.mapping.json.Rules._
-    Rule.gen[JsValue, Self]
+    Rule.gen[JsValue, HRef]
   }
 }
 
-case class Self(
+case class HRef(
                  href: String
                  )
 
-trait LinkFormats  {
+trait LinksFormats {
 
-  self :UserFormats with SelfFormats =>
-  implicit lazy val  linkJsonWrite: Write[Link, JsValue] = {
+  self: UserFormats with HRefFormats =>
+  implicit lazy val linkJsonWrite: Write[Links, JsValue] = {
     import play.api.data.mapping.json.Writes._
-    Write.gen[Link, JsObject]
+    Write.gen[Links, JsObject]
   }
 
-  implicit lazy val  linkJsonRead = {
+  implicit lazy val linkJsonRead = {
     import play.api.data.mapping.json.Rules._
-    Rule.gen[JsValue, Link]
+    Rule.gen[JsValue, Links]
   }
 }
 
-case class Link(
-                 self: Self,
-                 html: Self,
-                 issue: Self,
-                 comments: Self,
-                 review_comments: Self,
-                 review_comment: Self,
-                 commits: Self,
-                 statuses: Self
-                 )
+case class Links(
+                  self: HRef,
+                  html: HRef,
+                  issue: HRef,
+                  comments: HRef,
+                  review_comments: HRef,
+                  review_comment: HRef,
+                  commits: HRef,
+                  statuses: HRef
+                  )
 
-trait PullRequestLinksFormats  {
+trait PullRequestReviewCommentLinksFormats {
 
-  implicit lazy val  pullRequestLinksJsonWrite: Write[PullRequestLinks, JsValue] = {
+  self: UserFormats with HRefFormats =>
+  implicit lazy val linkPullRequestJsonWrite: Write[PullRequestReviewCommentLinks, JsValue] = {
     import play.api.data.mapping.json.Writes._
-    Write.gen[PullRequestLinks, JsObject]
+    Write.gen[PullRequestReviewCommentLinks, JsObject]
   }
 
-  implicit lazy val  pullRequestLinksJsonRead = {
+  implicit lazy val linkPullRequestJsonRead = {
     import play.api.data.mapping.json.Rules._
-    Rule.gen[JsValue, PullRequestLinks]
+    Rule.gen[JsValue, PullRequestReviewCommentLinks]
   }
 }
 
-case class PullRequestLinks(
-                 self: String,
-                 html: String,
-                 issue: String,
-                 comments: String,
-                 review_comments: String,
-                 review_comment: String,
-                 commits: String,
-                 statuses: String
-                 )
+case class PullRequestReviewCommentLinks(
+                                          self: HRef,
+                                          html: HRef,
+                                          pull_request: HRef
+                                          )
 
-trait LinkPullRequestFormats  {
 
-  self :UserFormats with SelfFormats =>
-  implicit lazy val  linkPullRequestJsonWrite: Write[LinkPullRequest, JsValue] = {
+trait LinksContentFormats {
+  implicit lazy val linkContentJsonWrite: Write[LinksContent, JsValue] = {
     import play.api.data.mapping.json.Writes._
-    Write.gen[LinkPullRequest, JsObject]
+    Write.gen[LinksContent, JsObject]
   }
 
-  implicit lazy val  linkPullRequestJsonRead = {
+  implicit lazy val linkContentJsonRead = {
     import play.api.data.mapping.json.Rules._
-    Rule.gen[JsValue, LinkPullRequest]
+    Rule.gen[JsValue, LinksContent]
   }
 }
-case class LinkPullRequest(
-                            self: Self,
-                            html: Self,
-                            pull_request: Self
-                            )
 
+case class LinksContent(
+                         self: String,
+                         html: String,
+                         git: String
+                         )
 
-trait LinkContentFormats  {
-  implicit lazy val  linkContentJsonWrite: Write[LinkContent, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[LinkContent, JsObject]
-  }
-
-  implicit lazy val  linkContentJsonRead = {
-    import play.api.data.mapping.json.Rules._
-    Rule.gen[JsValue, LinkContent]
-  }
-}
-case class LinkContent(
-                          self: String,
-                          html: String,
-                          git: String
-                          )
-
-trait TreeFormats  {
-  implicit lazy val  treeJsonWrite: Write[Tree, JsValue] = {
+trait TreeFormats {
+  implicit lazy val treeJsonWrite: Write[Tree, JsValue] = {
     import play.api.data.mapping.json.Writes._
     Write.gen[Tree, JsObject]
   }
 
-  implicit lazy val  treeJsonRead = {
+  implicit lazy val treeJsonRead = {
     import play.api.data.mapping.json.Rules._
     Rule.gen[JsValue, Tree]
   }
 }
+
 case class Tree(
-                   sha: String,
-                   url: String
-                   )
+                 sha: String,
+                 url: String
+                 )

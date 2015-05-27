@@ -1,7 +1,8 @@
 package tv.teads.github.api.models
 
+import org.joda.time.DateTime
 import play.api.data.mapping._
-import play.api.libs.json.{JsObject, JsValue}
+import play.api.libs.json.{JsNumber, JsObject, JsValue}
 
 trait RepositoryUrlsFormats {
     implicit lazy val  repositoryUrlsJsonWrite : Write[RepositoryUrls, JsValue] = {
@@ -17,8 +18,8 @@ trait RepositoryUrlsFormats {
         (__ \ "clone_url").read[String] ~
         (__ \ "git_url").read[String] ~
         (__ \ "ssh_url").read[String] ~
-        (__ \ "svn_url").read[String] ~
-        (__ \ "mirror_url").read[String]
+        (__ \ "svn_url").read[String]
+
       )(RepositoryUrls.apply _)
   }
 
@@ -28,8 +29,44 @@ case class RepositoryUrls(url: String,
                           clone_url: String,
                           git_url: String,
                           ssh_url: String,
-                          svn_url: String,
-                          mirror_url: String)
+                          svn_url: String
+//forks_url: String,
+//keys_url: String,
+//collaborators_url: String,
+//teams_url: String,
+//hooks_url: String,
+//issue_events_url: String,
+//events_url: String,
+//assignees_url: String,
+//branches_url: String,
+//tags_url: String,
+//blobs_url: String,
+//git_tags_url: String,
+//git_refs_url: String,
+//trees_url: String,
+//statuses_url: String,
+//languages_url: String,
+//stargazers_url: String,
+//contributors_url: String,
+//subscribers_url: String,
+//subscription_url: String,
+//commits_url: String,
+//git_commits_url: String,
+//comments_url: String,
+//issue_comment_url: String,
+//contents_url: String,
+//compare_url: String,
+//merges_url: String,
+//archive_url: String,
+//downloads_url: String,
+//issues_url: String,
+//pulls_url: String,
+//milestones_url: String,
+//notifications_url: String,
+//labels_url: String,
+//releases_url: String
+                           )
+
 trait PermissionFormats {
     implicit lazy val  permissionsJsonWrite : Write[Permissions, JsValue] = {
       import play.api.data.mapping.json.Writes._
@@ -66,7 +103,7 @@ trait RepositoryStatsFormats {
         (__ \ "watchers_count").read[Long] ~
         (__ \ "size").read[Long] ~
         (__ \ "open_issues_count").read[Long] ~
-        (__ \ "subscribers_count").read[Long]
+        (__ \ "watchers").read[Long]
       )(RepositoryStats.apply _)
   }
 
@@ -77,7 +114,7 @@ case class RepositoryStats(
                             watchers_count: Long,
                             size: Long,
                             open_issues_count: Long,
-                            subscribers_count: Long
+                            watchers: Long
                             )
 
 trait RepositoryConfigFormats {
@@ -110,6 +147,7 @@ trait RepositoryFormats {
 
   implicit lazy val  repositoryJsonWrite: Write[Repository, JsValue] = {
     import play.api.data.mapping.json.Writes._
+    implicit val dateTimeToLongJsObject: Write[DateTime, JsValue] = Write[DateTime, JsValue]{dt => JsNumber(dt.getMillis())}
     Write.gen[Repository, JsObject]
   }
 
@@ -137,16 +175,14 @@ trait RepositoryFormats {
         (__ \ "private").read[Boolean] ~
         (__ \ "description").read[Option[String]] ~
         (__ \ "fork").read[Boolean] ~
-        (__ \ "homepage").read[String] ~
-        (__ \ "language").read[String] ~
+        (__ \ "homepage").read[Option[String]] ~
+        (__ \ "language").read[Option[String]] ~
         (__ \ "default_branch").read[String] ~
-        (__ \ "pushed_at").read[String] ~
-        (__ \ "created_at").read[String] ~
+//        (__ \ "pushed_at").read[Long].compose(jodaTime) ~
+//        (__ \ "created_at").read[Long].compose(jodaTime) ~
         (__ \ "updated_at").read[String] ~
-        (__ \ "permissions").read[Permissions] ~
-        (__ \ "organization").read[User] ~
-        (__ \ "parent").read[Parent] ~
-        (__ \ "source").read[Parent] ~
+        (__ \ "permissions").read[Option[Permissions]] ~
+        (__ \ "organization").read[Option[User]] ~
         repositoryUrlsJsonRead ~
         repositoryStatsJsonRead ~
         repositoryConfigJsonRead ~
@@ -163,16 +199,14 @@ case class Repository(
                        `private`: Boolean,
                        description: Option[String],
                        fork: Boolean,
-                       homepage: String,
-                       language: String,
+                       homepage: Option[String],
+                       language: Option[String],
                        default_branch: String,
-                       pushed_at: String,
-                       created_at: String,
+//                       pushed_at: DateTime,
+//                       created_at: DateTime,
                        updated_at: String,
-                       permissions: Permissions,
-                       organization: User,
-                       parent: Parent,
-                       source: Parent,
+                       permissions: Option[Permissions],
+                       organization: Option[User],
                        urls: RepositoryUrls,
                        stats: RepositoryStats,
                        config: RepositoryConfig,

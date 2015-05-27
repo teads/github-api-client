@@ -65,22 +65,24 @@ trait UserFormats {
 }
 
 case class User(
-                 login: String,
-                 id: Long,
-                 avatar_url: String,
+                 name:Option[String],
+                 email:Option[String],
+                 login: Option[String],
+                 id: Option[Long],
+                 avatar_url: Option[String],
                  gravatar_id: Option[String],
-                 url: String,
-                 html_url: String,
-                 followers_url: String,
+                 url: Option[String],
+                 html_url: Option[String],
+                 followers_url: Option[String],
                  following_url: Option[String],
                  gists_url: Option[String],
-                 starred_url: String,
-                 subscriptions_url: String,
-                 organizations_url: String,
-                 repos_url: String,
+                 starred_url: Option[String],
+                 subscriptions_url: Option[String],
+                 organizations_url: Option[String],
+                 repos_url: Option[String],
                  events_url: Option[String],
-                 received_events_url: String,
-                 `type`: String,
-                 site_admin: Boolean
+                 received_events_url: Option[String],
+                 `type`: Option[String],
+                 site_admin: Option[Boolean]
                  )
   //extends Owner

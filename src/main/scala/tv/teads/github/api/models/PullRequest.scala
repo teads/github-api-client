@@ -71,28 +71,28 @@ trait ChangeMetadataFormats {
   implicit lazy val changeMetadataJsonRead = From[JsValue] { __ =>
     import play.api.data.mapping.json.Rules._
     (
-      (__ \ "comments").read[Long] ~
-        (__ \ "review_comments").read[Long] ~
-        (__ \ "commits").read[Long] ~
-        (__ \ "additions").read[Long] ~
-        (__ \ "review_comments").read[Long] ~
-        (__ \ "deletions").read[Long]
+      (__ \ "comments").read[Option[Long]] ~
+        (__ \ "review_comments").read[Option[Long]] ~
+        (__ \ "commits").read[Option[Long]] ~
+        (__ \ "additions").read[Option[Long]] ~
+        (__ \ "review_comments").read[Option[Long]] ~
+        (__ \ "deletions").read[Option[Long]]
       )(ChangeMetadata.apply _)
   }
 
 }
-case class ChangeMetadata(comments: Long,
-                          review_comments: Long,
-                          commits: Long,
-                          additions: Long,
-                          deletions: Long,
-                          changed_files: Long
+case class ChangeMetadata(comments: Option[Long],
+                          review_comments: Option[Long],
+                          commits: Option[Long],
+                          additions: Option[Long],
+                          deletions: Option[Long],
+                          changed_files: Option[Long]
 
                            )
 
 
 trait PullRequestFormats {
-  self :UserFormats with PullRequestUrlsFormats with PullRequestLinksFormats with TimeMetadataFormats with ChangeMetadataFormats with HeadFormats =>
+  self :UserFormats with PullRequestUrlsFormats with LinksFormats with TimeMetadataFormats with ChangeMetadataFormats with HeadFormats =>
   implicit lazy val  pullRequestJsonWrite : Write[PullRequest, JsValue] = {
     import play.api.data.mapping.json.Writes._
     Write.gen[PullRequest, JsObject]
@@ -110,14 +110,14 @@ trait PullRequestFormats {
          (__ \ "user").read[User] ~
          (__ \ "body").read[String] ~
          (__ \ "assignee").read[Option[User]] ~
-         (__ \ "milestone").read[String] ~
+         (__ \ "milestone").read[Option[String]] ~
          (__ \ "head").read[Head] ~
          (__ \ "base").read[Head] ~
          (__ \ "merged").read[Option[Boolean]] ~
          (__ \ "mergeable").read[Option[Boolean]] ~
          (__ \ "mergeable_state").read[Option[String]] ~
          (__ \ "merged_by").read[Option[User]] ~
-         (__ \ "_links").read[PullRequestLinks] ~
+         (__ \ "_links").read[Links] ~
            pullRequestUrlsJsonRead ~
            timeMetadataJsonRead ~
            changeMetadataJsonRead
@@ -135,14 +135,14 @@ case class PullRequest(
                          user: User,
                          body: String,
                          assignee: Option[User],
-                         milestone: String,
+                         milestone: Option[String],
                          head: Head,
                          base: Head,
                          merged: Option[Boolean],
                          mergeable: Option[Boolean],
                          mergeable_state: Option[String],
                          merged_by: Option[User],
-                         links: PullRequestLinks,
+                         links: Links,
                          urls: PullRequestUrls,
                          timeMetadata: TimeMetadata,
                          changeMetadata: ChangeMetadata

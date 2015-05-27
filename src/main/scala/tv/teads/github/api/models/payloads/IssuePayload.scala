@@ -23,7 +23,8 @@ trait IssuePayloadFormats {
 case class IssuePayload(
                            action: IssueAction,
                            issue: Issue,
-                           label: Label,
+                           label: Option[Label],
                            repository: Repository,
-                           sender: User
+                           sender: User,
+                           assignee: Option[User]
                            ) extends Payload
