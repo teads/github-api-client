@@ -15,6 +15,6 @@ object RateLimitService extends GithubService {
       case FailedRequest(statusCode) ⇒
         logger.error(s"Could not fetch rate limit, failed with status code ${statusCode.intValue}")
         val core = Core(0, 0, 0)
-        RateLimit(Resources(core, core), core)
+        RateLimit(Resources(core, core))
     }
 }

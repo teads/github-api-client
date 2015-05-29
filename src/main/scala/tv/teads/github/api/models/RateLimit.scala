@@ -62,7 +62,6 @@ trait RateLimitFormats {
                         )
 
   case class RateLimit(
-                        resources: Resources,
-                        rate: Core
+                        resources: Resources
                         )
 
