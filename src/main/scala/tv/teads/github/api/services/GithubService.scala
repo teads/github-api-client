@@ -1,6 +1,7 @@
 package tv.teads.github.api.services
 
-
+import scala.concurrent.ExecutionContext
+import akka.actor.ActorRefFactory
 import spray.http._
 import tv.teads.github.api.models.payloads.PayloadFormats
 import tv.teads.github.api.util._
@@ -17,7 +18,7 @@ trait GithubService extends Service with PayloadFormats {
   protected def baseRequest(path: String,
                           queryParams: Map[String, String],
                           useTestMediaType: Boolean = false,
-                          paginated: Boolean = false) = {
+                          paginated: Boolean = false)(implicit refFactory: ActorRefFactory, ec: ExecutionContext) = {
     val uri = Uri(path)
     val paramsWithToken = queryParams + configuration.api.tokenHeader
     val fullParams = if (paginated) paramsWithToken + configuration.api.paginationHeader else paramsWithToken
