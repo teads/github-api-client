@@ -10,7 +10,7 @@ class RepositoryServiceSpec extends BaseSpec {
 
   override implicit val patienceConfig = PatienceConfig(30 seconds, 1 second)
 
-  "Github Service" should "be able to fetch all repositories" in {
+  "Repository Service" should "be able to fetch all repositories" in {
 
     whenReady(RepositoryService.fetchAllRepositories) { list ⇒
       //      println(list)
