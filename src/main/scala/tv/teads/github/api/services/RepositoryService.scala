@@ -1,5 +1,6 @@
 package tv.teads.github.api.services
 
+import akka.actor.ActorRefFactory
 import spray.http._
 import spray.httpx.unmarshalling.FromResponseUnmarshaller
 import tv.teads.github.api.models._
@@ -10,7 +11,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object RepositoryService extends GithubService {
 
-  def fetchFile(repository: String, path: String)(implicit ec: ExecutionContext): Future[Option[String]] = {
+  def fetchFile(repository: String, path: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[String]] = {
     val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/contents/$path"
 
     baseRequest(url, Map.empty)
@@ -26,7 +27,7 @@ object RepositoryService extends GithubService {
     }
   }
 
-  def listTags(repository: String)(implicit ec: ExecutionContext): Future[List[Tag]] = {
+  def listTags(repository: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Tag]] = {
     import play.api.data.mapping.json.Rules._
     val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/tags"
     baseRequest(url, Map.empty).executeRequestInto[List[Tag]]().map {
@@ -37,23 +38,23 @@ object RepositoryService extends GithubService {
     }
   }
 
-  def fetchAllRepositories(implicit ec: ExecutionContext): Future[List[Repository]] = {
+  def fetchAllRepositories(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Repository]] = {
     import play.api.data.mapping.json.Rules._
     fetchAllPages[Repository](s"${configuration.api.url}/orgs/${configuration.organization}/repos", Map.empty)
   }
 
-  def fetchPullRequests(repository: String, queryParams: Map[String, String] = Map.empty)(implicit ec: ExecutionContext): Future[List[PullRequest]] = {
+  def fetchPullRequests(repository: String, queryParams: Map[String, String] = Map.empty)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[PullRequest]] = {
     import play.api.data.mapping.json.Rules._
     fetchAllPages[PullRequest](s"${configuration.api.url}/repos/${configuration.organization}/$repository/pulls", queryParams)
   }
 
-  def fetchOpenPullRequests(repository: String, queryParams: Map[String, String] = Map.empty)(implicit ec: ExecutionContext) =
+  def fetchOpenPullRequests(repository: String, queryParams: Map[String, String] = Map.empty)(implicit refFactory: ActorRefFactory, ec: ExecutionContext) =
     fetchPullRequests(repository, queryParams + ("state" -> "open"))
 
-  def fetchMatchingOpenPullRequests(repository: String, author: String, branch: String)(implicit ec: ExecutionContext) =
+  def fetchMatchingOpenPullRequests(repository: String, author: String, branch: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext) =
     fetchOpenPullRequests(repository, Map("head" -> s"$author:$branch"))
 
-  def fetchAllPages[T: FromResponseUnmarshaller](url: String, queryParams: Map[String, String])(implicit ec: ExecutionContext, ev: FromResponseUnmarshaller[List[T]]) = {
+  def fetchAllPages[T: FromResponseUnmarshaller](url: String, queryParams: Map[String, String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext, ev: FromResponseUnmarshaller[List[T]]) = {
 
     def findNextPageUrl(linkHeader: Option[String]): Option[String] =
       linkHeader.flatMap { links ⇒
@@ -61,7 +62,7 @@ object RepositoryService extends GithubService {
           case PagesNavRegex(link, rel) if rel == "next" ⇒ link
         }
       }
-    def fetchAux(url: String, alreadyFetched: Future[List[T]])(implicit ec: ExecutionContext): Future[List[T]] = {
+    def fetchAux(url: String, alreadyFetched: Future[List[T]])(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[T]] = {
       baseRequest(url, queryParams, useTestMediaType = true, paginated = true)
         .executeRequestInto[List[T]]()
         .flatMap {

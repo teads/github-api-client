@@ -2,13 +2,11 @@ package tv.teads.github.api.util
 
 import java.util.concurrent.ConcurrentHashMap
 
-
-import akka.actor.ActorSystem
-
 import scala.collection.concurrent
 import scala.collection.JavaConversions._
 import scala.concurrent.{ ExecutionContext, Future }
 
+import akka.actor.ActorRefFactory
 import spray.client.pipelining._
 import spray.http._
 import spray.httpx.unmarshalling.FromResponseUnmarshaller
@@ -20,7 +18,7 @@ case class SuccessfulRequest[T](response: T, rawResponse: HttpResponse) extends 
 case class FailedRequest[T](statusCode: StatusCode) extends ClientResponse[T]
 
 object HttpClient {
-  def apply(uri: Uri, method: HttpMethod = HttpMethods.GET): HttpClient =
+  def apply(uri: Uri, method: HttpMethod = HttpMethods.GET)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): HttpClient =
     HttpClient(uri, method, Nil)
 
   private case class CacheKey(uri: Uri, method: HttpMethod)
@@ -32,13 +30,9 @@ object HttpClient {
 }
 case class HttpClient private (uri: Uri,
                                method: HttpMethod,
-                               sendPipeline: List[RequestTransformer])  {
-
-  implicit val actorSystem = ActorSystem("github-api-client")
+                               sendPipeline: List[RequestTransformer])(implicit refFactory: ActorRefFactory, ec: ExecutionContext) {
 
   import HttpClient._
-
-  implicit def dispatcher: ExecutionContext = actorSystem.dispatcher
 
   def withHeader(headerName: String, headerValue: String) =
     copy(sendPipeline = addHeader(headerName, headerValue) :: sendPipeline)

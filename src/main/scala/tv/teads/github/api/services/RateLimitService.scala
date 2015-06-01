@@ -1,5 +1,6 @@
 package tv.teads.github.api.services
 
+import akka.actor.ActorRefFactory
 import tv.teads.github.api.models._
 import tv.teads.github.api.services.GithubConfiguration.configuration
 import tv.teads.github.api.util._
@@ -8,7 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object RateLimitService extends GithubService {
 
-  def getRateLimit(implicit ec: ExecutionContext): Future[RateLimit] =
+  def getRateLimit(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[RateLimit] =
     baseRequest(s"${configuration.api.url}/rate_limit", Map.empty)
       .executeRequestInto[RateLimit]().map {
       case SuccessfulRequest(rateLimit, _) ⇒ rateLimit
