@@ -1,6 +1,7 @@
 package tv.teads.github.api.services
 
 import spray.http._
+import spray.httpx.RequestBuilding._
 import spray.httpx.unmarshalling.FromResponseUnmarshaller
 import tv.teads.github.api.models._
 import tv.teads.github.api.services.GithubConfiguration.configuration
@@ -12,8 +13,8 @@ object RepositoryService extends GithubService {
 
   def fetchFile(repository: String, path: String)(implicit ec: ExecutionContext): Future[Option[String]] = {
     val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/contents/$path"
-
-    baseRequest(url, Map.empty)
+    val req: HttpRequest = Get(url)
+    baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
       .executeRequest()
       .map {
@@ -29,7 +30,8 @@ object RepositoryService extends GithubService {
   def listTags(repository: String)(implicit ec: ExecutionContext): Future[List[Tag]] = {
     import play.api.data.mapping.json.Rules._
     val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/tags"
-    baseRequest(url, Map.empty).executeRequestInto[List[Tag]]().map {
+    val req: HttpRequest = Get(url)
+    baseRequest(req, Map.empty).executeRequestInto[List[Tag]]().map {
       case SuccessfulRequest(tags, _) ⇒ tags
       case FailedRequest(statusCode) ⇒
         logger.error(s"Fetching tags for repository $repository failed, status code: ${statusCode.intValue}")
@@ -62,7 +64,8 @@ object RepositoryService extends GithubService {
         }
       }
     def fetchAux(url: String, alreadyFetched: Future[List[T]])(implicit ec: ExecutionContext): Future[List[T]] = {
-      baseRequest(url, queryParams, useTestMediaType = true, paginated = true)
+      val req: HttpRequest = Get(url)
+      baseRequest(req, queryParams, useTestMediaType = true, paginated = true)
         .executeRequestInto[List[T]]()
         .flatMap {
         case SuccessfulRequest(repositories, raw) ⇒

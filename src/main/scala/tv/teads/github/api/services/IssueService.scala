@@ -3,6 +3,8 @@ package tv.teads.github.api.services
 import play.api.data.mapping.Write
 import play.api.libs.json.{JsObject, JsValue}
 import spray.http._
+import spray.http.HttpRequest
+import spray.httpx.RequestBuilding._
 import tv.teads.github.api.models._
 import tv.teads.github.api.services.GithubConfiguration.configuration
 import tv.teads.github.api.util._
@@ -24,10 +26,10 @@ object IssueService extends GithubService {
 
   def create(repository: String, issue: IssueParam)(implicit ec: ExecutionContext): Future[Option[Issue]] = {
     val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/issues"
-
-    baseRequest(url, Map.empty)
+    val req :HttpRequest = Post(url, issue)
+    baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
-      .postJsonInto[IssueParam, Issue](issue)
+      .executeRequestInto[Issue]()
       .map {
       case SuccessfulRequest(i, _) ⇒ Some(i)
       case FailedRequest(statusCode) ⇒
