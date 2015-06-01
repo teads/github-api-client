@@ -12,6 +12,7 @@ import scala.concurrent.{ ExecutionContext, Future }
 import spray.client.pipelining._
 import spray.http._
 import spray.httpx.unmarshalling.FromResponseUnmarshaller
+import spray.httpx.marshalling.Marshaller
 
 import scala.util.Try
 
@@ -71,6 +72,23 @@ case class HttpClient private (uri: Uri,
       case response ⇒
         FailedRequest(response.status)
     }
+
+  def postJson[T](entity: T)(implicit w: Marshaller[T]): Future[HttpResponse] = {
+    val pipeline = sendReceive
+    pipeline(Post(uri, entity))
+  }
+
+  def postJsonInto[T, O](entity: T)(implicit w: Marshaller[T], evidence: FromResponseUnmarshaller[O]) = {
+    postJson[T](entity).map {
+      case response if response.status.isSuccess ⇒
+        Try(unmarshal(evidence)(response))
+          .map(converted ⇒ SuccessfulRequest(converted, response))
+          .getOrElse(FailedRequest(response.status))
+
+      case response ⇒
+        FailedRequest(response.status)
+    }
+  }
 
   private def addETagIfPossible(cacheKey: CacheKey): List[RequestTransformer] = {
     val cacheKey = CacheKey(uri, method)

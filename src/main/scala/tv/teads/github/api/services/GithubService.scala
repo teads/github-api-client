@@ -15,9 +15,9 @@ trait GithubService extends Service with PayloadFormats {
   protected val PagesNavRegex = """(?:\s*)<(.+)>; rel=(.+)""".r
 
   protected def baseRequest(path: String,
-                          queryParams: Map[String, String],
-                          useTestMediaType: Boolean = false,
-                          paginated: Boolean = false) = {
+                            queryParams: Map[String, String],
+                            useTestMediaType: Boolean = false,
+                            paginated: Boolean = false) = {
     val uri = Uri(path)
     val paramsWithToken = queryParams + configuration.api.tokenHeader
     val fullParams = if (paginated) paramsWithToken + configuration.api.paginationHeader else paramsWithToken
