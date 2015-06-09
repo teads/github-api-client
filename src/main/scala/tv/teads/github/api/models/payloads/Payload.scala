@@ -36,6 +36,7 @@ with ResourcesFormats
 with RateLimitFormats
 with PullRequestReviewCommentLinksFormats
 with PullRequestCommentFormats
+with FileFormats
 with RepositoryPayloadFormats
 with DeletePayloadFormats
 with CommitCommentPayloadFormats

@@ -17,13 +17,6 @@ class RepositoryServiceSpec extends BaseSpec {
       list should not be empty
     }
   }
-  it should "be able to fetch service-rtb Pull Requests" in {
-
-    whenReady(RepositoryService.fetchPullRequests("service-rtb")) { list ⇒
-      //      println(list)
-      list should not be empty
-    }
-  }
   it should "be able to fetch ccc-service-rtb Tags" in {
 
     whenReady(RepositoryService.listTags("ccc-service-rtb")) { list ⇒
