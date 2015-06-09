@@ -46,8 +46,8 @@ object IssueService extends GithubService {
     }
   }
 
-  def edit(repository: String, issue: IssueParam)(implicit ec: ExecutionContext): Future[Option[Issue]] = {
-    val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/issues"
+  def edit(repository: String, number:Int, issue: IssueParam)(implicit ec: ExecutionContext): Future[Option[Issue]] = {
+    val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/issues/$number"
     val req: HttpRequest = Patch(url, issue)
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
