@@ -29,6 +29,7 @@ object IssueService extends GithubService {
   case class IssueParam(title: String,
                         body: Option[String] = None,
                         assignee: Option[String] = None,
+                        state: Option[State] = None,
                         milestone: Option[String] = None,
                         labels: Set[String] = Set.empty)
 
@@ -46,7 +47,7 @@ object IssueService extends GithubService {
     }
   }
 
-  def edit(repository: String, number:Int, issue: IssueParam)(implicit ec: ExecutionContext): Future[Option[Issue]] = {
+  def edit(repository: String, number:Long, issue: IssueParam)(implicit ec: ExecutionContext): Future[Option[Issue]] = {
     val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/issues/$number"
     val req: HttpRequest = Patch(url, issue)
     baseRequest(req, Map.empty)
@@ -58,6 +59,14 @@ object IssueService extends GithubService {
         logger.error(s"Could not edit issue, failed with status code ${statusCode.intValue}")
         None
     }
+  }
+
+  def close(repository: String, number:Long, issue: IssueParam)(implicit ec: ExecutionContext): Future[Option[Issue]] = {
+    edit(repository, number, issue.copy(state = Some(State.closed)))
+  }
+
+  def open(repository: String, number:Long, issue: IssueParam)(implicit ec: ExecutionContext): Future[Option[Issue]] = {
+    edit(repository, number, issue.copy(state = Some(State.open)))
   }
 
   sealed trait Sort

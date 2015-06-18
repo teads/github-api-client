@@ -13,14 +13,27 @@ class IssueServiceSpec extends BaseSpec {
 
   override implicit val patienceConfig = PatienceConfig(30 seconds, 1 second)
 
-  "Issue Service" should "be able to create an issue" in {
+  "Issue Service" should "be able to create an issue, close it, re-open it and finally close it" in {
 
 
     val repository = "github-hooks"
-    val issue = IssueParam(title="IssueServiceSpec.createTest", body = Some("html body with some `markup`"))
+    val issue = IssueParam(title = "IssueServiceSpec.createTest", body = Some("html body with some `markup`"))
 
     whenReady(IssueService.create(repository, issue)) { res ⇒
       res should not be empty
+      val issueNumber = res.get.number
+
+      whenReady(IssueService.close(repository, issueNumber, issue)) { res1 ⇒
+        res1 should not be empty
+
+        whenReady(IssueService.open(repository, issueNumber, issue)) { res2 ⇒
+          res2 should not be empty
+
+          whenReady(IssueService.close(repository, issueNumber, issue)) { res3 ⇒
+            res3 should not be empty
+          }
+        }
+      }
     }
   }
 
