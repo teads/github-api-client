@@ -1,11 +1,10 @@
 //Revolver.settings
 
-scalaVersion := "2.11.6"
+scalaVersion := "2.11.7"
 
 resolvers += "Typesafe repository" at "https://repo.typesafe.com/typesafe/releases/"
 resolvers += Resolver.sonatypeRepo("releases")
 resolvers += "Typesafe repository" at "https://repo.typesafe.com/typesafe/releases/"
-//resolvers += "JTO snapshots" at "https://raw.github.com/jto/mvn-repo/master/snapshots"
 
 val akkaVersion = "2.3.11"
 val Akka = Seq(
