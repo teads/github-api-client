@@ -1,5 +1,6 @@
 package tv.teads.github.api.services
 
+import akka.actor.ActorRefFactory
 import play.api.data.mapping.Write
 import play.api.libs.json.{JsObject, JsValue}
 import spray.http.{HttpRequest, _}
@@ -38,7 +39,7 @@ object PullRequestService extends GithubService {
                                    head: Head,
                                    base: String)
 
-  def createFromBranch(repository: String, param: PullRequestBranchParam)(implicit ec: ExecutionContext): Future[Option[PullRequest]] = {
+  def createFromBranch(repository: String, param: PullRequestBranchParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
     val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/pulls"
     val req: HttpRequest = Post(url, param)
     baseRequest(req, Map.empty)
@@ -52,7 +53,7 @@ object PullRequestService extends GithubService {
     }
   }
 
-  def createFromIssue(repository: String, param: PullRequestIssueParam)(implicit ec: ExecutionContext): Future[Option[PullRequest]] = {
+  def createFromIssue(repository: String, param: PullRequestIssueParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
     val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/pulls"
     val req: HttpRequest = Post(url, param)
     baseRequest(req, Map.empty)
@@ -74,7 +75,7 @@ object PullRequestService extends GithubService {
     Write.gen[PullRequestEditParam, JsObject]
   }
 
-  def edit(repository: String, number:Int, param: PullRequestEditParam)(implicit ec: ExecutionContext): Future[Option[PullRequest]] = {
+  def edit(repository: String, number:Int, param: PullRequestEditParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
     val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/pulls/$number"
     val req: HttpRequest = Patch(url, param)
     baseRequest(req, Map.empty)
@@ -136,18 +137,18 @@ object PullRequestService extends GithubService {
     }
   }
 
-  def fetchPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit ec: ExecutionContext): Future[List[PullRequest]] = {
+  def fetchPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[PullRequest]] = {
     import play.api.data.mapping.json.Rules._
     fetchAllPages[PullRequest](s"${configuration.api.url}/repos/${configuration.organization}/$repository/pulls", filterToMap(filter))
   }
 
-  def fetchOpenPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit ec: ExecutionContext) =
+  def fetchOpenPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit refFactory: ActorRefFactory, ec: ExecutionContext) =
     fetchPullRequests(repository, filter.copy(state = Some(State.open)))
 
-  def fetchMatchingOpenPullRequests(repository: String, author: String, branch: String)(implicit ec: ExecutionContext) =
+  def fetchMatchingOpenPullRequests(repository: String, author: String, branch: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext) =
     fetchOpenPullRequests(repository, PullRequestFilter(head = Some(Head(author, branch))))
 
-  def byRepositoryAndNumber(repository: String, number: Long)(implicit ec: ExecutionContext): Future[Option[PullRequest]] = {
+  def byRepositoryAndNumber(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
     import play.api.data.mapping.json.Rules._
     val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/pulls/$number"
     val req: HttpRequest = Get(url)
@@ -163,7 +164,7 @@ object PullRequestService extends GithubService {
     }
   }
 
-  def isMerged(repository: String, number:Int)(implicit ec: ExecutionContext): Future[Boolean] = {
+  def isMerged(repository: String, number:Int)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
     val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/pulls/$number/merge"
     val req: HttpRequest = Get(url)
     baseRequest(req, Map.empty)
@@ -185,7 +186,7 @@ object PullRequestService extends GithubService {
     Write.gen[ToMerge, JsObject]
   }
 
-  def merge(repository: String, number:Int, toMerge:ToMerge)(implicit ec: ExecutionContext): Future[Boolean] = {
+  def merge(repository: String, number:Int, toMerge:ToMerge)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
     val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/pulls/$number/merge"
     val req: HttpRequest = Put(url, toMerge)
     baseRequest(req, Map.empty)
@@ -201,13 +202,13 @@ object PullRequestService extends GithubService {
     }
   }
 
-  def fetchFiles(repository: String, number: Long)(implicit ec: ExecutionContext): Future[List[File]] = {
+  def fetchFiles(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[File]] = {
     import play.api.data.mapping.json.Rules._
     val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/pulls/$number/files"
     fetchAllPages[File](url, Map.empty)
   }
 
-  def fetchCommits(repository: String, number: Long)(implicit ec: ExecutionContext): Future[List[GHCommit]] = {
+  def fetchCommits(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[GHCommit]] = {
     import play.api.data.mapping.json.Rules._
     val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/pulls/$number/commits"
     fetchAllPages[GHCommit](url, Map.empty)

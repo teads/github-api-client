@@ -1,5 +1,6 @@
 package tv.teads.github.api.services
 
+import akka.actor.ActorRefFactory
 import spray.http._
 import spray.httpx.RequestBuilding._
 import spray.httpx.unmarshalling.FromResponseUnmarshaller
@@ -11,7 +12,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object RepositoryService extends GithubService {
 
-  def fetchFile(repository: String, path: String)(implicit ec: ExecutionContext): Future[Option[String]] = {
+  def fetchFile(repository: String, path: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[String]] = {
     val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/contents/$path"
     val req: HttpRequest = Get(url)
     baseRequest(req, Map.empty)
@@ -27,7 +28,7 @@ object RepositoryService extends GithubService {
     }
   }
 
-  def listTags(repository: String)(implicit ec: ExecutionContext): Future[List[Tag]] = {
+  def listTags(repository: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Tag]] = {
     import play.api.data.mapping.json.Rules._
     val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/tags"
     val req: HttpRequest = Get(url)
@@ -39,7 +40,7 @@ object RepositoryService extends GithubService {
     }
   }
 
-  def fetchAllRepositories(implicit ec: ExecutionContext): Future[List[Repository]] = {
+  def fetchAllRepositories(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Repository]] = {
     import play.api.data.mapping.json.Rules._
     fetchAllPages[Repository](s"${configuration.api.url}/orgs/${configuration.organization}/repos", Map.empty)
   }
