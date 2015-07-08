@@ -1,4 +1,4 @@
-//Revolver.settings
+Revolver.settings
 
 scalaVersion := "2.11.7"
 
