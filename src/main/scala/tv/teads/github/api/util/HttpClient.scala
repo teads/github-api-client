@@ -20,8 +20,7 @@ case class SuccessfulRequest[T](response: T, rawResponse: HttpResponse) extends 
 case class FailedRequest[T](statusCode: StatusCode) extends ClientResponse[T]
 
 object HttpClient {
-  def apply(uri: Uri, method: HttpMethod = HttpMethods.GET): HttpClient =
-    HttpClient(uri, method, Nil)
+  def apply(req: HttpRequest): HttpClient = HttpClient(req, Nil)
 
   private case class CacheKey(uri: Uri, method: HttpMethod)
   private case class CacheEntry(eTag: String, response: HttpResponse)
@@ -30,8 +29,7 @@ object HttpClient {
 
   def cleanCache() = responseCache.clear()
 }
-case class HttpClient private (uri: Uri,
-                               method: HttpMethod,
+case class HttpClient private (req: HttpRequest,
                                sendPipeline: List[RequestTransformer])  {
 
   implicit val actorSystem = ActorSystem("github-api-client")
@@ -47,10 +45,10 @@ case class HttpClient private (uri: Uri,
     copy(sendPipeline = addCredentials(BasicHttpCredentials(username, password)) :: sendPipeline)
 
   def executeRequest(): Future[HttpResponse] = {
-    val cacheKey = CacheKey(uri, method)
+    val cacheKey = CacheKey(req.uri, req.method)
     val cacheEnabledPipeline = addETagIfPossible(cacheKey)
     val pipeline = if (cacheEnabledPipeline.isEmpty) sendReceive else cacheEnabledPipeline.reduce(_ ~> _) ~> sendReceive
-    pipeline(HttpRequest(method, uri)).map {
+    pipeline(req).map {
       case response if response.status == StatusCodes.NotModified ⇒ // In not modified, return the cached response
         responseCache(cacheKey).response
       case response ⇒ // otherwise, save the eTag and the response if it has one
@@ -73,7 +71,6 @@ case class HttpClient private (uri: Uri,
     }
 
   private def addETagIfPossible(cacheKey: CacheKey): List[RequestTransformer] = {
-    val cacheKey = CacheKey(uri, method)
     if (responseCache.contains(cacheKey))
       addHeader(HttpHeaders.`If-None-Match`.name, responseCache(cacheKey).eTag) :: sendPipeline
     else sendPipeline

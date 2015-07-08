@@ -22,6 +22,8 @@ libraryDependencies += "io.github.jto" %% "validation-json" % "1.0.2"
 libraryDependencies += "org.yaml" % "snakeyaml" % "1.15"
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.0.13"
 
+libraryDependencies += "com.chuusai" %% "shapeless" % "2.2.1"
+
 
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.5" % "test"
