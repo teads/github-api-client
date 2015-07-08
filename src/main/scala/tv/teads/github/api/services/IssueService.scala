@@ -1,5 +1,6 @@
 package tv.teads.github.api.services
 
+import akka.actor.ActorRefFactory
 import play.api.data.mapping.Write
 import play.api.libs.json.{JsObject, JsValue}
 import spray.http._
@@ -33,7 +34,7 @@ object IssueService extends GithubService {
                         milestone: Option[String] = None,
                         labels: Set[String] = Set.empty)
 
-  def create(repository: String, issue: IssueParam)(implicit ec: ExecutionContext): Future[Option[Issue]] = {
+  def create(repository: String, issue: IssueParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Issue]] = {
     val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/issues"
     val req: HttpRequest = Post(url, issue)
     baseRequest(req, Map.empty)
@@ -47,7 +48,7 @@ object IssueService extends GithubService {
     }
   }
 
-  def edit(repository: String, number:Long, issue: IssueParam)(implicit ec: ExecutionContext): Future[Option[Issue]] = {
+  def edit(repository: String, number:Long, issue: IssueParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Issue]] = {
     val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/issues/$number"
     val req: HttpRequest = Patch(url, issue)
     baseRequest(req, Map.empty)
@@ -61,11 +62,11 @@ object IssueService extends GithubService {
     }
   }
 
-  def close(repository: String, number:Long, issue: IssueParam)(implicit ec: ExecutionContext): Future[Option[Issue]] = {
+  def close(repository: String, number:Long, issue: IssueParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Issue]] = {
     edit(repository, number, issue.copy(state = Some(State.closed)))
   }
 
-  def open(repository: String, number:Long, issue: IssueParam)(implicit ec: ExecutionContext): Future[Option[Issue]] = {
+  def open(repository: String, number:Long, issue: IssueParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Issue]] = {
     edit(repository, number, issue.copy(state = Some(State.open)))
   }
 
@@ -107,7 +108,7 @@ object IssueService extends GithubService {
     }
   }
 
-  def byRepository(repository: String, issueFilter: IssueFilter)(implicit ec: ExecutionContext): Future[List[Issue]] = {
+  def byRepository(repository: String, issueFilter: IssueFilter)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Issue]] = {
     import play.api.data.mapping.json.Rules._
     val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/issues"
     val req: HttpRequest = Get(url)
@@ -123,7 +124,7 @@ object IssueService extends GithubService {
     }
   }
 
-  def byRepositoryAndNumber(repository: String, number: Long)(implicit ec: ExecutionContext): Future[Option[Issue]] = {
+  def byRepositoryAndNumber(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Issue]] = {
     import play.api.data.mapping.json.Rules._
     val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/issues/$number"
     val req: HttpRequest = Get(url)

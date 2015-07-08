@@ -2,14 +2,12 @@
 
 scalaVersion := "2.11.7"
 
-resolvers += "Typesafe repository" at "https://repo.typesafe.com/typesafe/releases/"
-resolvers += Resolver.sonatypeRepo("releases")
-resolvers += "Typesafe repository" at "https://repo.typesafe.com/typesafe/releases/"
+resolvers += Opts.resolver.sonatypeReleases
 
 val akkaVersion = "2.3.11"
 val Akka = Seq(
-  "com.typesafe.akka" %% "akka-actor" % akkaVersion,
-  "com.typesafe.akka" %% "akka-slf4j" % akkaVersion
+  "com.typesafe.akka" %% "akka-actor"     % akkaVersion % "provided",
+  "com.typesafe.akka" %% "akka-testkit"   % akkaVersion % "test"
 )
 
 libraryDependencies ++= Akka
@@ -23,7 +21,5 @@ libraryDependencies += "org.yaml" % "snakeyaml" % "1.15"
 libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.0.13"
 
 libraryDependencies += "com.chuusai" %% "shapeless" % "2.2.1"
-
-
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.5" % "test"

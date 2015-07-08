@@ -1,5 +1,6 @@
 package tv.teads.github.api.services
 
+import akka.actor.ActorRefFactory
 import spray.http.HttpRequest
 import spray.httpx.RequestBuilding._
 import tv.teads.github.api.models._
@@ -10,7 +11,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object RateLimitService extends GithubService {
 
-  def getRateLimit(implicit ec: ExecutionContext): Future[RateLimit] = {
+  def getRateLimit(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[RateLimit] = {
     val url: String = s"${configuration.api.url}/rate_limit"
     val req: HttpRequest = Get(url)
     baseRequest(req, Map.empty)

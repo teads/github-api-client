@@ -1,6 +1,7 @@
 package tv.teads.github.api.services
 
 
+import akka.actor.ActorRefFactory
 import spray.http._
 import spray.httpx.RequestBuilding._
 import spray.httpx.unmarshalling._
@@ -30,7 +31,7 @@ trait GithubService extends Service with PayloadFormats {
       .withHeader(HttpHeaders.Accept.name, mediaType)
   }
 
-  protected def fetchAllPages[T: FromResponseUnmarshaller](url: String, queryParams: Map[String, String])(implicit ec: ExecutionContext, ev: FromResponseUnmarshaller[List[T]]) = {
+  protected def fetchAllPages[T: FromResponseUnmarshaller](url: String, queryParams: Map[String, String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext, ev: FromResponseUnmarshaller[List[T]]) = {
 
     def findNextPageUrl(linkHeader: Option[String]): Option[String] =
       linkHeader.flatMap { links ⇒
@@ -38,7 +39,7 @@ trait GithubService extends Service with PayloadFormats {
           case PagesNavRegex(link, rel) if rel == "next" ⇒ link
         }
       }
-    def fetchAux(url: String, alreadyFetched: Future[List[T]])(implicit ec: ExecutionContext): Future[List[T]] = {
+    def fetchAux(url: String, alreadyFetched: Future[List[T]])(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[T]] = {
       val req: HttpRequest = Get(url)
       baseRequest(req, queryParams, useTestMediaType = true, paginated = true)
         .executeRequestInto[List[T]]()
