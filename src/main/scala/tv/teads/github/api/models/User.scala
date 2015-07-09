@@ -1,6 +1,6 @@
 package tv.teads.github.api.models
 
-import play.api.libs.json.{JsObject, JsValue}
+import play.api.libs.json.{ JsObject, JsValue }
 import play.api.data.mapping._
 
 //trait OwnerFormats {
@@ -52,7 +52,7 @@ import play.api.data.mapping._
 //                           ) extends Owner
 
 trait UserFormats {
-  implicit lazy val userJsonWrite : Write[User, JsValue] = {
+  implicit lazy val userJsonWrite: Write[User, JsValue] = {
     import play.api.data.mapping.json.Writes._
     Write.gen[User, JsObject]
   }
@@ -65,24 +65,24 @@ trait UserFormats {
 }
 
 case class User(
-                 name:Option[String],
-                 email:Option[String],
-                 login: Option[String],
-                 id: Option[Long],
-                 avatar_url: Option[String],
-                 gravatar_id: Option[String],
-                 url: Option[String],
-                 html_url: Option[String],
-                 followers_url: Option[String],
-                 following_url: Option[String],
-                 gists_url: Option[String],
-                 starred_url: Option[String],
-                 subscriptions_url: Option[String],
-                 organizations_url: Option[String],
-                 repos_url: Option[String],
-                 events_url: Option[String],
-                 received_events_url: Option[String],
-                 `type`: Option[String],
-                 site_admin: Option[Boolean]
-                 )
-  //extends Owner
+  name:                Option[String],
+  email:               Option[String],
+  login:               Option[String],
+  id:                  Option[Long],
+  avatar_url:          Option[String],
+  gravatar_id:         Option[String],
+  url:                 Option[String],
+  html_url:            Option[String],
+  followers_url:       Option[String],
+  following_url:       Option[String],
+  gists_url:           Option[String],
+  starred_url:         Option[String],
+  subscriptions_url:   Option[String],
+  organizations_url:   Option[String],
+  repos_url:           Option[String],
+  events_url:          Option[String],
+  received_events_url: Option[String],
+  `type`:              Option[String],
+  site_admin:          Option[Boolean]
+)
+//extends Owner

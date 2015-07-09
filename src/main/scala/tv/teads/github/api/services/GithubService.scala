@@ -1,6 +1,5 @@
 package tv.teads.github.api.services
 
-
 import akka.actor.ActorRefFactory
 import spray.http._
 import spray.httpx.RequestBuilding._
@@ -9,8 +8,7 @@ import tv.teads.github.api.models.payloads.PayloadFormats
 import tv.teads.github.api.util._
 import tv.teads.github.api.services.GithubConfiguration.configuration
 
-import scala.concurrent.{Future, ExecutionContext}
-
+import scala.concurrent.{ Future, ExecutionContext }
 
 trait GithubService extends Service with PayloadFormats {
 
@@ -19,10 +17,12 @@ trait GithubService extends Service with PayloadFormats {
   protected val RawContentMediaType = "application/vnd.github.v3.raw"
   protected val PagesNavRegex = """(?:\s*)<(.+)>; rel=(.+)""".r
 
-  protected def baseRequest(req: HttpRequest,
-                            queryParams: Map[String, String],
-                            useTestMediaType: Boolean = false,
-                            paginated: Boolean = false) = {
+  protected def baseRequest(
+    req:              HttpRequest,
+    queryParams:      Map[String, String],
+    useTestMediaType: Boolean             = false,
+    paginated:        Boolean             = false
+  ) = {
     val paramsWithToken = queryParams + configuration.api.tokenHeader
     val fullParams = if (paginated) paramsWithToken + configuration.api.paginationHeader else paramsWithToken
     val mediaType = if (useTestMediaType) TestMediaType else DefaultMediaType
@@ -44,17 +44,17 @@ trait GithubService extends Service with PayloadFormats {
       baseRequest(req, queryParams, useTestMediaType = true, paginated = true)
         .executeRequestInto[List[T]]()
         .flatMap {
-        case SuccessfulRequest(repositories, raw) ⇒
-          val fetchedRepos = alreadyFetched.map(_ ++ repositories)
+          case SuccessfulRequest(repositories, raw) ⇒
+            val fetchedRepos = alreadyFetched.map(_ ++ repositories)
 
-          findNextPageUrl(raw.headers.find(_.name == "Link").map(_.value))
-            .map(nextUrl ⇒ fetchAux(nextUrl, fetchedRepos))
-            .getOrElse(fetchedRepos)
+            findNextPageUrl(raw.headers.find(_.name == "Link").map(_.value))
+              .map(nextUrl ⇒ fetchAux(nextUrl, fetchedRepos))
+              .getOrElse(fetchedRepos)
 
-        case FailedRequest(statusCode) ⇒
-          logger.error(s"Failed to fetch repositories, request to $url completed with ${statusCode.intValue}")
-          alreadyFetched
-      }
+          case FailedRequest(statusCode) ⇒
+            logger.error(s"Failed to fetch repositories, request to $url completed with ${statusCode.intValue}")
+            alreadyFetched
+        }
     }
 
     fetchAux(url, Future.successful(Nil))

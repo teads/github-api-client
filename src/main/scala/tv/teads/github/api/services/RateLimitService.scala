@@ -7,7 +7,7 @@ import tv.teads.github.api.models._
 import tv.teads.github.api.services.GithubConfiguration.configuration
 import tv.teads.github.api.util._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 object RateLimitService extends GithubService {
 
@@ -16,11 +16,11 @@ object RateLimitService extends GithubService {
     val req: HttpRequest = Get(url)
     baseRequest(req, Map.empty)
       .executeRequestInto[RateLimit]().map {
-      case SuccessfulRequest(rateLimit, _) ⇒ rateLimit
-      case FailedRequest(statusCode) ⇒
-        logger.error(s"Could not fetch rate limit, failed with status code ${statusCode.intValue}")
-        val core = Core(0, 0, 0)
-        RateLimit(Resources(core, core))
-    }
+        case SuccessfulRequest(rateLimit, _) ⇒ rateLimit
+        case FailedRequest(statusCode) ⇒
+          logger.error(s"Could not fetch rate limit, failed with status code ${statusCode.intValue}")
+          val core = Core(0, 0, 0)
+          RateLimit(Resources(core, core))
+      }
   }
 }

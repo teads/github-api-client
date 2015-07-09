@@ -8,8 +8,7 @@ object ReleaseActions {
   // https://developer.github.com/v3/activity/events/types/#pullrequestevent
   object ReleaseAction extends ADTEnum[ReleaseAction] {
 
-    case object published    extends ReleaseAction
-
+    case object published extends ReleaseAction
 
     val list = Seq(
       published

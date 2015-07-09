@@ -8,22 +8,21 @@ object IssueActions {
   // https://developer.github.com/v3/activity/events/types/#pullrequestevent
   object IssueAction extends ADTEnum[IssueAction] {
 
-    case object assigned    extends IssueAction
-    case object unassigned  extends IssueAction
-    case object labeled     extends IssueAction
-    case object unlabeled   extends IssueAction
-    case object opened      extends IssueAction
-    case object closed      extends IssueAction
-    case object reopened    extends IssueAction
-
+    case object assigned extends IssueAction
+    case object unassigned extends IssueAction
+    case object labeled extends IssueAction
+    case object unlabeled extends IssueAction
+    case object opened extends IssueAction
+    case object closed extends IssueAction
+    case object reopened extends IssueAction
 
     val list = Seq(
-      assigned    ,
-      unassigned  ,
-      labeled     ,
-      unlabeled   ,
-      opened      ,
-      closed      ,
+      assigned,
+      unassigned,
+      labeled,
+      unlabeled,
+      opened,
+      closed,
       reopened
     )
   }

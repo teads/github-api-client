@@ -8,7 +8,7 @@ import tv.teads.github.api.models._
 import tv.teads.github.api.services.GithubConfiguration.configuration
 import tv.teads.github.api.util._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 object RepositoryService extends GithubService {
 
@@ -19,13 +19,13 @@ object RepositoryService extends GithubService {
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
       .executeRequest()
       .map {
-      case response if response.status == StatusCodes.OK ⇒
-        Some(response.entity.asString)
+        case response if response.status == StatusCodes.OK ⇒
+          Some(response.entity.asString)
 
-      case response ⇒
-        logger.error(s"fetchFile with url $url failed with status code ${response.status.intValue}")
-        None
-    }
+        case response ⇒
+          logger.error(s"fetchFile with url $url failed with status code ${response.status.intValue}")
+          None
+      }
   }
 
   def listTags(repository: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Tag]] = {

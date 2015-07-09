@@ -1,13 +1,13 @@
 package tv.teads.github.api.models.payloads
 
-import play.api.libs.json.{JsObject, JsValue}
+import play.api.libs.json.{ JsObject, JsValue }
 import tv.teads.github.api.models._
 import play.api.data.mapping._
 
 trait TeamAddPayloadFormats {
-  self: UserFormats with RepositoryFormats  with TeamFormats =>
+  self: UserFormats with RepositoryFormats with TeamFormats ⇒
 
-  implicit lazy val teamAddPayloadJsonWrite : Write[TeamAddPayload, JsValue] = {
+  implicit lazy val teamAddPayloadJsonWrite: Write[TeamAddPayload, JsValue] = {
     import play.api.data.mapping.json.Writes._
     Write.gen[TeamAddPayload, JsObject]
   }
@@ -19,8 +19,8 @@ trait TeamAddPayloadFormats {
 
 }
 case class TeamAddPayload(
-                           team: Team,
-                           repository: Repository,
-                           organization: Option[User],
-                           sender: User
-                           ) extends Payload
+  team:         Team,
+  repository:   Repository,
+  organization: Option[User],
+  sender:       User
+) extends Payload

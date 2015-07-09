@@ -8,8 +8,7 @@ object WatchActions {
   // https://developer.github.com/v3/activity/events/types/#pullrequestevent
   object WatchAction extends ADTEnum[WatchAction] {
 
-    case object started    extends WatchAction
-
+    case object started extends WatchAction
 
     val list = Seq(
       started

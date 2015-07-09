@@ -1,6 +1,6 @@
 package tv.teads.github.api.models
 
-import play.api.libs.json.{JsObject, JsValue}
+import play.api.libs.json.{ JsObject, JsValue }
 import play.api.data.mapping._
 
 trait FileFormats {
@@ -18,14 +18,14 @@ trait FileFormats {
 }
 
 case class File(
-                 sha: String,
-                 filename: String,
-                 status: String,
-                 additions: Long,
-                 deletions: Long,
-                 changes: Long,
-                 blob_url: String,
-                 raw_url: String,
-                 contents_url: String,
-                 patch: String
-                 )
+  sha:          String,
+  filename:     String,
+  status:       String,
+  additions:    Long,
+  deletions:    Long,
+  changes:      Long,
+  blob_url:     String,
+  raw_url:      String,
+  contents_url: String,
+  patch:        String
+)

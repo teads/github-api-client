@@ -1,9 +1,9 @@
 package tv.teads.github.api.models
-import play.api.libs.json.{JsObject, JsValue}
+import play.api.libs.json.{ JsObject, JsValue }
 import play.api.data.mapping._
 
 trait TeamFormats {
-  implicit lazy val teamJsonWrite : Write[Team, JsValue] = {
+  implicit lazy val teamJsonWrite: Write[Team, JsValue] = {
     import play.api.data.mapping.json.Writes._
     Write.gen[Team, JsObject]
   }
@@ -15,12 +15,12 @@ trait TeamFormats {
 
 }
 case class Team(
-                 name: String,
-                 id: Long,
-                 slug: String,
-                 description: Option[String],
-                 permission: Option[String],
-                 url: String,
-                 members_url: String,
-                 repositories_url: String
-                 )
+  name:             String,
+  id:               Long,
+  slug:             String,
+  description:      Option[String],
+  permission:       Option[String],
+  url:              String,
+  members_url:      String,
+  repositories_url: String
+)
