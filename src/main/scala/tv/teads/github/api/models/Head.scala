@@ -1,10 +1,10 @@
 package tv.teads.github.api.models
 
 import play.api.data.mapping._
-import play.api.libs.json.{JsObject, JsValue}
+import play.api.libs.json.{ JsObject, JsValue }
 
 trait HeadFormats {
-  self: UserFormats with RepositoryFormats =>
+  self: UserFormats with RepositoryFormats ⇒
   implicit lazy val headJsonWrite: Write[Head, JsValue] = {
     import play.api.data.mapping.json.Writes._
     Write.gen[Head, JsObject]
@@ -17,12 +17,12 @@ trait HeadFormats {
 }
 
 case class Head(
-                 label: String,
-                 ref: String,
-                 sha: String,
-                 user: User,
-                 repo: Option[Repository]
-                 )
+  label: String,
+  ref:   String,
+  sha:   String,
+  user:  User,
+  repo:  Option[Repository]
+)
 
 trait HRefFormats {
   implicit lazy val selfJsonWrite: Write[HRef, JsValue] = {
@@ -37,12 +37,12 @@ trait HRefFormats {
 }
 
 case class HRef(
-                 href: String
-                 )
+  href: String
+)
 
 trait LinksFormats {
 
-  self: UserFormats with HRefFormats =>
+  self: UserFormats with HRefFormats ⇒
   implicit lazy val linkJsonWrite: Write[Links, JsValue] = {
     import play.api.data.mapping.json.Writes._
     Write.gen[Links, JsObject]
@@ -55,19 +55,19 @@ trait LinksFormats {
 }
 
 case class Links(
-                  self: HRef,
-                  html: HRef,
-                  issue: HRef,
-                  comments: HRef,
-                  review_comments: HRef,
-                  review_comment: HRef,
-                  commits: HRef,
-                  statuses: HRef
-                  )
+  self:            HRef,
+  html:            HRef,
+  issue:           HRef,
+  comments:        HRef,
+  review_comments: HRef,
+  review_comment:  HRef,
+  commits:         HRef,
+  statuses:        HRef
+)
 
 trait PullRequestReviewCommentLinksFormats {
 
-  self: UserFormats with HRefFormats =>
+  self: UserFormats with HRefFormats ⇒
   implicit lazy val linkPullRequestJsonWrite: Write[PullRequestReviewCommentLinks, JsValue] = {
     import play.api.data.mapping.json.Writes._
     Write.gen[PullRequestReviewCommentLinks, JsObject]
@@ -80,11 +80,10 @@ trait PullRequestReviewCommentLinksFormats {
 }
 
 case class PullRequestReviewCommentLinks(
-                                          self: HRef,
-                                          html: HRef,
-                                          pull_request: HRef
-                                          )
-
+  self:         HRef,
+  html:         HRef,
+  pull_request: HRef
+)
 
 trait LinksContentFormats {
   implicit lazy val linkContentJsonWrite: Write[LinksContent, JsValue] = {
@@ -99,10 +98,10 @@ trait LinksContentFormats {
 }
 
 case class LinksContent(
-                         self: String,
-                         html: String,
-                         git: String
-                         )
+  self: String,
+  html: String,
+  git:  String
+)
 
 trait TreeFormats {
   implicit lazy val treeJsonWrite: Write[Tree, JsValue] = {
@@ -117,6 +116,6 @@ trait TreeFormats {
 }
 
 case class Tree(
-                 sha: String,
-                 url: String
-                 )
+  sha: String,
+  url: String
+)

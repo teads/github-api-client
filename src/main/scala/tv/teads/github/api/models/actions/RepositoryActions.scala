@@ -7,7 +7,7 @@ object RepositoryActions {
   sealed trait RepositoryAction
   object RepositoryAction extends ADTEnum[RepositoryAction] {
 
-    case object created    extends RepositoryAction
+    case object created extends RepositoryAction
     val list = Seq(created)
   }
 

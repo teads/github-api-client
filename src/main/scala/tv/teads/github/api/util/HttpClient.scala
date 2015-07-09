@@ -2,7 +2,6 @@ package tv.teads.github.api.util
 
 import java.util.concurrent.ConcurrentHashMap
 
-
 import akka.actor.ActorSystem
 
 import scala.collection.concurrent
@@ -29,8 +28,10 @@ object HttpClient {
 
   def cleanCache() = responseCache.clear()
 }
-case class HttpClient private (req: HttpRequest,
-                               sendPipeline: List[RequestTransformer])  {
+case class HttpClient private (
+    req:          HttpRequest,
+    sendPipeline: List[RequestTransformer]
+) {
 
   implicit val actorSystem = ActorSystem("github-api-client")
 

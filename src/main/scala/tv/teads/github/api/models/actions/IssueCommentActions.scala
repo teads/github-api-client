@@ -7,7 +7,7 @@ object IssueCommentActions {
   sealed trait IssueCommentAction
   object IssueCommentAction extends ADTEnum[IssueCommentAction] {
 
-    case object created    extends IssueCommentAction
+    case object created extends IssueCommentAction
     val list = Seq(created)
   }
 

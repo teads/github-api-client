@@ -7,9 +7,8 @@ object Directions {
   sealed trait Direction
   object Direction extends ADTEnum[Direction] {
 
-    case object asc  extends Direction
+    case object asc extends Direction
     case object desc extends Direction
-
 
     val list = Seq(
       asc, desc

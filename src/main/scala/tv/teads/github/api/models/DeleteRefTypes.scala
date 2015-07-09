@@ -7,8 +7,8 @@ object DeleteRefTypes {
   sealed trait DeleteRefType
   object DeleteRefType extends ADTEnum[DeleteRefType] {
 
-    case object branch        extends DeleteRefType
-    case object tag           extends DeleteRefType
+    case object branch extends DeleteRefType
+    case object tag extends DeleteRefType
 
     val list = Seq(
       branch,

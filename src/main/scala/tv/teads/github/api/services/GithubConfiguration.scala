@@ -8,7 +8,7 @@ private[services] object GithubConfiguration {
   val configuration = ConfigFactory.load("github").as[GithubConfiguration]("github")
 }
 private[services] case class ApiConfiguration(url: String, token: String, paging: Int) {
-  val tokenHeader = "access_token" -> token
-  val paginationHeader = "per_page" -> paging.toString
+  val tokenHeader = "access_token" → token
+  val paginationHeader = "per_page" → paging.toString
 }
 private[services] case class GithubConfiguration(api: ApiConfiguration, organization: String)

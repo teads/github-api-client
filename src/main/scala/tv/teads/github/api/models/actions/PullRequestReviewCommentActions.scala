@@ -7,7 +7,7 @@ object PullRequestReviewCommentActions {
   sealed trait PullRequestReviewCommentAction
   object PullRequestReviewCommentAction extends ADTEnum[PullRequestReviewCommentAction] {
 
-    case object created    extends PullRequestReviewCommentAction
+    case object created extends PullRequestReviewCommentAction
     val list = Seq(created)
   }
 
