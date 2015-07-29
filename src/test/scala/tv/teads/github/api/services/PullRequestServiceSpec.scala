@@ -20,7 +20,7 @@ class PullRequestServiceSpec extends BaseSpec {
   it should "be able to fetch a github-hooks Pull Request commits" in {
 
     whenReady(PullRequestService.fetchCommits("github-hooks", 5)) { list ⇒
-      println(list)
+      //      println(list)
       list should not be empty
     }
   }
