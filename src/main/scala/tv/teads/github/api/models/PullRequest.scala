@@ -1,7 +1,8 @@
 package tv.teads.github.api.models
 
+import org.joda.time.DateTime
 import play.api.data.mapping._
-import play.api.libs.json.{ JsObject, JsValue }
+import play.api.libs.json.{ JsString, JsObject, JsValue }
 
 trait PullRequestUrlsFormats {
   implicit lazy val pullRequestUrlsJsonWrite: Write[PullRequestUrls, JsValue] = {
@@ -40,26 +41,28 @@ case class PullRequestUrls(
 trait TimeMetadataFormats {
   implicit lazy val timeMetadataJsonWrite: Write[TimeMetadata, JsValue] = {
     import play.api.data.mapping.json.Writes._
+    implicit val dateTimeToStringJsValue: Write[DateTime, JsValue] = Write[DateTime, JsValue] { dt ⇒ JsString(dt.toString) }
+
     Write.gen[TimeMetadata, JsObject]
   }
 
   implicit lazy val timeMetadataJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
     (
-      (__ \ "created_at").read[String] ~
-      (__ \ "updated_at").read[String] ~
-      (__ \ "closed_at").read[Option[String]] ~
-      (__ \ "merged_at").read[Option[String]] ~
+      (__ \ "created_at").read(jodaDate) ~
+      (__ \ "updated_at").read(jodaDate) ~
+      (__ \ "closed_at").read(optionR(jodaDate)) ~
+      (__ \ "merged_at").read(optionR(jodaDate)) ~
       (__ \ "merge_commit_sha").read[Option[String]]
     )(TimeMetadata.apply _)
   }
 
 }
 case class TimeMetadata(
-  created_at:       String,
-  updated_at:       String,
-  closed_at:        Option[String],
-  merged_at:        Option[String],
+  created_at:       DateTime,
+  updated_at:       DateTime,
+  closed_at:        Option[DateTime],
+  merged_at:        Option[DateTime],
   merge_commit_sha: Option[String]
 )
 
