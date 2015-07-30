@@ -1,6 +1,7 @@
 package tv.teads.github.api.models
 
 import org.joda.time.DateTime
+import org.joda.time.format.ISODateTimeFormat
 import play.api.data.mapping._
 import play.api.libs.json.{ JsString, JsObject, JsValue }
 
@@ -48,11 +49,13 @@ trait TimeMetadataFormats {
 
   implicit lazy val timeMetadataJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
+    import tv.teads.github.api.util.CustomRules._
+
     (
-      (__ \ "created_at").read(jodaDate) ~
-      (__ \ "updated_at").read(jodaDate) ~
-      (__ \ "closed_at").read(optionR(jodaDate)) ~
-      (__ \ "merged_at").read(optionR(jodaDate)) ~
+      (__ \ "created_at").read(jodaLongOrISO) ~
+      (__ \ "updated_at").read(jodaLongOrISO) ~
+      (__ \ "closed_at").read(optionR(jodaLongOrISO)) ~
+      (__ \ "merged_at").read(optionR(jodaLongOrISO)) ~
       (__ \ "merge_commit_sha").read[Option[String]]
     )(TimeMetadata.apply _)
   }

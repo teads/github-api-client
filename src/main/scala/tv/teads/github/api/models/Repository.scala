@@ -155,6 +155,7 @@ trait RepositoryFormats {
 
   implicit lazy val GHRepoReads: Rule[JsValue, Repository] = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
+    import tv.teads.github.api.util.CustomRules._
 
     val tagsR = Rule.fromMapping[Option[String], List[String]] {
       case None ⇒ Success(Nil)
@@ -178,9 +179,9 @@ trait RepositoryFormats {
       (__ \ "homepage").read[Option[String]] ~
       (__ \ "language").read[Option[String]] ~
       (__ \ "default_branch").read[String] ~
-      (__ \ "pushed_at").read(jodaTime) ~
-      (__ \ "created_at").read(jodaTime) ~
-      (__ \ "updated_at").read(jodaTime) ~
+      (__ \ "pushed_at").read(jodaLongOrISO) ~
+      (__ \ "created_at").read(jodaLongOrISO) ~
+      (__ \ "updated_at").read(jodaLongOrISO) ~
       (__ \ "permissions").read[Option[Permissions]] ~
       (__ \ "organization").read[Option[User]] ~
       repositoryUrlsJsonRead ~
