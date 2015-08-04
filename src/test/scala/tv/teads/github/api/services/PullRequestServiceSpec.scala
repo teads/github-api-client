@@ -5,7 +5,6 @@ import tv.teads.github.api.BaseSpec
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 
-
 class PullRequestServiceSpec extends BaseSpec {
 
   override implicit val patienceConfig = PatienceConfig(30 seconds, 1 second)
@@ -25,6 +24,5 @@ class PullRequestServiceSpec extends BaseSpec {
       list should not be empty
     }
   }
-
 
 }

@@ -5,7 +5,6 @@ import tv.teads.github.api.BaseSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-
 class RepositoryServiceSpec extends BaseSpec {
 
   override implicit val patienceConfig = PatienceConfig(30 seconds, 1 second)
