@@ -1,5 +1,7 @@
 package tv.teads.github.api.models
 
+import org.joda.time.DateTime
+
 case class GHPullRequestMini(
   project:    String,
   url:        String,
@@ -7,10 +9,10 @@ case class GHPullRequestMini(
   state:      String,
   user:       User,
   body:       String,
-  created_at: String,
-  updated_at: String,
-  closed_at:  Option[String],
-  merged_at:  Option[String],
+  created_at: DateTime,
+  updated_at: DateTime,
+  closed_at:  Option[DateTime],
+  merged_at:  Option[DateTime],
   assignee:   Option[User],
   branch:     String,
   tags:       Set[String]
