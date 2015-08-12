@@ -1,7 +1,6 @@
 package tv.teads.github.api.models
 
 import org.joda.time.DateTime
-import org.joda.time.format.ISODateTimeFormat
 import play.api.data.mapping._
 import play.api.libs.json.{ JsString, JsObject, JsValue }
 
@@ -42,7 +41,7 @@ case class PullRequestUrls(
 trait TimeMetadataFormats {
   implicit lazy val timeMetadataJsonWrite: Write[TimeMetadata, JsValue] = {
     import play.api.data.mapping.json.Writes._
-    implicit val dateTimeToStringJsValue: Write[DateTime, JsValue] = Write[DateTime, JsValue] { dt ⇒ JsString(dt.toString) }
+    import tv.teads.github.api.util.CustomWrites._
 
     Write.gen[TimeMetadata, JsObject]
   }
