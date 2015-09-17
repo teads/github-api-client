@@ -34,7 +34,7 @@ case class HttpClient private (
     sendPipeline: List[RequestTransformer]
 ) {
 
-  val logger = LoggerFactory.getLogger(HttpClient.getClass)
+  val logger = LoggerFactory.getLogger("HttpClient")
 
   implicit val actorSystem = ActorSystem("github-api-client")
 
