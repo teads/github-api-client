@@ -3,6 +3,7 @@ package tv.teads.github.api.util
 import java.util.concurrent.ConcurrentHashMap
 
 import akka.actor.ActorSystem
+import org.slf4j.LoggerFactory
 
 import scala.collection.concurrent
 import scala.collection.JavaConversions._
@@ -12,7 +13,7 @@ import spray.client.pipelining._
 import spray.http._
 import spray.httpx.unmarshalling.FromResponseUnmarshaller
 
-import scala.util.Try
+import scala.util.{ Failure, Success, Try }
 
 sealed trait ClientResponse[T]
 case class SuccessfulRequest[T](response: T, rawResponse: HttpResponse) extends ClientResponse[T]
@@ -32,6 +33,8 @@ case class HttpClient private (
     req:          HttpRequest,
     sendPipeline: List[RequestTransformer]
 ) {
+
+  val logger = LoggerFactory.getLogger(HttpClient.getClass)
 
   implicit val actorSystem = ActorSystem("github-api-client")
 
@@ -63,9 +66,13 @@ case class HttpClient private (
   def executeRequestInto[T]()(implicit evidence: FromResponseUnmarshaller[T]) =
     executeRequest().map {
       case response if response.status.isSuccess ⇒
-        Try(unmarshal(evidence)(response))
-          .map(converted ⇒ SuccessfulRequest(converted, response))
-          .getOrElse(FailedRequest(response.status))
+        Try(unmarshal(evidence)(response)).map(converted ⇒ SuccessfulRequest(converted, response)) match {
+          case Success(r) ⇒ r
+          case Failure(ex) ⇒
+            logger.error(s"Failed to unmarshal response body from ${req.uri}: ${ex.getMessage}")
+            logger.debug(s"Response body was: ${response.entity.asString}")
+            FailedRequest(response.status)
+        }
 
       case response ⇒
         FailedRequest(response.status)

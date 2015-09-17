@@ -14,7 +14,7 @@ class IssueServiceSpec extends BaseSpec {
 
   "Issue Service" should "be able to create an issue, close it, re-open it and finally close it" in {
 
-    val repository = "github-hooks"
+    val repository = "github-api-client"
     val issue = IssueParam(title = "IssueServiceSpec.createTest", body = Some("html body with some `markup`"))
 
     whenReady(IssueService.create(repository, issue)) { res ⇒
