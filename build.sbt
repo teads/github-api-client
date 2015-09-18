@@ -4,7 +4,7 @@ scalaVersion    := "2.11.7"
 
 resolvers += Opts.resolver.sonatypeReleases
 
-val akkaVersion = "2.3.11"
+val akkaVersion = "2.3.13"
 val Akka = Seq(
   "com.typesafe.akka" %% "akka-actor"     % akkaVersion % "provided",
   "com.typesafe.akka" %% "akka-testkit"   % akkaVersion % "test"
@@ -21,7 +21,7 @@ libraryDependencies += "org.yaml"           %   "snakeyaml"       % "1.15"
 libraryDependencies += "ch.qos.logback"     %   "logback-classic" % "1.0.13"
 libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.1.0"
 
-libraryDependencies += "com.chuusai"        %%  "shapeless"       % "2.2.1"
+libraryDependencies += "com.chuusai"        %%  "shapeless"       % "2.2.5"
 
 libraryDependencies += "org.scalatest"      %% "scalatest"        % "2.2.5"   % "test"
 

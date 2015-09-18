@@ -41,23 +41,23 @@ trait IssueFormats {
 
 }
 case class Issue(
-  url:          String,
+  url:         String,
   labelsUrl:   String,
   commentsUrl: String,
   eventsUrl:   String,
   htmlUrl:     String,
-  id:           Long,
-  number:       Long,
-  title:        String,
-  user:         User,
-  labels:       List[Label],
-  state:        String,
-  locked:       Boolean,
-  assignee:     Option[User],
-  milestone:    Option[String],
-  comments:     Long,
+  id:          Long,
+  number:      Long,
+  title:       String,
+  user:        User,
+  labels:      List[Label],
+  state:       String,
+  locked:      Boolean,
+  assignee:    Option[User],
+  milestone:   Option[String],
+  comments:    Long,
   createdAt:   DateTime,
   updatedAt:   DateTime,
   closedAt:    Option[DateTime],
-  body:         String
+  body:        String
 )

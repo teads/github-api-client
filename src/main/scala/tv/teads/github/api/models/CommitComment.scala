@@ -32,15 +32,15 @@ trait CommitCommentFormats {
   }
 }
 case class CommitComment(
-  url:        String,
+  url:       String,
   htmlUrl:   String,
-  id:         Long,
-  user:       User,
-  position:   Option[Long],
-  line:       Option[Long],
-  path:       Option[String],
+  id:        Long,
+  user:      User,
+  position:  Option[Long],
+  line:      Option[Long],
+  path:      Option[String],
   commitId:  String,
   createdAt: DateTime,
   updatedAt: DateTime,
-  body:       String
+  body:      String
 )

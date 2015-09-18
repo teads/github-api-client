@@ -65,14 +65,14 @@ trait LinksFormats {
 }
 
 case class Links(
-  self:            HRef,
-  html:            HRef,
-  issue:           HRef,
-  comments:        HRef,
+  self:           HRef,
+  html:           HRef,
+  issue:          HRef,
+  comments:       HRef,
   reviewComments: HRef,
   reviewComment:  HRef,
-  commits:         HRef,
-  statuses:        HRef
+  commits:        HRef,
+  statuses:       HRef
 )
 
 trait PullRequestReviewCommentLinksFormats {
@@ -95,8 +95,8 @@ trait PullRequestReviewCommentLinksFormats {
 }
 
 case class PullRequestReviewCommentLinks(
-  self:         HRef,
-  html:         HRef,
+  self:        HRef,
+  html:        HRef,
   pullRequest: HRef
 )
 

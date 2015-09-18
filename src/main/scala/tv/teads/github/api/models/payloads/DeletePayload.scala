@@ -29,8 +29,8 @@ trait DeletePayloadFormats {
 }
 case class DeletePayload(
   ref:          String,
-  refType:     DeleteRefType,
-  pusherType:  String,
+  refType:      DeleteRefType,
+  pusherType:   String,
   repository:   Repository,
   organization: Option[User],
   sender:       User
