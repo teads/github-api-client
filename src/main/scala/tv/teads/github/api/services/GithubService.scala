@@ -60,4 +60,34 @@ trait GithubService extends Service with PayloadFormats {
     fetchAux(url, Future.successful(Nil))
   }
 
+  protected def fetchMultiple[T](route: String, errorMsg: String, params: Map[String, String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext, ev: FromResponseUnmarshaller[List[T]]): Future[List[T]] = {
+    val url = s"${configuration.api.url}/$route"
+    val req: HttpRequest = Get(url)
+    baseRequest(req, params).executeRequestInto[List[T]]().map {
+      case SuccessfulRequest(list, _) ⇒ list
+      case FailedRequest(statusCode) ⇒
+        logger.error(s"$errorMsg, status code: ${statusCode.intValue}")
+        Nil
+    }
+  }
+
+  protected def fetchMultiple[T](route: String, errorMsg: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext, ev: FromResponseUnmarshaller[List[T]]): Future[List[T]] = {
+    fetchMultiple(route, errorMsg, Map.empty)
+  }
+
+  protected def fetchOptional[T](route: String, errorMsg: String, params: Map[String, String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext, ev: FromResponseUnmarshaller[Option[T]]): Future[Option[T]] = {
+    val url = s"${configuration.api.url}/$route"
+    val req: HttpRequest = Get(url)
+    baseRequest(req, params).executeRequestInto[Option[T]]().map {
+      case SuccessfulRequest(o, _) ⇒ o
+      case FailedRequest(statusCode) ⇒
+        logger.error(s"$errorMsg, status code: ${statusCode.intValue}")
+        None
+    }
+  }
+
+  protected def fetchOptional[T](route: String, errorMsg: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext, ev: FromResponseUnmarshaller[Option[T]]): Future[Option[T]] = {
+    fetchOptional(route, errorMsg, Map.empty)
+  }
+
 }

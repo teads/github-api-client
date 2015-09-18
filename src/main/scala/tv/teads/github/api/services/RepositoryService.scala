@@ -30,14 +30,9 @@ object RepositoryService extends GithubService {
 
   def listTags(repository: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Tag]] = {
     import play.api.data.mapping.json.Rules._
-    val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/tags"
-    val req: HttpRequest = Get(url)
-    baseRequest(req, Map.empty).executeRequestInto[List[Tag]]().map {
-      case SuccessfulRequest(tags, _) ⇒ tags
-      case FailedRequest(statusCode) ⇒
-        logger.error(s"Fetching tags for repository $repository failed, status code: ${statusCode.intValue}")
-        Nil
-    }
+    val route = s"repos/${configuration.organization}/$repository/tags"
+    val errorMsg = s"Fetching tags for repository $repository failed"
+    fetchMultiple[Tag](route, errorMsg)
   }
 
   def fetchAllRepositories(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Repository]] = {
