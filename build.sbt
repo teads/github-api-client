@@ -19,6 +19,7 @@ libraryDependencies += "io.github.jto"      %%  "validation-core" % "1.0.2"
 libraryDependencies += "io.github.jto"      %%  "validation-json" % "1.0.2"
 libraryDependencies += "org.yaml"           %   "snakeyaml"       % "1.15"
 libraryDependencies += "ch.qos.logback"     %   "logback-classic" % "1.0.13"
+libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging" % "3.1.0"
 
 libraryDependencies += "com.chuusai"        %%  "shapeless"       % "2.2.1"
 
