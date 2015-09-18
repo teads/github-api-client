@@ -10,22 +10,36 @@ trait ContentFormats {
     Write.gen[Content, JsObject]
   }
 
-  implicit lazy val contentJsonRead = {
+  implicit lazy val contentJsonRead =  From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
-    Rule.gen[JsValue, Content]
+    // let's no leak implicits everywhere
+    (
+      (__ \ "type").read[String] ~
+      (__ \ "encoding").read[String] ~
+      (__ \ "size").read[Long] ~
+      (__ \ "name").read[String] ~
+      (__ \ "path").read[String] ~
+      (__ \ "contents").read[String] ~
+      (__ \ "sha").read[String] ~
+      (__ \ "url").read[String] ~
+      (__ \ "git_url").read[String] ~
+      (__ \ "html_url").read[String] ~
+      (__ \ "download_url").read[String] ~
+      (__ \ "_links").read[LinksContent]
+    )(Content.apply _)
   }
 }
 case class Content(
-  `type`:       String,
+  typ:       String,
   encoding:     String,
-  size:         Double,
+  size:         Long,
   name:         String,
   path:         String,
   content:      String,
   sha:          String,
   url:          String,
-  git_url:      String,
-  html_url:     String,
-  download_url: String,
-  _links:       LinksContent
+  gitUrl:      String,
+  htmlUrl:     String,
+  downloadUrl: String,
+  links:       LinksContent
 )

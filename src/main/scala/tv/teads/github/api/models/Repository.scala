@@ -26,11 +26,11 @@ trait RepositoryUrlsFormats {
 }
 case class RepositoryUrls(
   url:       String,
-  html_url:  String,
-  clone_url: String,
-  git_url:   String,
-  ssh_url:   String,
-  svn_url:   String
+  htmlUrl:  String,
+  cloneUrl: String,
+  gitUrl:   String,
+  sshUrl:   String,
+  svnUrl:   String
 //forks_url: String,
 //keys_url: String,
 //collaborators_url: String,
@@ -110,11 +110,11 @@ trait RepositoryStatsFormats {
 
 }
 case class RepositoryStats(
-  forks_count:       Long,
-  stargazers_count:  Long,
-  watchers_count:    Long,
+  forksCount:       Long,
+  stargazersCount:  Long,
+  watchersCount:    Long,
   size:              Long,
-  open_issues_count: Long,
+  open_issuesCount: Long,
   watchers:          Long
 )
 
@@ -136,10 +136,10 @@ trait RepositoryConfigFormats {
 
 }
 case class RepositoryConfig(
-  has_issues:    Boolean,
-  has_wiki:      Boolean,
-  has_pages:     Boolean,
-  has_downloads: Boolean
+  hasIssues:    Boolean,
+  hasWiki:      Boolean,
+  hasPages:     Boolean,
+  hasDownloads: Boolean
 )
 
 trait RepositoryFormats {
@@ -195,17 +195,17 @@ trait RepositoryFormats {
 case class Repository(
   id:             Long,
   name:           String,
-  full_name:      String,
+  fullName:      String,
   owner:          User,
-  `private`:      Boolean,
+  privat:      Boolean,
   description:    Option[String],
   fork:           Boolean,
   homepage:       Option[String],
   language:       Option[String],
-  default_branch: String,
-  pushed_at:      DateTime,
-  created_at:     DateTime,
-  updated_at:     DateTime,
+  defaultBranch: String,
+  pushedAt:      DateTime,
+  createdAt:     DateTime,
+  updatedAt:     DateTime,
   permissions:    Option[Permissions],
   organization:   Option[User],
   urls:           RepositoryUrls,

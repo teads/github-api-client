@@ -27,15 +27,15 @@ trait PullRequestUrlsFormats {
 
 }
 case class PullRequestUrls(
-  html_url:            String,
-  diff_url:            String,
-  patch_url:           String,
-  issue_url:           String,
-  commits_url:         String,
-  review_comments_url: String,
-  review_comment_url:  String,
-  comments_url:        String,
-  statuses_url:        String
+  htmlUrl:            String,
+  diffUrl:            String,
+  patchUrl:           String,
+  issueUrl:           String,
+  commitsUrl:         String,
+  review_commentsUrl: String,
+  review_commentUrl:  String,
+  commentsUrl:        String,
+  statusesUrl:        String
 )
 
 trait TimeMetadataFormats {
@@ -61,11 +61,11 @@ trait TimeMetadataFormats {
 
 }
 case class TimeMetadata(
-  created_at:       DateTime,
-  updated_at:       DateTime,
-  closed_at:        Option[DateTime],
-  merged_at:        Option[DateTime],
-  merge_commit_sha: Option[String]
+  createdAt:       DateTime,
+  updatedAt:       DateTime,
+  closedAt:        Option[DateTime],
+  mergedAt:        Option[DateTime],
+  mergeCommitSha: Option[String]
 )
 
 trait ChangeMetadataFormats {
@@ -89,11 +89,11 @@ trait ChangeMetadataFormats {
 }
 case class ChangeMetadata(
   comments:        Option[Long],
-  review_comments: Option[Long],
+  reviewComments: Option[Long],
   commits:         Option[Long],
   additions:       Option[Long],
   deletions:       Option[Long],
-  changed_files:   Option[Long]
+  changedFiles:   Option[Long]
 
 )
 
@@ -146,8 +146,8 @@ case class PullRequest(
   base:            Head,
   merged:          Option[Boolean],
   mergeable:       Option[Boolean],
-  mergeable_state: Option[String],
-  merged_by:       Option[User],
+  mergeableState: Option[String],
+  mergedBy:       Option[User],
   links:           Links,
   urls:            PullRequestUrls,
   timeMetadata:    TimeMetadata,

@@ -10,9 +10,17 @@ trait CommitDetailFormats {
     Write.gen[CommitDetail, JsObject]
   }
 
-  implicit lazy val commitDetailJsonRead = {
+  implicit lazy val commitDetailJsonRead =  From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
-    Rule.gen[JsValue, CommitDetail]
+    // let's no leak implicits everywhere
+    (
+      (__ \ "author").read[Author] ~
+      (__ \ "committer").read[Author] ~
+      (__ \ "message").read[String] ~
+      (__ \ "tree").read[Tree] ~
+      (__ \ "url").read[String] ~
+      (__ \ "comment_count").read[Long]
+    )(CommitDetail.apply _)
   }
 }
 case class CommitDetail(
@@ -21,5 +29,5 @@ case class CommitDetail(
   message:       String,
   tree:          Tree,
   url:           String,
-  comment_count: Long
+  commentCount: Long
 )

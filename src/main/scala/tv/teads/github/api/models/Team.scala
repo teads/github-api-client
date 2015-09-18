@@ -8,9 +8,19 @@ trait TeamFormats {
     Write.gen[Team, JsObject]
   }
 
-  implicit lazy val teamJsonRead = {
-    import play.api.data.mapping.json.Rules._ // let's no leak implicits everywhere
-    Rule.gen[JsValue, Team]
+  implicit lazy val teamJsonRead = From[JsValue] { __ ⇒
+    import play.api.data.mapping.json.Rules._
+    // let's no leak implicits everywhere
+    (
+      (__ \ "name").read[String] ~
+      (__ \ "id").read[Long] ~
+      (__ \ "slug").read[String] ~
+      (__ \ "description").read[Option[String]] ~
+      (__ \ "permission").read[Option[String]] ~
+      (__ \ "url").read[String] ~
+      (__ \ "members_url").read[String] ~
+      (__ \ "repositories_url").read[String]
+    )(Team.apply _)
   }
 
 }
@@ -21,6 +31,6 @@ case class Team(
   description:      Option[String],
   permission:       Option[String],
   url:              String,
-  members_url:      String,
-  repositories_url: String
+  membersUrl:      String,
+  repositoriesUrl: String
 )
