@@ -22,7 +22,7 @@ trait GithubService extends Service with PayloadFormats {
     queryParams:      Map[String, String],
     useTestMediaType: Boolean             = false,
     paginated:        Boolean             = false
-  ) = {
+  )(implicit refFactory: ActorRefFactory) = {
     val paramsWithToken = queryParams + configuration.api.tokenHeader
     val fullParams = if (paginated) paramsWithToken + configuration.api.paginationHeader else paramsWithToken
     val mediaType = if (useTestMediaType) TestMediaType else DefaultMediaType

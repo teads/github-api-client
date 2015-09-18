@@ -2,8 +2,8 @@ package tv.teads.github.api.util
 
 import java.util.concurrent.ConcurrentHashMap
 
-import akka.actor.ActorSystem
 import com.typesafe.scalalogging.LazyLogging
+import akka.actor.ActorRefFactory
 
 import scala.collection.concurrent
 import scala.collection.JavaConversions._
@@ -20,7 +20,7 @@ case class SuccessfulRequest[T](response: T, rawResponse: HttpResponse) extends 
 case class FailedRequest[T](statusCode: StatusCode) extends ClientResponse[T]
 
 object HttpClient {
-  def apply(req: HttpRequest): HttpClient = HttpClient(req, Nil)
+  def apply(req: HttpRequest)(implicit refFactory: ActorRefFactory): HttpClient = HttpClient(req, Nil)
 
   private case class CacheKey(uri: Uri, method: HttpMethod)
   private case class CacheEntry(eTag: String, response: HttpResponse)
@@ -32,13 +32,11 @@ object HttpClient {
 case class HttpClient private (
     req:          HttpRequest,
     sendPipeline: List[RequestTransformer]
-) extends LazyLogging {
-
-  implicit val actorSystem = ActorSystem("github-api-client")
+)(implicit refFactory: ActorRefFactory) extends LazyLogging {
 
   import HttpClient._
 
-  implicit def dispatcher: ExecutionContext = actorSystem.dispatcher
+  implicit def dispatcher: ExecutionContext = refFactory.dispatcher
 
   def withHeader(headerName: String, headerValue: String) =
     copy(sendPipeline = addHeader(headerName, headerValue) :: sendPipeline)
