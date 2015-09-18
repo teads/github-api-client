@@ -1,8 +1,5 @@
 package tv.teads.github.api.links
 
-/**
- * Created by gbougeard on 27/05/15.
- */
 object PullRequest {
   //  self	The API location of this Pull Request.
   //  html	The HTML location of this Pull Request.
