@@ -3,7 +3,7 @@ package tv.teads.github.api.util
 import java.util.concurrent.ConcurrentHashMap
 
 import akka.actor.ActorSystem
-import org.slf4j.LoggerFactory
+import com.typesafe.scalalogging.LazyLogging
 
 import scala.collection.concurrent
 import scala.collection.JavaConversions._
@@ -32,9 +32,7 @@ object HttpClient {
 case class HttpClient private (
     req:          HttpRequest,
     sendPipeline: List[RequestTransformer]
-) {
-
-  val logger = LoggerFactory.getLogger("HttpClient")
+) extends LazyLogging {
 
   implicit val actorSystem = ActorSystem("github-api-client")
 
