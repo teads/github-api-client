@@ -114,33 +114,15 @@ object IssueService extends GithubService {
 
   def byRepository(repository: String, issueFilter: IssueFilter)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Issue]] = {
     import play.api.data.mapping.json.Rules._
-    val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/issues"
-    val req: HttpRequest = Get(url)
-
-    baseRequest(req, filterToMap(issueFilter))
-      .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
-      .executeRequestInto[List[Issue]]()
-      .map {
-        case SuccessfulRequest(i, _) ⇒ i
-        case FailedRequest(statusCode) ⇒
-          logger.error(s"Could retrieve issues, failed with status code ${statusCode.intValue}")
-          List.empty
-      }
+    val url = s"repos/${configuration.organization}/$repository/issues"
+    val errorMsg = s"Fetching issues for repository $repository failed"
+    fetchMultiple[Issue](url, errorMsg, filterToMap(issueFilter))
   }
 
   def byRepositoryAndNumber(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Issue]] = {
     import play.api.data.mapping.json.Rules._
-    val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/issues/$number"
-    val req: HttpRequest = Get(url)
-
-    baseRequest(req, Map.empty)
-      .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
-      .executeRequestInto[Issue]()
-      .map {
-        case SuccessfulRequest(i, _) ⇒ Some(i)
-        case FailedRequest(statusCode) ⇒
-          logger.error(s"Could not retrieve issue, failed with status code ${statusCode.intValue}")
-          None
-      }
+    val url = s"repos/${configuration.organization}/$repository/issues/$number"
+    val errorMsg = s"Fetching issue #$number for repository $repository failed"
+    fetchOptional[Issue](url, errorMsg)
   }
 }

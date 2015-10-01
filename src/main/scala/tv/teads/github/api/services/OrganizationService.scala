@@ -12,14 +12,9 @@ import scala.concurrent.{ ExecutionContext, Future }
 object OrganizationService extends GithubService {
 
   def fetchOrg(org: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Organization]] = {
-    val url = s"${configuration.api.url}/orgs/$org"
-    val req: HttpRequest = Get(url)
-    baseRequest(req, Map.empty).executeRequestInto[Option[Organization]]().map {
-      case SuccessfulRequest(o, _) ⇒ o
-      case FailedRequest(statusCode) ⇒
-        logger.error(s"Fetching organization $org failed, status code: ${statusCode.intValue}")
-        None
-    }
+    val url = s"orgs/$org"
+    val errorMsg = s"Fetching organization $org failed"
+    fetchOptional[Organization](url, errorMsg)
   }
 
   def fetchDefaultOrg(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Organization]] = {
@@ -28,14 +23,9 @@ object OrganizationService extends GithubService {
 
   def fetchUserOrgs(user: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Org]] = {
     import play.api.data.mapping.json.Rules._
-    val url = s"${configuration.api.url}/users/$user/orgs"
-    val req: HttpRequest = Get(url)
-    baseRequest(req, Map.empty).executeRequestInto[List[Org]]().map {
-      case SuccessfulRequest(orgs, _) ⇒ orgs
-      case FailedRequest(statusCode) ⇒
-        logger.error(s"Fetching orgs for user $user failed, status code: ${statusCode.intValue}")
-        Nil
-    }
+    val url = s"users/$user/orgs"
+    val errorMsg = s"Fetching organizations for user $user failed"
+    fetchMultiple[Org](url, errorMsg)
   }
 
 }

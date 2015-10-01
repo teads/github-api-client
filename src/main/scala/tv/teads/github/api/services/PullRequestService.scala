@@ -100,11 +100,8 @@ object PullRequestService extends GithubService {
   object Sort extends ADTEnum[Sort] {
 
     case object created extends Sort
-
     case object updated extends Sort
-
     case object popularity extends Sort
-
     case object `long-running` extends Sort
 
     val list = Seq(
@@ -158,18 +155,8 @@ object PullRequestService extends GithubService {
 
   def byRepositoryAndNumber(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
     import play.api.data.mapping.json.Rules._
-    val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/pulls/$number"
-    val req: HttpRequest = Get(url)
-
-    baseRequest(req, Map.empty)
-      .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
-      .executeRequestInto[PullRequest]()
-      .map {
-        case SuccessfulRequest(i, _) ⇒ Some(i)
-        case FailedRequest(statusCode) ⇒
-          logger.error(s"Could not retrieve pull equest, failed with status code ${statusCode.intValue}")
-          None
-      }
+    val url = s"repos/${configuration.organization}/$repository/pulls/$number"
+    fetchOptional[PullRequest](url, s"Could not fetch Pull Request #$number for repository $repository")
   }
 
   def isMerged(repository: String, number: Int)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
