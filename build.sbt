@@ -26,5 +26,14 @@ libraryDependencies += "com.chuusai"        %%  "shapeless"       % "2.2.5"
 libraryDependencies += "org.scalatest"      %% "scalatest"        % "2.2.5"   % "test"
 
 // Release Settings
+
+def teadsRepo(repo: String) =
+  repo at s"http://nexus.teads.net/nexus/content/repositories/$repo"
+
 publishMavenStyle     := true
 pomIncludeRepository  := { _ => false }
+publishTo             := Some(if(isSnapshot.value) teadsRepo("snapshots") else teadsRepo("releases"))
+
+credentials           += Credentials(Path.userHome / ".ivy2" / ".credentials")
+
+
