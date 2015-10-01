@@ -19,6 +19,6 @@ trait AuthorFormats {
 case class Author(
   name:     String,
   email:    String,
-  username: Option[String],
-  date:     Option[String]
+  username: Option[String] = None,
+  date:     Option[String] = None
 )
