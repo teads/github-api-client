@@ -3,6 +3,7 @@ package tv.teads.github.api.models
 import org.joda.time.DateTime
 import play.api.data.mapping._
 import play.api.libs.json.{ JsNumber, JsObject, JsValue }
+import tv.teads.github.api.models.Permissions.Permission
 
 trait RepositoryUrlsFormats {
   implicit lazy val repositoryUrlsJsonWrite: Write[RepositoryUrls, JsValue] = {
@@ -68,10 +69,10 @@ case class RepositoryUrls(
 //releases_url: String
 )
 
-trait PermissionFormats {
-  implicit lazy val permissionsJsonWrite: Write[Permissions, JsValue] = {
+trait BooleanPermissionFormats {
+  implicit lazy val permissionsJsonWrite: Write[BooleanPermissions, JsValue] = {
     import play.api.data.mapping.json.Writes._
-    Write.gen[Permissions, JsObject]
+    Write.gen[BooleanPermissions, JsObject]
   }
 
   implicit lazy val permissionJsonRead = From[JsValue] { __ ⇒
@@ -80,11 +81,11 @@ trait PermissionFormats {
       (__ \ "admin").read[Boolean] ~
       (__ \ "push").read[Boolean] ~
       (__ \ "pull").read[Boolean]
-    )(Permissions.apply _)
+    )(BooleanPermissions.apply _)
   }
 
 }
-case class Permissions(
+case class BooleanPermissions(
   admin: Boolean,
   push:  Boolean,
   pull:  Boolean
@@ -143,7 +144,7 @@ case class RepositoryConfig(
 )
 
 trait RepositoryFormats {
-  self: UserFormats with RepositoryUrlsFormats with PermissionFormats with RepositoryConfigFormats with RepositoryStatsFormats with ParentFormats ⇒
+  self: UserFormats with RepositoryUrlsFormats with BooleanPermissionFormats with RepositoryConfigFormats with RepositoryStatsFormats with ParentFormats ⇒
 
   implicit lazy val repositoryJsonWrite: Write[Repository, JsValue] = {
     import play.api.data.mapping.json.Writes._
@@ -182,7 +183,7 @@ trait RepositoryFormats {
       (__ \ "pushed_at").read(jodaLongOrISO) ~
       (__ \ "created_at").read(jodaLongOrISO) ~
       (__ \ "updated_at").read(jodaLongOrISO) ~
-      (__ \ "permissions").read[Option[Permissions]] ~
+      (__ \ "permissions").read[Option[BooleanPermissions]] ~
       (__ \ "organization").read[Option[User]] ~
       repositoryUrlsJsonRead ~
       repositoryStatsJsonRead ~
@@ -206,10 +207,10 @@ case class Repository(
   pushedAt:      DateTime,
   createdAt:     DateTime,
   updatedAt:     DateTime,
-  permissions:   Option[Permissions],
+  permissions:   Option[BooleanPermissions],
   organization:  Option[User],
   urls:          RepositoryUrls,
   stats:         RepositoryStats,
   config:        RepositoryConfig,
-  tags:          List[String]        = Nil
+  tags:          List[String]               = Nil
 )

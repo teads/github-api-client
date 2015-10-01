@@ -14,14 +14,16 @@ trait GithubService extends Service with PayloadFormats {
 
   protected val DefaultMediaType = "application/vnd.github.v3+json"
   protected val TestMediaType = "application/vnd.github.moondragon+json"
+  protected val PermissionMediaType = "application/vnd.github.ironman-preview+json"
   protected val RawContentMediaType = "application/vnd.github.v3.raw"
   protected val PagesNavRegex = """(?:\s*)<(.+)>; rel=(.+)""".r
 
   protected def baseRequest(
-    req:              HttpRequest,
-    queryParams:      Map[String, String],
-    useTestMediaType: Boolean             = false,
-    paginated:        Boolean             = false
+    req:                    HttpRequest,
+    queryParams:            Map[String, String],
+    useTestMediaType:       Boolean             = false,
+    usePermissionMediaType: Boolean             = false,
+    paginated:              Boolean             = false
   )(implicit refFactory: ActorRefFactory) = {
     val paramsWithToken = queryParams + configuration.api.tokenHeader
     val fullParams = if (paginated) paramsWithToken + configuration.api.paginationHeader else paramsWithToken

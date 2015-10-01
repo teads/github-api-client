@@ -10,7 +10,7 @@ trait PayloadFormats extends RepositoryFormats
   with HeadFormats
   with TreeFormats
   with RepositoryUrlsFormats
-  with PermissionFormats
+  with BooleanPermissionFormats
   with RepositoryConfigFormats
   with RepositoryStatsFormats
   with ParentFormats
