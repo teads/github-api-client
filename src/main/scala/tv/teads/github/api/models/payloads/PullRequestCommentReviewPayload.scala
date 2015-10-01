@@ -14,10 +14,17 @@ trait PullRequestCommentReviewPayloadFormats {
     Write.gen[PullRequestCommentReviewPayload, JsObject]
   }
 
-  implicit lazy val pullRequestCommentReviewPayloadJsonRead = {
+  implicit lazy val pullRequestCommentReviewPayloadJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
     // let's no leak implicits everywhere
-    Rule.gen[JsValue, PullRequestCommentReviewPayload]
+    (
+      (__ \ "action").read[PullRequestReviewCommentAction] ~
+      (__ \ "comment").read[PullRequestReviewComment] ~
+      (__ \ "pull_request").read[PullRequest] ~
+      (__ \ "repository").read[Repository] ~
+      (__ \ "organization").read[Option[User]] ~
+      (__ \ "sender").read[User]
+    )(PullRequestCommentReviewPayload.apply _)
   }
 
 }

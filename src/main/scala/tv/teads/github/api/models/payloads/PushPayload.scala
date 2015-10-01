@@ -12,9 +12,24 @@ trait PushPayloadFormats {
     Write.gen[PushPayload, JsObject]
   }
 
-  implicit lazy val pushPayloadJsonRead = {
-    import play.api.data.mapping.json.Rules._ // let's no leak implicits everywhere
-    Rule.gen[JsValue, PushPayload]
+  implicit lazy val pushPayloadJsonRead = From[JsValue] { __ ⇒
+    import play.api.data.mapping.json.Rules._
+    // let's no leak implicits everywhere
+    (
+      (__ \ "ref").read[String] ~
+      (__ \ "before").read[String] ~
+      (__ \ "after").read[String] ~
+      (__ \ "created").read[Boolean] ~
+      (__ \ "deleted").read[Boolean] ~
+      (__ \ "forced").read[Boolean] ~
+      (__ \ "base_ref").read[Option[String]] ~
+      (__ \ "compare").read[String] ~
+      (__ \ "commits").read[List[Commit]] ~
+      (__ \ "head_commits").read[Option[Commit]] ~
+      (__ \ "repository").read[Repository] ~
+      (__ \ "pusher").read[Author] ~
+      (__ \ "sender").read[User]
+    )(PushPayload.apply _)
   }
 
 }
@@ -25,10 +40,10 @@ case class PushPayload(
   created:     Boolean,
   deleted:     Boolean,
   forced:      Boolean,
-  base_ref:    Option[String],
+  baseRef:    Option[String],
   compare:     String,
   commits:     List[Commit],
-  head_commit: Option[Commit],
+  headCommit: Option[Commit],
   repository:  Repository,
   pusher:      Author,
   sender:      User

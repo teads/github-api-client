@@ -41,14 +41,14 @@ case class StatusPayload(
   id:          Long,
   sha:         String,
   name:        String,
-  target_url:  Option[String],
+  targetUrl:  Option[String],
   context:     String,
   description: Option[String],
   state:       StatusState,
   commit:      GHCommit,
   branches:    List[Branch],
-  created_at:  DateTime,
-  updated_at:  DateTime,
+  createdAt:  DateTime,
+  updatedAt:  DateTime,
   repository:  Repository,
   sender:      User
 ) extends Payload

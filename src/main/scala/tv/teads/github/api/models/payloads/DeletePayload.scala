@@ -13,16 +13,24 @@ trait DeletePayloadFormats {
     Write.gen[DeletePayload, JsObject]
   }
 
-  implicit lazy val deletePayloadJsonRead = {
-    import play.api.data.mapping.json.Rules._ // let's no leak implicits everywhere
-    Rule.gen[JsValue, DeletePayload]
+  implicit lazy val deletePayloadJsonRead = From[JsValue] { __ ⇒
+    import play.api.data.mapping.json.Rules._
+    // let's no leak implicits everywhere
+    (
+      (__ \ "ref").read[String] ~
+      (__ \ "ref_type").read[DeleteRefType] ~
+      (__ \ "pusher_type").read[String] ~
+      (__ \ "repository").read[Repository] ~
+      (__ \ "organization").read[Option[User]] ~
+      (__ \ "sender").read[User]
+    )(DeletePayload.apply _)
   }
 
 }
 case class DeletePayload(
   ref:          String,
-  ref_type:     DeleteRefType,
-  pusher_type:  String,
+  refType:     DeleteRefType,
+  pusherType:  String,
   repository:   Repository,
   organization: Option[User],
   sender:       User

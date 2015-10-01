@@ -57,9 +57,30 @@ trait UserFormats {
     Write.gen[User, JsObject]
   }
 
-  implicit lazy val userJsonRead = {
-    import play.api.data.mapping.json.Rules._ // let's no leak implicits everywhere
-    Rule.gen[JsValue, User]
+  implicit lazy val userJsonRead = From[JsValue] { __ ⇒
+    import play.api.data.mapping.json.Rules._
+    // let's no leak implicits everywhere
+    (
+      (__ \ "name").read[Option[String]] ~
+      (__ \ "email").read[Option[String]] ~
+      (__ \ "login").read[Option[String]] ~
+      (__ \ "id").read[Option[Long]] ~
+      (__ \ "avatar_url").read[Option[String]] ~
+      (__ \ "gravatar_id").read[Option[String]] ~
+      (__ \ "url").read[Option[String]] ~
+      (__ \ "html_url").read[Option[String]] ~
+      (__ \ "followers_url").read[Option[String]] ~
+      (__ \ "following_url").read[Option[String]] ~
+      (__ \ "gists_url").read[Option[String]] ~
+      (__ \ "starred_url").read[Option[String]] ~
+      (__ \ "subscriptions_url").read[Option[String]] ~
+      (__ \ "organizations_url").read[Option[String]] ~
+      (__ \ "repos_url").read[Option[String]] ~
+      (__ \ "events_url").read[Option[String]] ~
+      (__ \ "receivend_events_url").read[Option[String]] ~
+      (__ \ "type").read[Option[String]] ~
+      (__ \ "site_admin").read[Option[Boolean]]
+    )(User.apply _)
   }
 
 }
@@ -69,20 +90,20 @@ case class User(
   email:               Option[String],
   login:               Option[String],
   id:                  Option[Long],
-  avatar_url:          Option[String],
+  avatarUrl:          Option[String],
   gravatar_id:         Option[String],
   url:                 Option[String],
-  html_url:            Option[String],
-  followers_url:       Option[String],
-  following_url:       Option[String],
-  gists_url:           Option[String],
-  starred_url:         Option[String],
-  subscriptions_url:   Option[String],
-  organizations_url:   Option[String],
-  repos_url:           Option[String],
-  events_url:          Option[String],
-  received_events_url: Option[String],
-  `type`:              Option[String],
-  site_admin:          Option[Boolean]
+  htmlUrl:            Option[String],
+  followersUrl:       Option[String],
+  followingUrl:       Option[String],
+  gistsUrl:           Option[String],
+  starredUrl:         Option[String],
+  subscriptionsUrl:   Option[String],
+  organizationsUrl:   Option[String],
+  reposUrl:           Option[String],
+  eventsUrl:          Option[String],
+  receivedEventsUrl: Option[String],
+  typ:              Option[String],
+  siteAdmin:          Option[Boolean]
 )
 //extends Owner

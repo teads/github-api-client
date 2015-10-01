@@ -40,17 +40,17 @@ trait PullRequestCommentFormats {
 case class PullRequestReviewComment(
   url:                String,
   id:                 Long,
-  diff_hunk:          String,
+  diffHunk:          String,
   path:               String,
   position:           Option[Long],
-  original_position:  Option[Long],
-  commit_id:          String,
-  original_commit_id: String,
+  originalPosition:  Option[Long],
+  commitId:          String,
+  originalCommitId: String,
   user:               User,
   body:               String,
-  created_at:         DateTime,
-  updated_at:         DateTime,
-  html_url:           String,
-  pull_request_url:   String,
-  _links:             PullRequestReviewCommentLinks
+  createdAt:         DateTime,
+  updatedAt:         DateTime,
+  htmlUrl:           String,
+  pullRequestUrl:   String,
+  links:             PullRequestReviewCommentLinks
 )

@@ -13,19 +13,29 @@ trait CreatePayloadFormats {
     Write.gen[CreatePayload, JsObject]
   }
 
-  implicit lazy val createPayloadJsonRead = {
-    import play.api.data.mapping.json.Rules._ // let's no leak implicits everywhere
-    Rule.gen[JsValue, CreatePayload]
+  implicit lazy val createPayloadJsonRead = From[JsValue] { __ ⇒
+    import play.api.data.mapping.json.Rules._
+    // let's no leak implicits everywhere
+    (
+      (__ \ "ref").read[Option[String]] ~
+      (__ \ "ref_type").read[CreateRefType] ~
+      (__ \ "master_branch").read[String] ~
+      (__ \ "description").read[Option[String]] ~
+      (__ \ "pusher_type").read[String] ~
+      (__ \ "repository").read[Repository] ~
+      (__ \ "organization").read[Option[User]] ~
+      (__ \ "sender").read[User]
+    )(CreatePayload.apply _)
   }
 
 }
 
 case class CreatePayload(
   ref:           Option[String],
-  ref_type:      CreateRefType,
-  master_branch: String,
+  refType:      CreateRefType,
+  masterBranch: String,
   description:   Option[String],
-  pusher_type:   String,
+  pusherType:   String,
   repository:    Repository,
   organization:  Option[User],
   sender:        User

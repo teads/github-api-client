@@ -48,9 +48,19 @@ trait LinksFormats {
     Write.gen[Links, JsObject]
   }
 
-  implicit lazy val linkJsonRead = {
+  implicit lazy val linkJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
-    Rule.gen[JsValue, Links]
+    // let's no leak implicits everywhere
+    (
+      (__ \ "self").read[HRef] ~
+      (__ \ "html").read[HRef] ~
+      (__ \ "issue").read[HRef] ~
+      (__ \ "comments").read[HRef] ~
+      (__ \ "review_comments").read[HRef] ~
+      (__ \ "review_comment").read[HRef] ~
+      (__ \ "commits").read[HRef] ~
+      (__ \ "statuses").read[HRef]
+    )(Links.apply _)
   }
 }
 
@@ -59,8 +69,8 @@ case class Links(
   html:            HRef,
   issue:           HRef,
   comments:        HRef,
-  review_comments: HRef,
-  review_comment:  HRef,
+  reviewComments: HRef,
+  reviewComment:  HRef,
   commits:         HRef,
   statuses:        HRef
 )
@@ -73,16 +83,21 @@ trait PullRequestReviewCommentLinksFormats {
     Write.gen[PullRequestReviewCommentLinks, JsObject]
   }
 
-  implicit lazy val linkPullRequestJsonRead = {
+  implicit lazy val linkPullRequestJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
-    Rule.gen[JsValue, PullRequestReviewCommentLinks]
+    // let's no leak implicits everywhere
+    (
+      (__ \ "self").read[HRef] ~
+      (__ \ "html").read[HRef] ~
+      (__ \ "pull_request").read[HRef]
+    )(PullRequestReviewCommentLinks.apply _)
   }
 }
 
 case class PullRequestReviewCommentLinks(
   self:         HRef,
   html:         HRef,
-  pull_request: HRef
+  pullRequest: HRef
 )
 
 trait LinksContentFormats {

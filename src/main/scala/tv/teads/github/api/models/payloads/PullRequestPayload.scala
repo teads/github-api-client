@@ -14,9 +14,16 @@ trait PullRequestPayloadFormats {
     Write.gen[PullRequestPayload, JsObject]
   }
 
-  implicit lazy val pullRequestPayloadJsonRead = {
-    import play.api.data.mapping.json.Rules._ // let's no leak implicits everywhere
-    Rule.gen[JsValue, PullRequestPayload]
+  implicit lazy val pullRequestPayloadJsonRead = From[JsValue] { __ ⇒
+    import play.api.data.mapping.json.Rules._
+    // let's no leak implicits everywhere
+    (
+      (__ \ "action").read[PullRequestAction] ~
+      (__ \ "number").read[Long] ~
+      (__ \ "pull_request").read[PullRequest] ~
+      (__ \ "repository").read[Repository] ~
+      (__ \ "sender").read[User]
+    )(PullRequestPayload.apply _)
   }
 
 }

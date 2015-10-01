@@ -42,10 +42,10 @@ trait IssueFormats {
 }
 case class Issue(
   url:          String,
-  labels_url:   String,
-  comments_url: String,
-  events_url:   String,
-  html_url:     String,
+  labelsUrl:   String,
+  commentsUrl: String,
+  eventsUrl:   String,
+  htmlUrl:     String,
   id:           Long,
   number:       Long,
   title:        String,
@@ -56,8 +56,8 @@ case class Issue(
   assignee:     Option[User],
   milestone:    Option[String],
   comments:     Long,
-  created_at:   DateTime,
-  updated_at:   DateTime,
-  closed_at:    Option[DateTime],
+  createdAt:   DateTime,
+  updatedAt:   DateTime,
+  closedAt:    Option[DateTime],
   body:         String
 )

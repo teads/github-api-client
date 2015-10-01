@@ -10,19 +10,28 @@ trait GHCommitFormats {
     Write.gen[GHCommit, JsObject]
   }
 
-  implicit lazy val ghCommitJsonRead = {
-    import play.api.data.mapping.json.Rules._ // let's no leak implicits everywhere
-    Rule.gen[JsValue, GHCommit]
+  implicit lazy val ghCommitJsonRead = From[JsValue] { __ ⇒
+    import play.api.data.mapping.json.Rules._
+    // let's no leak implicits everywhere
+    (
+      (__ \ "sha").read[String] ~
+      (__ \ "commit").read[CommitDetail] ~
+      (__ \ "url").read[String] ~
+      (__ \ "html_url").read[String] ~
+      (__ \ "comments_url").read[String] ~
+      (__ \ "author").read[User] ~
+      (__ \ "committer").read[User] ~
+      (__ \ "parents").read[List[Parent]]
+    )(GHCommit.apply _)
   }
-
 }
 
 case class GHCommit(
   sha:          String,
   commit:       CommitDetail,
   url:          String,
-  html_url:     String,
-  comments_url: String,
+  htmlUrl:     String,
+  commentsUrl: String,
   author:       User,
   committer:    User,
   parents:      List[Parent]

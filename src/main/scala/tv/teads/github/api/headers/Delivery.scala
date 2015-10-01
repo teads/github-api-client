@@ -1,8 +1,5 @@
 package tv.teads.github.api.headers
 
-/**
- * Created by gbougeard on 27/05/15.
- */
 object Delivery {
   lazy val GithubEvent = "X-Github-Event"
   lazy val HubSignature = "X-Hub-Signature"
