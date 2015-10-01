@@ -29,14 +29,14 @@ trait FileFormats {
 }
 
 case class File(
-  sha:          String,
-  filename:     String,
-  status:       String,
-  additions:    Long,
-  deletions:    Long,
-  changes:      Long,
+  sha:         String,
+  filename:    String,
+  status:      String,
+  additions:   Long,
+  deletions:   Long,
+  changes:     Long,
   blobUrl:     String,
   rawUrl:      String,
   contentsUrl: String,
-  patch:        String
+  patch:       String
 )

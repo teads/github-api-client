@@ -23,8 +23,8 @@ trait TagFormats {
 
 }
 case class Tag(
-  name:        String,
-  commit:      TagCommit,
+  name:       String,
+  commit:     TagCommit,
   zipballUrl: Option[String],
   tarballUrl: Option[String]
 )

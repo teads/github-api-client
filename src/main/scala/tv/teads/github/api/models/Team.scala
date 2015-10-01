@@ -25,12 +25,12 @@ trait TeamFormats {
 
 }
 case class Team(
-  name:             String,
-  id:               Long,
-  slug:             String,
-  description:      Option[String],
-  permission:       Option[String],
-  url:              String,
+  name:            String,
+  id:              Long,
+  slug:            String,
+  description:     Option[String],
+  permission:      Option[String],
+  url:             String,
   membersUrl:      String,
   repositoriesUrl: String
 )

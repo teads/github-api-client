@@ -20,7 +20,7 @@ trait ParentFormats {
 
 }
 case class Parent(
-  sha:      String,
-  url:      String,
+  sha:     String,
+  url:     String,
   htmlUrl: String
 )

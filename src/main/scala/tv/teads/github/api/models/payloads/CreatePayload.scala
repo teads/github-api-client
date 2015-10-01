@@ -31,12 +31,12 @@ trait CreatePayloadFormats {
 }
 
 case class CreatePayload(
-  ref:           Option[String],
+  ref:          Option[String],
   refType:      CreateRefType,
   masterBranch: String,
-  description:   Option[String],
+  description:  Option[String],
   pusherType:   String,
-  repository:    Repository,
-  organization:  Option[User],
-  sender:        User
+  repository:   Repository,
+  organization: Option[User],
+  sender:       User
 ) extends Payload

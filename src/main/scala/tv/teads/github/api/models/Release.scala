@@ -39,21 +39,21 @@ trait ReleaseFormats {
 
 }
 case class Release(
-  url:              String,
+  url:             String,
   assetsUrl:       String,
   uploadUrl:       String,
   htmlUrl:         String,
-  id:               Long,
+  id:              Long,
   tagName:         String,
   targetCommitish: String,
-  name:             String,
-  draft:            Boolean,
-  author:           Author,
-  prerelease:       Boolean,
+  name:            String,
+  draft:           Boolean,
+  author:          Author,
+  prerelease:      Boolean,
   createdAt:       DateTime,
   publishedAt:     DateTime,
-  assets:           List[String],
+  assets:          List[String],
   tarballUrl:      String,
   zipballUrl:      String,
-  body:             String
+  body:            String
 )

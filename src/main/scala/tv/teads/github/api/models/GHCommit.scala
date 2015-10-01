@@ -27,12 +27,12 @@ trait GHCommitFormats {
 }
 
 case class GHCommit(
-  sha:          String,
-  commit:       CommitDetail,
-  url:          String,
+  sha:         String,
+  commit:      CommitDetail,
+  url:         String,
   htmlUrl:     String,
   commentsUrl: String,
-  author:       User,
-  committer:    User,
-  parents:      List[Parent]
+  author:      User,
+  committer:   User,
+  parents:     List[Parent]
 )

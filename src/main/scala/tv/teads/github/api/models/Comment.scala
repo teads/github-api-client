@@ -31,12 +31,12 @@ trait CommentFormats {
 }
 
 case class Comment(
-  url:        String,
+  url:       String,
   htmlUrl:   String,
   issueUrl:  String,
-  id:         Long,
-  user:       User,
+  id:        Long,
+  user:      User,
   createdAt: DateTime,
   updatedAt: DateTime,
-  body:       String
+  body:      String
 )

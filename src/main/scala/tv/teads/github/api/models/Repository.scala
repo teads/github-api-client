@@ -25,7 +25,7 @@ trait RepositoryUrlsFormats {
 
 }
 case class RepositoryUrls(
-  url:       String,
+  url:      String,
   htmlUrl:  String,
   cloneUrl: String,
   gitUrl:   String,
@@ -113,9 +113,9 @@ case class RepositoryStats(
   forksCount:       Long,
   stargazersCount:  Long,
   watchersCount:    Long,
-  size:              Long,
+  size:             Long,
   open_issuesCount: Long,
-  watchers:          Long
+  watchers:         Long
 )
 
 trait RepositoryConfigFormats {
@@ -193,23 +193,23 @@ trait RepositoryFormats {
 }
 
 case class Repository(
-  id:             Long,
-  name:           String,
+  id:            Long,
+  name:          String,
   fullName:      String,
-  owner:          User,
-  privat:      Boolean,
-  description:    Option[String],
-  fork:           Boolean,
-  homepage:       Option[String],
-  language:       Option[String],
+  owner:         User,
+  privat:        Boolean,
+  description:   Option[String],
+  fork:          Boolean,
+  homepage:      Option[String],
+  language:      Option[String],
   defaultBranch: String,
   pushedAt:      DateTime,
   createdAt:     DateTime,
   updatedAt:     DateTime,
-  permissions:    Option[Permissions],
-  organization:   Option[User],
-  urls:           RepositoryUrls,
-  stats:          RepositoryStats,
-  config:         RepositoryConfig,
-  tags:           List[String]        = Nil
+  permissions:   Option[Permissions],
+  organization:  Option[User],
+  urls:          RepositoryUrls,
+  stats:         RepositoryStats,
+  config:        RepositoryConfig,
+  tags:          List[String]        = Nil
 )

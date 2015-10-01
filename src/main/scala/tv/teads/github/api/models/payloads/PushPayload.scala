@@ -34,17 +34,17 @@ trait PushPayloadFormats {
 
 }
 case class PushPayload(
-  ref:         String,
-  before:      String,
-  after:       String,
-  created:     Boolean,
-  deleted:     Boolean,
-  forced:      Boolean,
+  ref:        String,
+  before:     String,
+  after:      String,
+  created:    Boolean,
+  deleted:    Boolean,
+  forced:     Boolean,
   baseRef:    Option[String],
-  compare:     String,
-  commits:     List[Commit],
+  compare:    String,
+  commits:    List[Commit],
   headCommit: Option[Commit],
-  repository:  Repository,
-  pusher:      Author,
-  sender:      User
+  repository: Repository,
+  pusher:     Author,
+  sender:     User
 ) extends Payload
