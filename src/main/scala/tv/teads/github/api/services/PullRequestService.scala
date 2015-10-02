@@ -150,6 +150,9 @@ object PullRequestService extends GithubService {
   def fetchOpenPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit refFactory: ActorRefFactory, ec: ExecutionContext) =
     fetchPullRequests(repository, filter.copy(state = Some(State.open)))
 
+  def fetchClosedPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit refFactory: ActorRefFactory, ec: ExecutionContext) =
+    fetchPullRequests(repository, filter.copy(state = Some(State.closed)))
+
   def fetchMatchingOpenPullRequests(repository: String, author: String, branch: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext) =
     fetchOpenPullRequests(repository, PullRequestFilter(head = Some(Head(author, branch))))
 
