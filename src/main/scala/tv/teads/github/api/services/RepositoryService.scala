@@ -5,12 +5,13 @@ import spray.http._
 import spray.httpx.RequestBuilding._
 import spray.httpx.unmarshalling.FromResponseUnmarshaller
 import tv.teads.github.api.models._
+import tv.teads.github.api.models.payloads.PayloadFormats
 import tv.teads.github.api.services.GithubConfiguration.configuration
 import tv.teads.github.api.util._
 
 import scala.concurrent.{ ExecutionContext, Future }
 
-object RepositoryService extends GithubService {
+object RepositoryService extends GithubService with PayloadFormats {
 
   def listTags(repository: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Tag]] = {
     import play.api.data.mapping.json.Rules._

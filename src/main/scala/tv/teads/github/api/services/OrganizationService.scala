@@ -4,12 +4,13 @@ import akka.actor.ActorRefFactory
 import spray.http._
 import spray.httpx.RequestBuilding._
 import tv.teads.github.api.models._
+import tv.teads.github.api.models.payloads.PayloadFormats
 import tv.teads.github.api.services.GithubConfiguration.configuration
 import tv.teads.github.api.util._
 
 import scala.concurrent.{ ExecutionContext, Future }
 
-object OrganizationService extends GithubService {
+object OrganizationService extends GithubService with PayloadFormats {
 
   def fetchOrg(org: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Organization]] = {
     val url = s"orgs/$org"
