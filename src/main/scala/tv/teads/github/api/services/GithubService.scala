@@ -10,7 +10,7 @@ import tv.teads.github.api.services.GithubConfiguration.configuration
 
 import scala.concurrent.{ Future, ExecutionContext }
 
-trait GithubService extends Service with PayloadFormats {
+trait GithubService extends Service {
 
   protected val DefaultMediaType = "application/vnd.github.v3+json"
   protected val TestMediaType = "application/vnd.github.moondragon+json"

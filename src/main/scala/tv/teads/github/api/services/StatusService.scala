@@ -12,12 +12,13 @@ import tv.teads.github.api.filters.common.States.State
 import tv.teads.github.api.models.StatusStates.StatusState
 import tv.teads.github.api.models._
 import tv.teads.github.api.models.common.ADTEnum
+import tv.teads.github.api.models.payloads.PayloadFormats
 import tv.teads.github.api.services.GithubConfiguration.configuration
 import tv.teads.github.api.util._
 
 import scala.concurrent.{ ExecutionContext, Future }
 
-object StatusService extends GithubService {
+object StatusService extends GithubService with PayloadFormats {
 
   def create(repository: String, sha: String, status: Status)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[StatusResponse]] = {
     val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/statuses/$sha"

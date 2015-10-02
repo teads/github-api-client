@@ -11,6 +11,7 @@ import tv.teads.github.api.filters.common.States.State
 import tv.teads.github.api.models._
 import tv.teads.github.api.filters.common.Filter
 import tv.teads.github.api.models.common.ADTEnum
+import tv.teads.github.api.models.payloads.PayloadFormats
 import tv.teads.github.api.services.GithubConfiguration.configuration
 import tv.teads.github.api.util._
 
@@ -20,7 +21,7 @@ import syntax.singleton._
 
 import scala.concurrent.{ ExecutionContext, Future }
 
-object IssueService extends GithubService {
+object IssueService extends GithubService with PayloadFormats {
 
   implicit lazy val issueParamJsonWrite: Write[IssueParam, JsValue] = {
     import play.api.data.mapping.json.Writes._

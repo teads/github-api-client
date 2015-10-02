@@ -8,12 +8,13 @@ import play.api.libs.json.{ JsObject, JsValue }
 import spray.http._
 import spray.httpx.RequestBuilding._
 import tv.teads.github.api.models._
+import tv.teads.github.api.models.payloads.PayloadFormats
 import tv.teads.github.api.services.GithubConfiguration.configuration
 import tv.teads.github.api.util._
 
 import scala.concurrent.{ ExecutionContext, Future }
 
-object ContentService extends GithubService {
+object ContentService extends GithubService with PayloadFormats {
 
   def fetchFile(org: String, repository: String, path: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[String]] = {
     val url = s"${configuration.api.url}/repos/$org/$repository/contents/$path"

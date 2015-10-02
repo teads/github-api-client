@@ -6,12 +6,13 @@ import spray.httpx.RequestBuilding._
 import tv.teads.github.api.models._
 import tv.teads.github.api.models.common.ADTEnum
 import tv.teads.github.api.models.Permissions.Permission
+import tv.teads.github.api.models.payloads.PayloadFormats
 import tv.teads.github.api.services.GithubConfiguration.configuration
 import tv.teads.github.api.util._
 
 import scala.concurrent.{ ExecutionContext, Future }
 
-object TeamService extends GithubService {
+object TeamService extends GithubService with PayloadFormats {
 
   def fetchOrgTeams(org: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Team]] = {
     import play.api.data.mapping.json.Rules._

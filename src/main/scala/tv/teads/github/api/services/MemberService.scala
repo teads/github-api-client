@@ -4,12 +4,13 @@ import akka.actor.ActorRefFactory
 import spray.http._
 import spray.httpx.RequestBuilding._
 import tv.teads.github.api.models._
+import tv.teads.github.api.models.payloads.PayloadFormats
 import tv.teads.github.api.services.GithubConfiguration.configuration
 import tv.teads.github.api.util._
 
 import scala.concurrent.{ ExecutionContext, Future }
 
-object MemberService extends GithubService {
+object MemberService extends GithubService with PayloadFormats {
 
   def fetchOrgMembers(org: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Member]] = {
     import play.api.data.mapping.json.Rules._
