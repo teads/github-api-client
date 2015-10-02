@@ -28,9 +28,9 @@ trait PullRequestPayloadFormats {
 
 }
 case class PullRequestPayload(
-  action:       PullRequestAction,
-  number:       Long,
-  pull_request: PullRequest,
-  repository:   Repository,
-  sender:       User
+  action:      PullRequestAction,
+  number:      Long,
+  pullRequest: PullRequest,
+  repository:  Repository,
+  sender:      User
 ) extends Payload
