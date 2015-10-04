@@ -62,6 +62,7 @@ trait PayloadFormats extends RepositoryFormats
   with WatchPayloadFormats
   with OrganizationFormats
   with MemberFormats
+  with OrganizationMembershipFormats
 
 trait Payload
 

@@ -72,4 +72,17 @@ object MemberService extends GithubService with PayloadFormats {
     isPublicMemberOfOrg(configuration.organization, username)
   }
 
+  def getAuthUserMembership(org: String, token: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[OrganizationMembership]] = {
+    val url = s"${configuration.api.url}/user/memberships/orgs/$org"
+    baseRequest(Get(url), Map.empty, Some(token)).executeRequestInto[OrganizationMembership]().map {
+      case SuccessfulRequest(o, _) ⇒ Some(o)
+      case FailedRequest(statusCode) ⇒
+        logger.error(s"Getting $org organization membership failed, status code: ${statusCode.intValue}")
+        None
+    }
+  }
+
+  def getAuthUserMembershipOfDefaultOrg(token: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[OrganizationMembership]] = {
+    getAuthUserMembership(configuration.organization, token)
+  }
 }
