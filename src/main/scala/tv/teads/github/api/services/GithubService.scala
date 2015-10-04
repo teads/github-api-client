@@ -21,16 +21,17 @@ trait GithubService extends Service {
   protected def baseRequest(
     req:                    HttpRequest,
     queryParams:            Map[String, String],
+    token:                  Option[String]      = None,
     useTestMediaType:       Boolean             = false,
     usePermissionMediaType: Boolean             = false,
     paginated:              Boolean             = false
   )(implicit refFactory: ActorRefFactory) = {
-    val paramsWithToken = queryParams + configuration.api.tokenHeader
-    val fullParams = if (paginated) paramsWithToken + configuration.api.paginationHeader else paramsWithToken
+    val fullParams = if (paginated) queryParams + configuration.api.paginationHeader else queryParams
     val mediaType = if (useTestMediaType) TestMediaType else DefaultMediaType
     val uri = req.uri.withQuery(fullParams ++ req.uri.query)
     HttpClient(req.copy(uri = uri))
       .withHeader(HttpHeaders.Accept.name, mediaType)
+      .withHeader(HttpHeaders.Authorization.name, s"token ${token.getOrElse(configuration.api.token)}")
   }
 
   protected def fetchAllPages[T: FromResponseUnmarshaller](url: String, queryParams: Map[String, String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext, ev: FromResponseUnmarshaller[List[T]]) = {
