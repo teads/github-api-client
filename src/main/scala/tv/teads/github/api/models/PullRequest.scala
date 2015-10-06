@@ -3,6 +3,7 @@ package tv.teads.github.api.models
 import org.joda.time.DateTime
 import play.api.data.mapping._
 import play.api.libs.json.{ JsString, JsObject, JsValue }
+import tv.teads.github.api.models.PullRequestStatuses.PullRequestStatus
 
 trait PullRequestUrlsFormats {
   implicit lazy val pullRequestUrlsJsonWrite: Write[PullRequestUrls, JsValue] = {
@@ -132,24 +133,29 @@ trait PullRequestFormats {
 
 }
 case class PullRequest(
-  url:            String,
-  id:             Long,
-  number:         Long,
-  state:          String,
-  locked:         Boolean,
-  title:          String,
-  user:           User,
-  body:           String,
-  assignee:       Option[User],
-  milestone:      Option[String],
-  head:           Head,
-  base:           Head,
-  merged:         Option[Boolean],
-  mergeable:      Option[Boolean],
-  mergeableState: Option[String],
-  mergedBy:       Option[User],
-  links:          Links,
-  urls:           PullRequestUrls,
-  timeMetadata:   TimeMetadata,
-  changeMetadata: ChangeMetadata
-)
+    url:            String,
+    id:             Long,
+    number:         Long,
+    state:          String,
+    locked:         Boolean,
+    title:          String,
+    user:           User,
+    body:           String,
+    assignee:       Option[User],
+    milestone:      Option[String],
+    head:           Head,
+    base:           Head,
+    merged:         Option[Boolean],
+    mergeable:      Option[Boolean],
+    mergeableState: Option[String],
+    mergedBy:       Option[User],
+    links:          Links,
+    urls:           PullRequestUrls,
+    timeMetadata:   TimeMetadata,
+    changeMetadata: ChangeMetadata
+) {
+  def status: PullRequestStatus =
+    if (state == "open") PullRequestStatus.open
+    else if (state == "closed" && timeMetadata.mergedAt.isDefined) PullRequestStatus.merged
+    else PullRequestStatus.closed
+}
