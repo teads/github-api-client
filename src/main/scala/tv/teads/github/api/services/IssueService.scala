@@ -12,7 +12,7 @@ import tv.teads.github.api.models._
 import tv.teads.github.api.filters.common.Filter
 import tv.teads.github.api.models.common.ADTEnum
 import tv.teads.github.api.models.payloads.PayloadFormats
-import tv.teads.github.api.services.GithubConfiguration.configuration
+import tv.teads.github.api.services.Configuration.configuration
 import tv.teads.github.api.util._
 
 import shapeless._
@@ -38,7 +38,7 @@ object IssueService extends GithubService with PayloadFormats {
   )
 
   def create(repository: String, issue: IssueParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Issue]] = {
-    val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/issues"
+    val url = s"${configuration.url}/repos/${configuration.organization}/$repository/issues"
     val req: HttpRequest = Post(url, issue)
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -52,7 +52,7 @@ object IssueService extends GithubService with PayloadFormats {
   }
 
   def edit(repository: String, number: Long, issue: IssueParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Issue]] = {
-    val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/issues/$number"
+    val url = s"${configuration.url}/repos/${configuration.organization}/$repository/issues/$number"
     val req: HttpRequest = Patch(url, issue)
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)

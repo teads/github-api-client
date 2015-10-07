@@ -9,7 +9,7 @@ import spray.http._
 import spray.httpx.RequestBuilding._
 import tv.teads.github.api.models._
 import tv.teads.github.api.models.payloads.PayloadFormats
-import tv.teads.github.api.services.GithubConfiguration.configuration
+import tv.teads.github.api.services.Configuration.configuration
 import tv.teads.github.api.util._
 
 import scala.concurrent.{ ExecutionContext, Future }
@@ -17,7 +17,7 @@ import scala.concurrent.{ ExecutionContext, Future }
 object ContentService extends GithubService with PayloadFormats {
 
   def fetchFile(org: String, repository: String, path: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[String]] = {
-    val url = s"${configuration.api.url}/repos/$org/$repository/contents/$path"
+    val url = s"${configuration.url}/repos/$org/$repository/contents/$path"
     val req: HttpRequest = Get(url)
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -37,7 +37,7 @@ object ContentService extends GithubService with PayloadFormats {
   }
 
   def fetchReadme(org: String, repository: String, branch: String = "master")(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[String]] = {
-    val url = s"${configuration.api.url}/repos/$org/$repository/readme"
+    val url = s"${configuration.url}/repos/$org/$repository/readme"
     val req: HttpRequest = Get(url)
     baseRequest(req, Map("ref" → branch))
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -71,7 +71,7 @@ object ContentService extends GithubService with PayloadFormats {
   }
 
   def createFile(org: String, repository: String, file: FileCreateParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${configuration.api.url}/repos/$org/$repository/content/${file.path}"
+    val url = s"${configuration.url}/repos/$org/$repository/content/${file.path}"
     val req: HttpRequest = Put(url, file.copy(content = Base64.getEncoder.encodeToString(file.content.getBytes)))
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -102,7 +102,7 @@ object ContentService extends GithubService with PayloadFormats {
   }
 
   def editFile(org: String, repository: String, file: FileEditParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${configuration.api.url}/repos/$org/$repository/content/${file.path}"
+    val url = s"${configuration.url}/repos/$org/$repository/content/${file.path}"
     val req: HttpRequest = Put(url, file.copy(content = Base64.getEncoder.encodeToString(file.content.getBytes)))
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -118,7 +118,7 @@ object ContentService extends GithubService with PayloadFormats {
   }
 
   def deleteFile(org: String, repository: String, file: FileEditParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${configuration.api.url}/repos/$org/$repository/content/${file.path}"
+    val url = s"${configuration.url}/repos/$org/$repository/content/${file.path}"
     val req: HttpRequest = Delete(url)
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)

@@ -7,7 +7,7 @@ import tv.teads.github.api.models._
 import tv.teads.github.api.models.common.ADTEnum
 import tv.teads.github.api.models.Permissions.Permission
 import tv.teads.github.api.models.payloads.PayloadFormats
-import tv.teads.github.api.services.GithubConfiguration.configuration
+import tv.teads.github.api.services.Configuration.configuration
 import tv.teads.github.api.util._
 
 import scala.concurrent.{ ExecutionContext, Future }
@@ -40,7 +40,7 @@ object TeamService extends GithubService with PayloadFormats {
 
   def fetchTeamMembers(id: Long, filter: MembershipFilter = MembershipFilter.all)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Member]] = {
     import play.api.data.mapping.json.Rules._
-    val url: String = s"${configuration.api.url}/teams/$id/members"
+    val url: String = s"${configuration.url}/teams/$id/members"
     val req: HttpRequest = Get(url)
     baseRequest(req, Map.empty, usePermissionMediaType = true)
       .executeRequestInto[List[Member]]().map {
@@ -54,7 +54,7 @@ object TeamService extends GithubService with PayloadFormats {
   @Deprecated
   def isTeamMember(id: Long, username: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
     import play.api.data.mapping.json.Rules._
-    val url: String = s"${configuration.api.url}/teams/$id/members/$username"
+    val url: String = s"${configuration.url}/teams/$id/members/$username"
     val req: HttpRequest = Get(url)
     baseRequest(req, Map.empty)
       .executeRequest()
@@ -69,7 +69,7 @@ object TeamService extends GithubService with PayloadFormats {
   @Deprecated
   def addTeamMember(id: Long, username: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
     import play.api.data.mapping.json.Rules._
-    val url: String = s"${configuration.api.url}/teams/$id/members/$username"
+    val url: String = s"${configuration.url}/teams/$id/members/$username"
     val req: HttpRequest = Put(url)
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.`Content-Length`.name, "0")
@@ -85,7 +85,7 @@ object TeamService extends GithubService with PayloadFormats {
   @Deprecated
   def deleteTeamMember(id: Long, username: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
     import play.api.data.mapping.json.Rules._
-    val url: String = s"${configuration.api.url}/teams/$id/members/$username"
+    val url: String = s"${configuration.url}/teams/$id/members/$username"
     val req: HttpRequest = Delete(url)
     baseRequest(req, Map.empty)
       .executeRequest()
@@ -111,7 +111,7 @@ object TeamService extends GithubService with PayloadFormats {
 
   def addTeamMembership(id: Long, username: String, membership: Membership)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
     import play.api.data.mapping.json.Rules._
-    val url: String = s"${configuration.api.url}/teams/$id/memberships/$username"
+    val url: String = s"${configuration.url}/teams/$id/memberships/$username"
     val req: HttpRequest = Put(url, membership)
     baseRequest(req, Map.empty, usePermissionMediaType = true)
       .executeRequest()
@@ -125,7 +125,7 @@ object TeamService extends GithubService with PayloadFormats {
 
   def deleteTeamMembership(id: Long, username: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
     import play.api.data.mapping.json.Rules._
-    val url: String = s"${configuration.api.url}/teams/$id/memberships/$username"
+    val url: String = s"${configuration.url}/teams/$id/memberships/$username"
     val req: HttpRequest = Delete(url)
     baseRequest(req, Map.empty)
       .executeRequest()
@@ -146,7 +146,7 @@ object TeamService extends GithubService with PayloadFormats {
 
   def addTeamRepo(id: Long, repository: String, permission: Permission)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
     import play.api.data.mapping.json.Rules._
-    val url: String = s"${configuration.api.url}/teams/$id/repos/${configuration.organization}/$repository"
+    val url: String = s"${configuration.url}/teams/$id/repos/${configuration.organization}/$repository"
     val req: HttpRequest = Put(url, permission.toString)
     baseRequest(req, Map.empty, usePermissionMediaType = true)
       .executeRequest()
@@ -160,7 +160,7 @@ object TeamService extends GithubService with PayloadFormats {
 
   def deleteTeamRepo(id: Long, repository: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
     import play.api.data.mapping.json.Rules._
-    val url: String = s"${configuration.api.url}/teams/$id/repos/${configuration.organization}/$repository"
+    val url: String = s"${configuration.url}/teams/$id/repos/${configuration.organization}/$repository"
     val req: HttpRequest = Delete(url)
     baseRequest(req, Map.empty)
       .executeRequest()
@@ -174,7 +174,7 @@ object TeamService extends GithubService with PayloadFormats {
 
   def isRepoManagedByTeam(id: Long, repository: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
     import play.api.data.mapping.json.Rules._
-    val url: String = s"${configuration.api.url}/teams/$id/repos/${configuration.organization}/$repository"
+    val url: String = s"${configuration.url}/teams/$id/repos/${configuration.organization}/$repository"
     val req: HttpRequest = Get(url)
     baseRequest(req, Map.empty, usePermissionMediaType = true)
       .executeRequest()
@@ -187,7 +187,7 @@ object TeamService extends GithubService with PayloadFormats {
   }
 
   def create(team: Team)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Team]] = {
-    val url = s"${configuration.api.url}/orgs/${configuration.organization}/teams"
+    val url = s"${configuration.url}/orgs/${configuration.organization}/teams"
     val req: HttpRequest = Post(url, team)
     baseRequest(req, Map.empty, usePermissionMediaType = true)
       .executeRequestInto[Team]()
@@ -200,7 +200,7 @@ object TeamService extends GithubService with PayloadFormats {
   }
 
   def edit(id: Long, team: Team)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Team]] = {
-    val url = s"${configuration.api.url}/teams/$id"
+    val url = s"${configuration.url}/teams/$id"
     val req: HttpRequest = Patch(url, team)
     baseRequest(req, Map.empty, usePermissionMediaType = true)
       .executeRequestInto[Team]()
@@ -213,7 +213,7 @@ object TeamService extends GithubService with PayloadFormats {
   }
 
   def delete(id: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${configuration.api.url}/teams/$id"
+    val url = s"${configuration.url}/teams/$id"
     val req: HttpRequest = Delete(url)
     baseRequest(req, Map.empty)
       .executeRequest()

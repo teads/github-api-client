@@ -5,7 +5,7 @@ import spray.http._
 import spray.httpx.RequestBuilding._
 import tv.teads.github.api.models._
 import tv.teads.github.api.models.payloads.PayloadFormats
-import tv.teads.github.api.services.GithubConfiguration.configuration
+import tv.teads.github.api.services.Configuration.configuration
 import tv.teads.github.api.util._
 
 import scala.concurrent.{ ExecutionContext, Future }
@@ -25,7 +25,7 @@ object MemberService extends GithubService with PayloadFormats {
 
   def isMemberOfOrg(org: String, username: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
     import play.api.data.mapping.json.Rules._
-    val url = s"${configuration.api.url}/orgs/$org/members/$username"
+    val url = s"${configuration.url}/orgs/$org/members/$username"
     val req: HttpRequest = Get(url)
     baseRequest(req, Map.empty)
       .executeRequest()
@@ -55,7 +55,7 @@ object MemberService extends GithubService with PayloadFormats {
 
   def isPublicMemberOfOrg(org: String, username: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
     import play.api.data.mapping.json.Rules._
-    val url = s"${configuration.api.url}/orgs/$org/public_members/$username"
+    val url = s"${configuration.url}/orgs/$org/public_members/$username"
     val req: HttpRequest = Get(url)
     baseRequest(req, Map.empty)
       .executeRequest()
@@ -73,7 +73,7 @@ object MemberService extends GithubService with PayloadFormats {
   }
 
   def getAuthUserMembership(org: String, token: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[OrganizationMembership]] = {
-    val url = s"${configuration.api.url}/user/memberships/orgs/$org"
+    val url = s"${configuration.url}/user/memberships/orgs/$org"
     baseRequest(Get(url), Map.empty, Some(token)).executeRequestInto[OrganizationMembership]().map {
       case SuccessfulRequest(o, _) ⇒ Some(o)
       case FailedRequest(statusCode) ⇒

@@ -11,7 +11,7 @@ import tv.teads.github.api.filters.common.States.State
 import tv.teads.github.api.models._
 import tv.teads.github.api.models.common.ADTEnum
 import tv.teads.github.api.models.payloads.PayloadFormats
-import tv.teads.github.api.services.GithubConfiguration.configuration
+import tv.teads.github.api.services.Configuration.configuration
 import tv.teads.github.api.util._
 
 import shapeless._
@@ -45,7 +45,7 @@ object PullRequestService extends GithubService with PayloadFormats {
   )
 
   def createFromBranch(repository: String, param: PullRequestBranchParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
-    val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/pulls"
+    val url = s"${configuration.url}/repos/${configuration.organization}/$repository/pulls"
     val req: HttpRequest = Post(url, param)
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -59,7 +59,7 @@ object PullRequestService extends GithubService with PayloadFormats {
   }
 
   def createFromIssue(repository: String, param: PullRequestIssueParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
-    val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/pulls"
+    val url = s"${configuration.url}/repos/${configuration.organization}/$repository/pulls"
     val req: HttpRequest = Post(url, param)
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -83,7 +83,7 @@ object PullRequestService extends GithubService with PayloadFormats {
   }
 
   def edit(repository: String, number: Int, param: PullRequestEditParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
-    val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/pulls/$number"
+    val url = s"${configuration.url}/repos/${configuration.organization}/$repository/pulls/$number"
     val req: HttpRequest = Patch(url, param)
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -145,7 +145,7 @@ object PullRequestService extends GithubService with PayloadFormats {
 
   def fetchPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[PullRequest]] = {
     import play.api.data.mapping.json.Rules._
-    fetchAllPages[PullRequest](s"${configuration.api.url}/repos/${configuration.organization}/$repository/pulls", filterToMap(filter))
+    fetchAllPages[PullRequest](s"${configuration.url}/repos/${configuration.organization}/$repository/pulls", filterToMap(filter))
   }
 
   def fetchOpenPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit refFactory: ActorRefFactory, ec: ExecutionContext) =
@@ -164,7 +164,7 @@ object PullRequestService extends GithubService with PayloadFormats {
   }
 
   def isMerged(repository: String, number: Int)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/pulls/$number/merge"
+    val url = s"${configuration.url}/repos/${configuration.organization}/$repository/pulls/$number/merge"
     val req: HttpRequest = Get(url)
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -187,7 +187,7 @@ object PullRequestService extends GithubService with PayloadFormats {
   }
 
   def merge(repository: String, number: Int, toMerge: ToMerge)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/pulls/$number/merge"
+    val url = s"${configuration.url}/repos/${configuration.organization}/$repository/pulls/$number/merge"
     val req: HttpRequest = Put(url, toMerge)
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -205,13 +205,13 @@ object PullRequestService extends GithubService with PayloadFormats {
 
   def fetchFiles(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[File]] = {
     import play.api.data.mapping.json.Rules._
-    val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/pulls/$number/files"
+    val url = s"${configuration.url}/repos/${configuration.organization}/$repository/pulls/$number/files"
     fetchAllPages[File](url, Map.empty)
   }
 
   def fetchCommits(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[GHCommit]] = {
     import play.api.data.mapping.json.Rules._
-    val url = s"${configuration.api.url}/repos/${configuration.organization}/$repository/pulls/$number/commits"
+    val url = s"${configuration.url}/repos/${configuration.organization}/$repository/pulls/$number/commits"
     fetchAllPages[GHCommit](url, Map.empty)
   }
 }

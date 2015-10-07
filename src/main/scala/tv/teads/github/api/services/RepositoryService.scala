@@ -6,7 +6,7 @@ import spray.httpx.RequestBuilding._
 import spray.httpx.unmarshalling.FromResponseUnmarshaller
 import tv.teads.github.api.models._
 import tv.teads.github.api.models.payloads.PayloadFormats
-import tv.teads.github.api.services.GithubConfiguration.configuration
+import tv.teads.github.api.services.Configuration.configuration
 import tv.teads.github.api.util._
 
 import scala.concurrent.{ ExecutionContext, Future }
@@ -22,7 +22,7 @@ object RepositoryService extends GithubService with PayloadFormats {
 
   def fetchAllRepositories(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Repository]] = {
     import play.api.data.mapping.json.Rules._
-    fetchAllPages[Repository](s"${configuration.api.url}/orgs/${configuration.organization}/repos", Map.empty)
+    fetchAllPages[Repository](s"${configuration.url}/orgs/${configuration.organization}/repos", Map.empty)
   }
 
 }
