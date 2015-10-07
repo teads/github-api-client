@@ -17,14 +17,14 @@ trait OrganizationMembershipFormats {
     // let's no leak implicits everywhere
     (
       (__ \ "role").read[String] ~
-      (__ \ "site_admin").read[Boolean]
+      (__ \ "state").read[String]
     )(OrganizationMembership.apply _)
   }
 
 }
 
 case class OrganizationMembership(
-  role:      String,
-  siteAdmin: Boolean
+  role:  String,
+  state: String
 )
 
