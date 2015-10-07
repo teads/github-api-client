@@ -6,7 +6,7 @@ import spray.httpx.RequestBuilding._
 import spray.httpx.unmarshalling._
 import tv.teads.github.api.models.payloads.PayloadFormats
 import tv.teads.github.api.util._
-import tv.teads.github.api.services.GithubConfiguration.configuration
+import tv.teads.github.api.services.Configuration.configuration
 
 import scala.concurrent.{ Future, ExecutionContext }
 
@@ -26,12 +26,12 @@ trait GithubService extends Service {
     usePermissionMediaType: Boolean             = false,
     paginated:              Boolean             = false
   )(implicit refFactory: ActorRefFactory) = {
-    val fullParams = if (paginated) queryParams + configuration.api.paginationHeader else queryParams
+    val fullParams = if (paginated) queryParams + configuration.paginationHeader else queryParams
     val mediaType = if (useTestMediaType) TestMediaType else DefaultMediaType
     val uri = req.uri.withQuery(fullParams ++ req.uri.query)
     HttpClient(req.copy(uri = uri))
       .withHeader(HttpHeaders.Accept.name, mediaType)
-      .withHeader(HttpHeaders.Authorization.name, s"token ${token.getOrElse(configuration.api.token)}")
+      .withHeader(HttpHeaders.Authorization.name, s"token ${token.getOrElse(configuration.token)}")
   }
 
   protected def fetchAllPages[T: FromResponseUnmarshaller](url: String, queryParams: Map[String, String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext, ev: FromResponseUnmarshaller[List[T]]) = {
@@ -64,7 +64,7 @@ trait GithubService extends Service {
   }
 
   protected def fetchMultiple[T](route: String, errorMsg: String, params: Map[String, String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext, ev: FromResponseUnmarshaller[List[T]]): Future[List[T]] = {
-    val url = s"${configuration.api.url}/$route"
+    val url = s"${configuration.url}/$route"
     val req: HttpRequest = Get(url)
     baseRequest(req, params).executeRequestInto[List[T]]().map {
       case SuccessfulRequest(list, _) ⇒ list
@@ -79,7 +79,7 @@ trait GithubService extends Service {
   }
 
   protected def fetchOptional[T](route: String, errorMsg: String, params: Map[String, String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext, ev: FromResponseUnmarshaller[Option[T]]): Future[Option[T]] = {
-    val url = s"${configuration.api.url}/$route"
+    val url = s"${configuration.url}/$route"
     val req: HttpRequest = Get(url)
     baseRequest(req, params).executeRequestInto[Option[T]]().map {
       case SuccessfulRequest(o, _) ⇒ o
