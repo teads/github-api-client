@@ -2,24 +2,21 @@ package tv.teads.github.api.services
 
 import akka.actor.ActorRefFactory
 import play.api.data.mapping.Write
-import play.api.libs.json.{ JsObject, JsValue }
+import play.api.libs.json.{JsObject, JsValue}
 import spray.http._
 import spray.http.HttpRequest
 import spray.httpx.RequestBuilding._
+import tv.teads.github.api.Configuration
 import tv.teads.github.api.filters.common.Directions.Direction
 import tv.teads.github.api.filters.common.States.State
 import tv.teads.github.api.models._
-import tv.teads.github.api.filters.common.Filter
 import tv.teads.github.api.models.common.ADTEnum
 import tv.teads.github.api.models.payloads.PayloadFormats
-import tv.teads.github.api.services.Configuration.configuration
+import Configuration.configuration
 import tv.teads.github.api.util._
+import tv.teads.github.api.util.ToMapRec._
 
-import shapeless._
-import record._
-import syntax.singleton._
-
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 object IssueService extends GithubService with PayloadFormats {
 
@@ -96,28 +93,13 @@ object IssueService extends GithubService with PayloadFormats {
     direction: Option[Direction] = Some(Direction.desc),
     since:     Option[DateTime]  = None
 
-  ) extends Filter
-
-  val filterGen = LabelledGeneric[IssueFilter]
-
-  def filterToMap(issueFilter: IssueFilter): Map[String, String] = {
-    val hlist = filterGen.to(issueFilter)
-    hlist.toMap.collect {
-      case (k, v) ⇒
-        v match {
-          case it: Iterable[_] ⇒ k → it
-          case opt: Option[_]  ⇒ k → (opt: Iterable[_])
-        }
-    }.collect {
-      case (k, v) if !v.isEmpty ⇒ k.name → v.mkString(",")
-    }
-  }
+  )
 
   def byRepository(repository: String, issueFilter: IssueFilter)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Issue]] = {
     import play.api.data.mapping.json.Rules._
     val url = s"repos/${configuration.organization}/$repository/issues"
     val errorMsg = s"Fetching issues for repository $repository failed"
-    fetchMultiple[Issue](url, errorMsg, filterToMap(issueFilter))
+    fetchMultiple[Issue](url, errorMsg, issueFilter.toMapRecStringified)
   }
 
   def byRepositoryAndNumber(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Issue]] = {

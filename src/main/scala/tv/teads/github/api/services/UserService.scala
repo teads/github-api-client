@@ -3,12 +3,13 @@ package tv.teads.github.api.services
 import akka.actor.ActorRefFactory
 import spray.http.HttpRequest
 import spray.httpx.RequestBuilding._
+import tv.teads.github.api.Configuration
 import tv.teads.github.api.models._
 import tv.teads.github.api.models.payloads.PayloadFormats
-import tv.teads.github.api.services.Configuration.configuration
+import Configuration.configuration
 import tv.teads.github.api.util._
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 object UserService extends GithubService with PayloadFormats {
 

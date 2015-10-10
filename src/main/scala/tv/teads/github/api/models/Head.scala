@@ -1,7 +1,7 @@
 package tv.teads.github.api.models
 
 import play.api.data.mapping._
-import play.api.libs.json.{ JsObject, JsValue }
+import play.api.libs.json.{JsObject, JsValue}
 
 trait HeadFormats {
   self: UserFormats with RepositoryFormats ⇒

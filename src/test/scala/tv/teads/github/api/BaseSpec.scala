@@ -3,7 +3,7 @@ package tv.teads.github.api
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{ BeforeAndAfterAll, FlatSpecLike, Matchers, OptionValues }
+import org.scalatest.{BeforeAndAfterAll, FlatSpecLike, Matchers, OptionValues}
 
 abstract class BaseSpec
     extends TestKit(ActorSystem("github-client-test"))

@@ -4,15 +4,16 @@ import java.util.Base64
 
 import akka.actor.ActorRefFactory
 import play.api.data.mapping.Write
-import play.api.libs.json.{ JsObject, JsValue }
+import play.api.libs.json.{JsObject, JsValue}
 import spray.http._
 import spray.httpx.RequestBuilding._
+import tv.teads.github.api.Configuration
 import tv.teads.github.api.models._
 import tv.teads.github.api.models.payloads.PayloadFormats
-import tv.teads.github.api.services.Configuration.configuration
+import Configuration.configuration
 import tv.teads.github.api.util._
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 object ContentService extends GithubService with PayloadFormats {
 

@@ -1,7 +1,7 @@
 package tv.teads.github.api.models.payloads
 
 import org.joda.time.DateTime
-import play.api.libs.json.{ JsObject, JsValue }
+import play.api.libs.json.{JsObject, JsValue}
 import tv.teads.github.api.models.StatusStates.StatusState
 import tv.teads.github.api.models._
 import play.api.data.mapping._

@@ -1,6 +1,6 @@
 package tv.teads.github.api.models.payloads
 
-import play.api.libs.json.{ JsObject, JsValue }
+import play.api.libs.json.{JsObject, JsValue}
 import tv.teads.github.api.models.actions.IssueActions
 import IssueActions.IssueAction
 import tv.teads.github.api.models._

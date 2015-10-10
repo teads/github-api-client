@@ -1,16 +1,17 @@
 package tv.teads.github.api.services
 
 import akka.actor.ActorRefFactory
-import spray.http.{ HttpHeaders, StatusCodes, HttpRequest }
+import spray.http.{HttpHeaders, StatusCodes, HttpRequest}
 import spray.httpx.RequestBuilding._
+import tv.teads.github.api.Configuration
 import tv.teads.github.api.models._
 import tv.teads.github.api.models.common.ADTEnum
 import tv.teads.github.api.models.Permissions.Permission
 import tv.teads.github.api.models.payloads.PayloadFormats
-import tv.teads.github.api.services.Configuration.configuration
+import Configuration.configuration
 import tv.teads.github.api.util._
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 object TeamService extends GithubService with PayloadFormats {
 

@@ -4,11 +4,12 @@ import akka.actor.ActorRefFactory
 import spray.http._
 import spray.httpx.RequestBuilding._
 import spray.httpx.unmarshalling._
+import tv.teads.github.api.Configuration
 import tv.teads.github.api.models.payloads.PayloadFormats
 import tv.teads.github.api.util._
-import tv.teads.github.api.services.Configuration.configuration
+import Configuration.configuration
 
-import scala.concurrent.{ Future, ExecutionContext }
+import scala.concurrent.{Future, ExecutionContext}
 
 trait GithubService extends Service {
 
