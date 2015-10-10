@@ -3,11 +3,8 @@ package tv.teads.github.api.services
 import tv.teads.github.api.BaseSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
 
 class ContentServiceSpec extends BaseSpec {
-
-  override implicit val patienceConfig = PatienceConfig(30 seconds, 1 second)
 
   "Content Service" should "be able to fetch readme of repository ebuzzing/github-api-client" in {
 

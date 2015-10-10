@@ -3,11 +3,8 @@ package tv.teads.github.api.services
 import tv.teads.github.api.BaseSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
 
 class MemberServiceSpec extends BaseSpec {
-
-  override implicit val patienceConfig = PatienceConfig(30 seconds, 1 second)
 
   "Member Service" should "be able to fetch an organization members (ebuzzing) " in {
 

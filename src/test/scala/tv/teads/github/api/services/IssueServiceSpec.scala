@@ -7,11 +7,8 @@ import tv.teads.github.api.services.IssueService.{Sort, IssueFilter, IssueParam}
 import tv.teads.github.api.util.ToMapRec._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
 
 class IssueServiceSpec extends BaseSpec {
-
-  override implicit val patienceConfig = PatienceConfig(30 seconds, 1 second)
 
   "Issue Service" should "be able to create an issue, close it, re-open it and finally close it" in {
 
