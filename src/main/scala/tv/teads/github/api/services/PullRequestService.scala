@@ -2,23 +2,20 @@ package tv.teads.github.api.services
 
 import akka.actor.ActorRefFactory
 import play.api.data.mapping.Write
-import play.api.libs.json.{ JsObject, JsValue }
-import spray.http.{ HttpRequest, _ }
+import play.api.libs.json.{JsObject, JsValue}
+import spray.http.{HttpRequest, _}
 import spray.httpx.RequestBuilding._
+import tv.teads.github.api.Configuration
 import tv.teads.github.api.filters.common.Directions.Direction
-import tv.teads.github.api.filters.common.Filter
 import tv.teads.github.api.filters.common.States.State
 import tv.teads.github.api.models._
 import tv.teads.github.api.models.common.ADTEnum
 import tv.teads.github.api.models.payloads.PayloadFormats
-import tv.teads.github.api.services.Configuration.configuration
+import Configuration.configuration
 import tv.teads.github.api.util._
+import tv.teads.github.api.util.ToMapRec._
 
-import shapeless._
-import record._
-import syntax.singleton._
-
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 object PullRequestService extends GithubService with PayloadFormats {
 
@@ -126,26 +123,11 @@ object PullRequestService extends GithubService with PayloadFormats {
     sort:      Option[Sort]      = Some(Sort.created),
     direction: Option[Direction] = Some(Direction.desc)
 
-  ) extends Filter
-
-  val filterGen = LabelledGeneric[PullRequestFilter]
-
-  def filterToMap(filter: PullRequestFilter): Map[String, String] = {
-    val hlist = filterGen.to(filter)
-    hlist.toMap.collect {
-      case (k, v) ⇒
-        v match {
-          case it: Iterable[_] ⇒ k → it
-          case opt: Option[_]  ⇒ k → (opt: Iterable[_])
-        }
-    }.collect {
-      case (k, v) if !v.isEmpty ⇒ k.name → v.mkString(",")
-    }
-  }
+  )
 
   def fetchPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[PullRequest]] = {
     import play.api.data.mapping.json.Rules._
-    fetchAllPages[PullRequest](s"${configuration.url}/repos/${configuration.organization}/$repository/pulls", filterToMap(filter))
+    fetchAllPages[PullRequest](s"${configuration.url}/repos/${configuration.organization}/$repository/pulls", filter.toMapRecStringified)
   }
 
   def fetchOpenPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit refFactory: ActorRefFactory, ec: ExecutionContext) =

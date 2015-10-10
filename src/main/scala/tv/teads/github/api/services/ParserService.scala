@@ -1,7 +1,7 @@
 package tv.teads.github.api.services
 
 import play.api.data.mapping._
-import play.api.libs.json.{ Json, JsValue }
+import play.api.libs.json.{Json, JsValue}
 import tv.teads.github.api.models.payloads._
 import tv.teads.github.api.models.payloads.Events._
 

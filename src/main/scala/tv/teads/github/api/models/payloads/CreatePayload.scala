@@ -1,6 +1,6 @@
 package tv.teads.github.api.models.payloads
 
-import play.api.libs.json.{ JsObject, JsValue }
+import play.api.libs.json.{JsObject, JsValue}
 import tv.teads.github.api.models.CreateRefTypes.CreateRefType
 import tv.teads.github.api.models._
 import play.api.data.mapping._

@@ -2,7 +2,7 @@ package tv.teads.github.api.models
 
 import org.joda.time.DateTime
 import play.api.data.mapping._
-import play.api.libs.json.{ JsObject, JsValue }
+import play.api.libs.json.{JsObject, JsValue}
 
 trait CommitCommentFormats {
   self: UserFormats ⇒

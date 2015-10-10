@@ -1,7 +1,7 @@
 package tv.teads.github.api.models.payloads
 
 import tv.teads.github.api.models._
-import play.api.libs.json.{ JsObject, JsValue }
+import play.api.libs.json.{JsObject, JsValue}
 import play.api.data.mapping._
 
 trait CommitCommentPayloadFormats {

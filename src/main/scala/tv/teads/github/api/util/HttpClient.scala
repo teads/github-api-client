@@ -7,13 +7,13 @@ import akka.actor.ActorRefFactory
 
 import scala.collection.concurrent
 import scala.collection.JavaConversions._
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 import spray.client.pipelining._
 import spray.http._
 import spray.httpx.unmarshalling.FromResponseUnmarshaller
 
-import scala.util.{ Failure, Success, Try }
+import scala.util.{Failure, Success, Try}
 
 sealed trait ClientResponse[T]
 case class SuccessfulRequest[T](response: T, rawResponse: HttpResponse) extends ClientResponse[T]

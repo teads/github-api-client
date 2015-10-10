@@ -1,11 +1,11 @@
 package tv.teads.github.api.util
 
-import play.api.data.mapping.{ Failure, Success, Rule, Write }
+import play.api.data.mapping.{Failure, Success, Rule, Write}
 import play.api.data.mapping.json.Rules._
 import play.api.data.mapping.json.Writes._
-import play.api.libs.json.{ Json, JsValue }
+import play.api.libs.json.{Json, JsValue}
 import spray.httpx.marshalling.Marshaller
-import spray.httpx.unmarshalling.{ Deserialized, MalformedContent, SimpleUnmarshaller, Unmarshaller }
+import spray.httpx.unmarshalling.{Deserialized, MalformedContent, SimpleUnmarshaller, Unmarshaller}
 import spray.http._
 import MediaTypes._
 

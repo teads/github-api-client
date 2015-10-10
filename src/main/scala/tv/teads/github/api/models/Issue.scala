@@ -1,7 +1,7 @@
 package tv.teads.github.api.models
 
 import org.joda.time.DateTime
-import play.api.libs.json.{ JsObject, JsValue }
+import play.api.libs.json.{JsObject, JsValue}
 import play.api.data.mapping._
 
 trait IssueFormats {

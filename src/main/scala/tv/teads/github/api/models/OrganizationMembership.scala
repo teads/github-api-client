@@ -1,7 +1,7 @@
 package tv.teads.github.api.models
 
-import play.api.data.mapping.{ From, Write }
-import play.api.libs.json.{ JsObject, JsValue }
+import play.api.data.mapping.{From, Write}
+import play.api.libs.json.{JsObject, JsValue}
 
 trait OrganizationMembershipFormats {
 
