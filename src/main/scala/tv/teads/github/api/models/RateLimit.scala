@@ -46,12 +46,10 @@ trait RateLimitFormats {
 }
 
 case class Core(
-    limit:     Long,
-    remaining: Long,
-    reset:     Long
-) {
-  override def toString = s"rest $remaining of $limit. Reset at ${new DateTime(reset * 1000).toString("yyyy-MM-dd HH:mm:ss")}"
-}
+  limit:     Long,
+  remaining: Long,
+  reset:     Long
+)
 
 case class Resources(
   core:   Core,

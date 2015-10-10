@@ -11,7 +11,6 @@ import tv.teads.github.api.Configuration
 import tv.teads.github.api.models._
 import tv.teads.github.api.models.payloads.PayloadFormats
 import Configuration.configuration
-import tv.teads.github.api.util._
 
 import scala.concurrent.{ExecutionContext, Future}
 

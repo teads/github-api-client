@@ -28,15 +28,15 @@ trait PullRequestUrlsFormats {
 
 }
 case class PullRequestUrls(
-  htmlUrl:            String,
-  diffUrl:            String,
-  patchUrl:           String,
-  issueUrl:           String,
-  commitsUrl:         String,
-  review_commentsUrl: String,
-  review_commentUrl:  String,
-  commentsUrl:        String,
-  statusesUrl:        String
+  htmlUrl:           String,
+  diffUrl:           String,
+  patchUrl:          String,
+  issueUrl:          String,
+  commitsUrl:        String,
+  reviewCommentsUrl: String,
+  reviewCommentUrl:  String,
+  commentsUrl:       String,
+  statusesUrl:       String
 )
 
 trait TimeMetadataFormats {

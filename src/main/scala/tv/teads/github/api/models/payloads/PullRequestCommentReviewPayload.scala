@@ -1,9 +1,8 @@
 package tv.teads.github.api.models.payloads
 
 import play.api.libs.json.{JsObject, JsValue}
-import tv.teads.github.api.models.actions.PullRequestReviewCommentActions
-import tv.teads.github.api.models.actions.PullRequestReviewCommentActions.{PullRequestReviewCommentAction, PullRequestReviewCommentAction$}
 import tv.teads.github.api.models._
+import tv.teads.github.api.models.actions.PullRequestReviewCommentActions._
 import play.api.data.mapping._
 
 trait PullRequestCommentReviewPayloadFormats {
@@ -32,7 +31,7 @@ trait PullRequestCommentReviewPayloadFormats {
 case class PullRequestCommentReviewPayload(
   action:       PullRequestReviewCommentAction,
   comment:      PullRequestReviewComment,
-  pull_request: PullRequest,
+  pullRequest:  PullRequest,
   repository:   Repository,
   organization: Option[User],
   sender:       User
