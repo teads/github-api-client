@@ -23,20 +23,14 @@ trait ValidationJsonSupport {
 
       implicitly[R[T]].validate(Json.parse(string)) match {
         case Success(s) ⇒ Right(s)
-        case Failure(e) ⇒ Left(MalformedContent(s"Received JSON is not valid.\n${e}"))
-      } //      try {
-      //        implicitly[R[T]].validate(Json.parse(string)).asEither.left.map(e ⇒ MalformedContent(s"Received JSON is not valid.\n${Json.prettyPrint(JsError.toFlatJson(e))}"))
-      //      } catch {
-      //        case NonFatal(exc) ⇒ Left(MalformedContent(exc.getMessage, exc))
-      //      }
-      )(UTF8StringUnmarshaller)
+        case Failure(e) ⇒ Left(MalformedContent(s"Received JSON is not valid.\n$e"))
+      })(UTF8StringUnmarshaller)
 
   implicit def validationJsonMarshaller[T: W](implicit printer: JsValue ⇒ String = Json.stringify) =
     Marshaller.delegate[T, String](ContentTypes.`application/json`) { value ⇒
       printer(implicitly[W[T]].writes(value))
     }
 
-  //
   private val UTF8StringUnmarshaller = new Unmarshaller[String] {
     def apply(entity: HttpEntity) = Right(entity.asString(defaultCharset = HttpCharsets.`UTF-8`))
   }

@@ -3,7 +3,6 @@ package tv.teads.github.api.models
 import org.joda.time.DateTime
 import play.api.data.mapping._
 import play.api.libs.json.{JsNumber, JsObject, JsValue}
-import tv.teads.github.api.models.Permissions.Permission
 
 trait RepositoryUrlsFormats {
   implicit lazy val repositoryUrlsJsonWrite: Write[RepositoryUrls, JsValue] = {
@@ -32,41 +31,6 @@ case class RepositoryUrls(
   gitUrl:   String,
   sshUrl:   String,
   svnUrl:   String
-//forks_url: String,
-//keys_url: String,
-//collaborators_url: String,
-//teams_url: String,
-//hooks_url: String,
-//issue_events_url: String,
-//events_url: String,
-//assignees_url: String,
-//branches_url: String,
-//tags_url: String,
-//blobs_url: String,
-//git_tags_url: String,
-//git_refs_url: String,
-//trees_url: String,
-//statuses_url: String,
-//languages_url: String,
-//stargazers_url: String,
-//contributors_url: String,
-//subscribers_url: String,
-//subscription_url: String,
-//commits_url: String,
-//git_commits_url: String,
-//comments_url: String,
-//issue_comment_url: String,
-//contents_url: String,
-//compare_url: String,
-//merges_url: String,
-//archive_url: String,
-//downloads_url: String,
-//issues_url: String,
-//pulls_url: String,
-//milestones_url: String,
-//notifications_url: String,
-//labels_url: String,
-//releases_url: String
 )
 
 trait BooleanPermissionFormats {
@@ -111,12 +75,12 @@ trait RepositoryStatsFormats {
 
 }
 case class RepositoryStats(
-  forksCount:       Long,
-  stargazersCount:  Long,
-  watchersCount:    Long,
-  size:             Long,
-  open_issuesCount: Long,
-  watchers:         Long
+  forksCount:      Long,
+  stargazersCount: Long,
+  watchersCount:   Long,
+  size:            Long,
+  openIssuesCount: Long,
+  watchers:        Long
 )
 
 trait RepositoryConfigFormats {

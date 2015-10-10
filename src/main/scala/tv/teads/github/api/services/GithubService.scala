@@ -5,7 +5,6 @@ import spray.http._
 import spray.httpx.RequestBuilding._
 import spray.httpx.unmarshalling._
 import tv.teads.github.api.Configuration
-import tv.teads.github.api.models.payloads.PayloadFormats
 import tv.teads.github.api.util._
 import Configuration.configuration
 

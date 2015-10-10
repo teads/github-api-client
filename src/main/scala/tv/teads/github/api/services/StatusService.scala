@@ -1,17 +1,10 @@
 package tv.teads.github.api.services
 
 import akka.actor.ActorRefFactory
-import play.api.data.mapping.{To, Write}
-import play.api.libs.json.{JsObject, JsValue}
-import shapeless._
 import spray.http.{HttpRequest, _}
 import spray.httpx.RequestBuilding._
 import tv.teads.github.api.Configuration
-import tv.teads.github.api.filters.common.Directions.Direction
-import tv.teads.github.api.filters.common.States.State
-import tv.teads.github.api.models.StatusStates.StatusState
 import tv.teads.github.api.models._
-import tv.teads.github.api.models.common.ADTEnum
 import tv.teads.github.api.models.payloads.PayloadFormats
 import Configuration.configuration
 import tv.teads.github.api.util._

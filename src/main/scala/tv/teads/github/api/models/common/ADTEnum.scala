@@ -28,16 +28,3 @@ trait ADTEnum[A] {
   implicit lazy val jsonWrites: play.api.libs.json.Writes[A] = play.api.libs.json.Writes(s ⇒ JsString(s.toString))
 
 }
-
-object enums {
-
-  trait EnumAdt[A] {
-    def values: List[A]
-
-    def valueAsString(x: A): String
-
-    def parseValue(x: String): Option[A] = values.find(valueAsString(_) == x)
-  }
-
-  def values[A](implicit ev: EnumAdt[A]): List[A] = ev.values
-}
