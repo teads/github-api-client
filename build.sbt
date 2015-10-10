@@ -1,6 +1,7 @@
 name            := "github-api-client"
 organization    := "tv.teads"
 scalaVersion    := "2.11.7"
+scalacOptions   := Seq("-feature", "-deprecation", "-Xlint")
 
 resolvers += Opts.resolver.sonatypeReleases
 
