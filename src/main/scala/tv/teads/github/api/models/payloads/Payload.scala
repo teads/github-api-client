@@ -63,6 +63,8 @@ trait PayloadFormats extends RepositoryFormats
   with OrganizationFormats
   with MemberFormats
   with OrganizationMembershipFormats
+  with HookConfigFormats
+  with HookFormats
 
 trait Payload
 
