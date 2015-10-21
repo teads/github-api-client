@@ -30,5 +30,11 @@ class TeamServiceSpec extends BaseSpec {
       list should not be empty
     }
   }
+  it should "be able to fetch teams repositories" in {
+
+    whenReady(TeamService.fetchTeamRepos(1600886)) { list ⇒
+      list should not be empty
+    }
+  }
 
 }

@@ -27,7 +27,7 @@ trait GithubService extends Service {
     paginated:              Boolean             = false
   )(implicit refFactory: ActorRefFactory) = {
     val fullParams = if (paginated) queryParams + configuration.paginationHeader else queryParams
-    val mediaType = if (useTestMediaType) TestMediaType else DefaultMediaType
+    val mediaType = if (useTestMediaType) TestMediaType else PermissionMediaType
     val uri = req.uri.withQuery(fullParams ++ req.uri.query)
     HttpClient(req.copy(uri = uri))
       .withHeader(HttpHeaders.Accept.name, mediaType)
