@@ -2,9 +2,8 @@ package tv.teads.github.api.models
 
 import java.time.ZonedDateTime
 
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsObject, JsValue}
 import play.api.data.mapping._
-import play.api.libs.functional.syntax._
 
 trait StatusResponseFormats {
   self: StatusFormats with UserFormats ⇒

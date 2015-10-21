@@ -3,11 +3,6 @@ import play.api.libs.json.{JsObject, JsValue}
 import play.api.data.mapping._
 
 trait ParentFormats {
-  implicit lazy val parentJsonWrite: Write[Parent, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[Parent, JsObject]
-  }
-
   implicit lazy val parentJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
     // let's no leak implicits everywhere

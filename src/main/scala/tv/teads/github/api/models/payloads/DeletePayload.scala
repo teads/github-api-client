@@ -8,11 +8,6 @@ import play.api.data.mapping._
 trait DeletePayloadFormats {
   self: UserFormats with RepositoryFormats ⇒
 
-  implicit lazy val deletePayloadJsonWrite: Write[DeletePayload, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[DeletePayload, JsObject]
-  }
-
   implicit lazy val deletePayloadJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
     // let's no leak implicits everywhere

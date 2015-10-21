@@ -7,11 +7,6 @@ import play.api.data.mapping._
 
 trait IssueFormats {
   self: UserFormats with LabelFormats ⇒
-  implicit lazy val issueJsonWrite: Write[Issue, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    import tv.teads.github.api.util.CustomWrites._
-    Write.gen[Issue, JsObject]
-  }
 
   implicit lazy val issueJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._

@@ -7,11 +7,6 @@ import play.api.data.mapping._
 trait MembershipPayloadFormats {
   self: UserFormats with RepositoryFormats with TeamFormats ⇒
 
-  implicit lazy val membershipPayloadJsonWrite: Write[MembershipPayload, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[MembershipPayload, JsObject]
-  }
-
   implicit lazy val membershipPayloadJsonRead = {
     import play.api.data.mapping.json.Rules._ // let's no leak implicits everywhere
     Rule.gen[JsValue, MembershipPayload]

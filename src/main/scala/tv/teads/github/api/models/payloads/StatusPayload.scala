@@ -10,12 +10,6 @@ import play.api.data.mapping._
 trait StatusPayloadFormats {
   self: UserFormats with RepositoryFormats with GHCommitFormats with BranchFormats ⇒
 
-  implicit lazy val statusPayloadJsonWrite: Write[StatusPayload, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    import tv.teads.github.api.util.CustomWrites._
-    Write.gen[StatusPayload, JsObject]
-  }
-
   implicit lazy val statusPayloadJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
     import tv.teads.github.api.util.CustomRules._

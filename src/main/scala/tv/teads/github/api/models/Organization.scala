@@ -6,18 +6,6 @@ import play.api.libs.json.{JsObject, JsValue}
 import play.api.data.mapping._
 
 trait OrganizationFormats {
-  implicit lazy val orgJsonWrite: Write[Org, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    import tv.teads.github.api.util.CustomWrites._
-    Write.gen[Org, JsObject]
-  }
-
-  implicit lazy val organizationJsonWrite: Write[Organization, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    import tv.teads.github.api.util.CustomWrites._
-    Write.gen[Organization, JsObject]
-  }
-
   implicit lazy val orgJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
     import tv.teads.github.api.util.CustomRules._

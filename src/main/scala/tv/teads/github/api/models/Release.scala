@@ -7,11 +7,6 @@ import play.api.data.mapping._
 
 trait ReleaseFormats {
   self: UserFormats with AuthorFormats ⇒
-  implicit lazy val releaseJsonWrite: Write[Release, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    import tv.teads.github.api.util.CustomWrites._
-    Write.gen[Release, JsObject]
-  }
 
   implicit lazy val releaseJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._

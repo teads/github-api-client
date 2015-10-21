@@ -4,10 +4,6 @@ import play.api.libs.json.{JsObject, JsValue}
 import play.api.data.mapping._
 
 trait UserFormats {
-  implicit lazy val userJsonWrite: Write[User, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[User, JsObject]
-  }
 
   implicit lazy val userJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._

@@ -7,11 +7,6 @@ import play.api.data.mapping._
 
 trait PullRequestCommentFormats {
   self: UserFormats with PullRequestReviewCommentLinksFormats ⇒
-  implicit lazy val pullRequestCommentJsonWrite: Write[PullRequestReviewComment, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    import tv.teads.github.api.util.CustomWrites._
-    Write.gen[PullRequestReviewComment, JsObject]
-  }
 
   implicit lazy val pullRequestCommentJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._

@@ -4,13 +4,6 @@ import play.api.libs.json.{JsObject, JsValue}
 import play.api.data.mapping._
 
 trait MemberFormats {
-
-  implicit lazy val memberGhJsonWrite: Write[Member, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    import tv.teads.github.api.util.CustomWrites._
-    Write.gen[Member, JsObject]
-  }
-
   implicit lazy val memberGhJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
     import tv.teads.github.api.util.CustomRules._
