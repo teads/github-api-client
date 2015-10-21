@@ -1,6 +1,7 @@
 package tv.teads.github.api.models
 
-import org.joda.time.DateTime
+import java.time.ZonedDateTime
+
 import play.api.libs.json.{JsObject, JsValue}
 import play.api.data.mapping._
 
@@ -32,9 +33,9 @@ trait IssueFormats {
       (__ \ "assignee").read[Option[User]] ~
       (__ \ "milestone").read[Option[String]] ~
       (__ \ "comments").read[Long] ~
-      (__ \ "created_at").read(jodaLongOrISO) ~
-      (__ \ "updated_at").read(jodaLongOrISO) ~
-      (__ \ "closed_at").read(optionR(jodaLongOrISO)) ~
+      (__ \ "created_at").read(zonedDateTime) ~
+      (__ \ "updated_at").read(zonedDateTime) ~
+      (__ \ "closed_at").read(optionR(zonedDateTime)) ~
       (__ \ "body").read[String]
     )(Issue.apply _)
   }
@@ -56,8 +57,8 @@ case class Issue(
   assignee:    Option[User],
   milestone:   Option[String],
   comments:    Long,
-  createdAt:   DateTime,
-  updatedAt:   DateTime,
-  closedAt:    Option[DateTime],
+  createdAt:   ZonedDateTime,
+  updatedAt:   ZonedDateTime,
+  closedAt:    Option[ZonedDateTime],
   body:        String
 )

@@ -1,28 +1,31 @@
 package tv.teads.github.api.util
 
-import org.joda.time.DateTime
-import play.api.data.mapping.json.Rules._
+import java.time._
+import java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
+import java.time.temporal._
+
+import scala.language.implicitConversions
+import scala.util.Try
+
 import play.api.data.mapping._
 import play.api.libs.json.{JsNumber, JsString, JsValue}
 
 object CustomRules {
 
-  implicit val jodaDate = jodaDateRule("yyyy-MM-dd'T'HH:mm:ssZ")
+  private implicit def toTemporalQuery[R](f: TemporalAccessor ⇒ R): TemporalQuery[R] = new TemporalQuery[R] {
+    override def queryFrom(temporal: TemporalAccessor): R = f(temporal)
+  }
 
-  def jodaLongOrISO: Rule[JsValue, DateTime] = {
-    val invalid = Failure(Seq(ValidationError("error.DateTime")))
+  private val InvalidZonedDateTime = Failure(Seq(ValidationError("error.ZonedDateTime")))
 
-    Rule.fromMapping[JsValue, DateTime] {
-      case JsNumber(v) ⇒ jodaTime.validate(v.toLong).asOpt match {
-        case Some(dt) ⇒ Success(dt)
-        case None     ⇒ invalid
-      }
-      case JsString(v) ⇒ jodaDate.validate(v).asOpt match {
-        case Some(dt) ⇒ Success(dt)
-        case None     ⇒ invalid
-      }
-      case _ ⇒ invalid
+  val zonedDateTime = Rule.fromMapping[JsValue, ZonedDateTime] {
+    case JsNumber(v) ⇒
+      Success(ZonedDateTime.ofInstant(Instant.ofEpochMilli(v.toLong), ZoneId.systemDefault()))
+    case JsString(v) ⇒ Try(ISO_OFFSET_DATE_TIME.parse(v, ZonedDateTime.from _)).toOption match {
+      case Some(dt) ⇒ Success(dt)
+      case None     ⇒ InvalidZonedDateTime
     }
+    case _ ⇒ InvalidZonedDateTime
   }
 
 }

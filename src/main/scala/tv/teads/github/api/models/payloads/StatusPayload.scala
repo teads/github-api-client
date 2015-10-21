@@ -1,6 +1,7 @@
 package tv.teads.github.api.models.payloads
 
-import org.joda.time.DateTime
+import java.time.ZonedDateTime
+
 import play.api.libs.json.{JsObject, JsValue}
 import tv.teads.github.api.models.StatusStates.StatusState
 import tv.teads.github.api.models._
@@ -29,8 +30,8 @@ trait StatusPayloadFormats {
       (__ \ "state").read[StatusState] ~
       (__ \ "commit").read[GHCommit] ~
       (__ \ "branches").read[List[Branch]] ~
-      (__ \ "created_at").read(jodaLongOrISO) ~
-      (__ \ "updated_at").read(jodaLongOrISO) ~
+      (__ \ "created_at").read(zonedDateTime) ~
+      (__ \ "updated_at").read(zonedDateTime) ~
       (__ \ "repository").read[Repository] ~
       (__ \ "sender").read[User]
     )(StatusPayload.apply _)
@@ -47,8 +48,8 @@ case class StatusPayload(
   state:       StatusState,
   commit:      GHCommit,
   branches:    List[Branch],
-  createdAt:   DateTime,
-  updatedAt:   DateTime,
+  createdAt:   ZonedDateTime,
+  updatedAt:   ZonedDateTime,
   repository:  Repository,
   sender:      User
 ) extends Payload

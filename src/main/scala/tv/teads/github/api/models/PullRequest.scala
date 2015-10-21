@@ -1,6 +1,7 @@
 package tv.teads.github.api.models
 
-import org.joda.time.DateTime
+import java.time.ZonedDateTime
+
 import play.api.data.mapping._
 import play.api.libs.json.{JsString, JsObject, JsValue}
 import tv.teads.github.api.models.PullRequestStatuses.PullRequestStatus
@@ -52,20 +53,20 @@ trait TimeMetadataFormats {
     import tv.teads.github.api.util.CustomRules._
 
     (
-      (__ \ "created_at").read(jodaLongOrISO) ~
-      (__ \ "updated_at").read(jodaLongOrISO) ~
-      (__ \ "closed_at").read(optionR(jodaLongOrISO)) ~
-      (__ \ "merged_at").read(optionR(jodaLongOrISO)) ~
+      (__ \ "created_at").read(zonedDateTime) ~
+      (__ \ "updated_at").read(zonedDateTime) ~
+      (__ \ "closed_at").read(optionR(zonedDateTime)) ~
+      (__ \ "merged_at").read(optionR(zonedDateTime)) ~
       (__ \ "merge_commit_sha").read[Option[String]]
     )(TimeMetadata.apply _)
   }
 
 }
 case class TimeMetadata(
-  createdAt:      DateTime,
-  updatedAt:      DateTime,
-  closedAt:       Option[DateTime],
-  mergedAt:       Option[DateTime],
+  createdAt:      ZonedDateTime,
+  updatedAt:      ZonedDateTime,
+  closedAt:       Option[ZonedDateTime],
+  mergedAt:       Option[ZonedDateTime],
   mergeCommitSha: Option[String]
 )
 

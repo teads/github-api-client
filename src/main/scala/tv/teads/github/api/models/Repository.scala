@@ -1,6 +1,7 @@
 package tv.teads.github.api.models
 
-import org.joda.time.DateTime
+import java.time.ZonedDateTime
+
 import play.api.data.mapping._
 import play.api.libs.json.{JsNumber, JsObject, JsValue}
 
@@ -112,7 +113,7 @@ trait RepositoryFormats {
 
   implicit lazy val repositoryJsonWrite: Write[Repository, JsValue] = {
     import play.api.data.mapping.json.Writes._
-    implicit val dateTimeToLongJsObject: Write[DateTime, JsValue] = Write[DateTime, JsValue] { dt ⇒ JsNumber(dt.getMillis()) }
+    implicit val dateTimeToLongJsObject = Write[ZonedDateTime, JsValue] { dt ⇒ JsNumber(dt.toInstant.toEpochMilli) }
     Write.gen[Repository, JsObject]
   }
 
@@ -144,9 +145,9 @@ trait RepositoryFormats {
       (__ \ "homepage").read[Option[String]] ~
       (__ \ "language").read[Option[String]] ~
       (__ \ "default_branch").read[String] ~
-      (__ \ "pushed_at").read(jodaLongOrISO) ~
-      (__ \ "created_at").read(jodaLongOrISO) ~
-      (__ \ "updated_at").read(jodaLongOrISO) ~
+      (__ \ "pushed_at").read(zonedDateTime) ~
+      (__ \ "created_at").read(zonedDateTime) ~
+      (__ \ "updated_at").read(zonedDateTime) ~
       (__ \ "permissions").read[Option[BooleanPermissions]] ~
       (__ \ "organization").read[Option[User]] ~
       repositoryUrlsJsonRead ~
@@ -168,9 +169,9 @@ case class Repository(
   homepage:      Option[String],
   language:      Option[String],
   defaultBranch: String,
-  pushedAt:      DateTime,
-  createdAt:     DateTime,
-  updatedAt:     DateTime,
+  pushedAt:      ZonedDateTime,
+  createdAt:     ZonedDateTime,
+  updatedAt:     ZonedDateTime,
   permissions:   Option[BooleanPermissions],
   organization:  Option[User],
   urls:          RepositoryUrls,

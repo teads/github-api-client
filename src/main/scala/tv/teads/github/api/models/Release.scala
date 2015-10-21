@@ -1,6 +1,7 @@
 package tv.teads.github.api.models
 
-import org.joda.time.DateTime
+import java.time.ZonedDateTime
+
 import play.api.libs.json.{JsObject, JsValue}
 import play.api.data.mapping._
 
@@ -28,8 +29,8 @@ trait ReleaseFormats {
       (__ \ "draft").read[Boolean] ~
       (__ \ "author").read[Author] ~
       (__ \ "prerelease").read[Boolean] ~
-      (__ \ "created_at").read(jodaLongOrISO) ~
-      (__ \ "published_at").read(jodaLongOrISO) ~
+      (__ \ "created_at").read(zonedDateTime) ~
+      (__ \ "published_at").read(zonedDateTime) ~
       (__ \ "assets").read[List[String]] ~
       (__ \ "tarball_url").read[String] ~
       (__ \ "zipball_url").read[String] ~
@@ -50,8 +51,8 @@ case class Release(
   draft:           Boolean,
   author:          Author,
   prerelease:      Boolean,
-  createdAt:       DateTime,
-  publishedAt:     DateTime,
+  createdAt:       ZonedDateTime,
+  publishedAt:     ZonedDateTime,
   assets:          List[String],
   tarballUrl:      String,
   zipballUrl:      String,

@@ -1,6 +1,7 @@
 package tv.teads.github.api.models
 
-import org.joda.time.DateTime
+import java.time.ZonedDateTime
+
 import play.api.libs.json.{JsObject, JsValue}
 import play.api.data.mapping._
 
@@ -50,8 +51,8 @@ trait OrganizationFormats {
       (__ \ "followers").read[Long] ~
       (__ \ "following").read[Long] ~
       (__ \ "html_url").read[String] ~
-      (__ \ "created_at").read(jodaLongOrISO) ~
-      (__ \ "updated_at").read(jodaLongOrISO) ~
+      (__ \ "created_at").read(zonedDateTime) ~
+      (__ \ "updated_at").read(zonedDateTime) ~
       (__ \ "type").read[String]
     )(Organization.apply _)
   }
@@ -70,8 +71,8 @@ case class Organization(
   followers:   Long,
   following:   Long,
   htmlUrl:     String,
-  createdAt:   DateTime,
-  updatedAt:   DateTime,
+  createdAt:   ZonedDateTime,
+  updatedAt:   ZonedDateTime,
   typ:         String
 )
 
