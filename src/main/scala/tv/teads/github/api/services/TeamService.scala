@@ -15,6 +15,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object TeamService extends GithubService with PayloadFormats {
 
+  def fetchTeam(id: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Team]] = {
+    import play.api.data.mapping.json.Rules._
+    val url: String = s"teams/$id"
+    val errorMsg = s"Fetching teams for id $id failed"
+    fetchOptional[Team](url, errorMsg)
+  }
+
   def fetchOrgTeams(org: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Team]] = {
     import play.api.data.mapping.json.Rules._
     val url: String = s"orgs/$org/teams"

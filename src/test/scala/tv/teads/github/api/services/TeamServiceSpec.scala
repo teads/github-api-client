@@ -24,5 +24,11 @@ class TeamServiceSpec extends BaseSpec {
       list should not be empty
     }
   }
+  it should "be able to fetch a team" in {
+
+    whenReady(TeamService.fetchTeam(1276819)) { list ⇒
+      list should not be empty
+    }
+  }
 
 }
