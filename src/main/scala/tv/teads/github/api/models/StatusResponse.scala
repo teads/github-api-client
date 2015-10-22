@@ -1,9 +1,8 @@
 package tv.teads.github.api.models
 
-import org.joda.time.DateTime
-import play.api.libs.json.{JsObject, JsValue}
-import play.api.data.mapping._
-import play.api.libs.json._
+import java.time.ZonedDateTime
+
+import play.api.libs.json.JsValue
 import play.api.data.mapping._
 import play.api.libs.functional.syntax._
 
@@ -16,8 +15,8 @@ trait StatusResponseFormats {
     // let's no leak implicits everywhere
     (
       statusJsonRead ~
-      (__ \ "created_at").read(jodaLongOrISO) ~
-      (__ \ "updated_at").read(jodaLongOrISO) ~
+      (__ \ "created_at").read(zonedDateTime) ~
+      (__ \ "updated_at").read(zonedDateTime) ~
       (__ \ "id").read[Long] ~
       (__ \ "url").read[String] ~
       (__ \ "creator").read[User]
@@ -29,8 +28,8 @@ trait StatusResponseFormats {
 
 case class StatusResponse(
   status:    Status,
-  createdAt: DateTime,
-  updatedAt: DateTime,
+  createdAt: ZonedDateTime,
+  updatedAt: ZonedDateTime,
   id:        Long,
   url:       String,
   creator:   User

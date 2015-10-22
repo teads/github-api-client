@@ -1,6 +1,7 @@
 package tv.teads.github.api.models
 
-import org.joda.time.DateTime
+import java.time.ZonedDateTime
+
 import play.api.libs.json.{JsObject, JsValue}
 import play.api.data.mapping._
 
@@ -27,8 +28,8 @@ trait PullRequestCommentFormats {
       (__ \ "original_commit_id").read[String] ~
       (__ \ "user").read[User] ~
       (__ \ "body").read[String] ~
-      (__ \ "created_at").read(jodaLongOrISO) ~
-      (__ \ "updated_at").read(jodaLongOrISO) ~
+      (__ \ "created_at").read(zonedDateTime) ~
+      (__ \ "updated_at").read(zonedDateTime) ~
       (__ \ "html_url").read[String] ~
       (__ \ "pull_request_url").read[String] ~
       (__ \ "_links").read[PullRequestReviewCommentLinks]
@@ -48,8 +49,8 @@ case class PullRequestReviewComment(
   originalCommitId: String,
   user:             User,
   body:             String,
-  createdAt:        DateTime,
-  updatedAt:        DateTime,
+  createdAt:        ZonedDateTime,
+  updatedAt:        ZonedDateTime,
   htmlUrl:          String,
   pullRequestUrl:   String,
   links:            PullRequestReviewCommentLinks

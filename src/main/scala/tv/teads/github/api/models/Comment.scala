@@ -1,9 +1,9 @@
 package tv.teads.github.api.models
 
-import org.joda.time.DateTime
+import java.time.ZonedDateTime
+
 import play.api.data.mapping._
 import play.api.libs.json.{JsObject, JsValue}
-import tv.teads.github.api.models.StatusStates.StatusState
 
 trait CommentFormats {
   self: UserFormats ⇒
@@ -23,8 +23,8 @@ trait CommentFormats {
       (__ \ "issue_url").read[String] ~
       (__ \ "id").read[Long] ~
       (__ \ "user").read[User] ~
-      (__ \ "created_at").read(jodaLongOrISO) ~
-      (__ \ "updated_at").read(jodaLongOrISO) ~
+      (__ \ "created_at").read(zonedDateTime) ~
+      (__ \ "updated_at").read(zonedDateTime) ~
       (__ \ "body").read[String]
     )(Comment.apply _)
   }
@@ -36,7 +36,7 @@ case class Comment(
   issueUrl:  String,
   id:        Long,
   user:      User,
-  createdAt: DateTime,
-  updatedAt: DateTime,
+  createdAt: ZonedDateTime,
+  updatedAt: ZonedDateTime,
   body:      String
 )

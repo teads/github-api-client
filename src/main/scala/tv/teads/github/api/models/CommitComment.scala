@@ -1,6 +1,7 @@
 package tv.teads.github.api.models
 
-import org.joda.time.DateTime
+import java.time.ZonedDateTime
+
 import play.api.data.mapping._
 import play.api.libs.json.{JsObject, JsValue}
 
@@ -25,8 +26,8 @@ trait CommitCommentFormats {
       (__ \ "line").read[Option[Long]] ~
       (__ \ "path").read[Option[String]] ~
       (__ \ "commit_id").read[String] ~
-      (__ \ "created_at").read(jodaLongOrISO) ~
-      (__ \ "updated_at").read(jodaLongOrISO) ~
+      (__ \ "created_at").read(zonedDateTime) ~
+      (__ \ "updated_at").read(zonedDateTime) ~
       (__ \ "body").read[String]
     )(CommitComment.apply _)
   }
@@ -40,7 +41,7 @@ case class CommitComment(
   line:      Option[Long],
   path:      Option[String],
   commitId:  String,
-  createdAt: DateTime,
-  updatedAt: DateTime,
+  createdAt: ZonedDateTime,
+  updatedAt: ZonedDateTime,
   body:      String
 )

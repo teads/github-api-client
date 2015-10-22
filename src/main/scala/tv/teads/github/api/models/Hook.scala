@@ -1,7 +1,8 @@
 package tv.teads.github.api.models
 
-import org.joda.time.DateTime
-import play.api.libs.json.{JsObject, JsValue}
+import java.time.ZonedDateTime
+
+import play.api.libs.json.JsValue
 import play.api.data.mapping._
 
 trait HookFormats {
@@ -19,8 +20,8 @@ trait HookFormats {
       (__ \ "events").read[List[String]] ~
       (__ \ "active").read[Boolean] ~
       (__ \ "config").read[HookConfig] ~
-      (__ \ "updated_at").read(jodaLongOrISO) ~
-      (__ \ "created_at").read(jodaLongOrISO)
+      (__ \ "updated_at").read(zonedDateTime) ~
+      (__ \ "created_at").read(zonedDateTime)
     )(Hook.apply _)
   }
 
@@ -34,6 +35,6 @@ case class Hook(
   events:    List[String],
   active:    Boolean,
   config:    HookConfig,
-  updatedAt: DateTime,
-  createdAt: DateTime
+  updatedAt: ZonedDateTime,
+  createdAt: ZonedDateTime
 )
