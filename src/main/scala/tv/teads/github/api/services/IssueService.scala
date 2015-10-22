@@ -14,7 +14,7 @@ import tv.teads.github.api.models.common.ADTEnum
 import tv.teads.github.api.models.payloads.PayloadFormats
 import Configuration.configuration
 import tv.teads.github.api.util._
-import tv.teads.github.api.util.ToMapRec._
+import tv.teads.github.api.util.CaseClassToMap._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -99,7 +99,7 @@ object IssueService extends GithubService with PayloadFormats {
     import play.api.data.mapping.json.Rules._
     val url = s"repos/${configuration.organization}/$repository/issues"
     val errorMsg = s"Fetching issues for repository $repository failed"
-    fetchMultiple[Issue](url, errorMsg, issueFilter.toMapRecStringified)
+    fetchMultiple[Issue](url, errorMsg, issueFilter.toMapStringified)
   }
 
   def byRepositoryAndNumber(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Issue]] = {

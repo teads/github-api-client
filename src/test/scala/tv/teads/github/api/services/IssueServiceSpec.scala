@@ -4,7 +4,7 @@ import tv.teads.github.api.BaseSpec
 import tv.teads.github.api.filters.common.Directions.Direction
 import tv.teads.github.api.filters.common.States.State
 import tv.teads.github.api.services.IssueService.{Sort, IssueFilter, IssueParam}
-import tv.teads.github.api.util.ToMapRec._
+import tv.teads.github.api.util.CaseClassToMap._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -36,7 +36,7 @@ class IssueServiceSpec extends BaseSpec {
   it should "transform an IssueFilter with default values into a Map" in {
     val filter = IssueFilter()
     val expected = Map("state" → State.open.toString, "sort" → Sort.created.toString, "direction" → Direction.desc.toString)
-    filter.toMapRecStringified should contain theSameElementsAs expected
+    filter.toMapStringified should contain theSameElementsAs expected
   }
 
 }
