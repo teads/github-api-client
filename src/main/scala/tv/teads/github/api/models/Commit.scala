@@ -5,10 +5,6 @@ import play.api.data.mapping._
 
 trait CommitFormats {
   self: UserFormats with AuthorFormats ⇒
-  implicit lazy val commitJsonWrite: Write[Commit, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[Commit, JsObject]
-  }
 
   implicit lazy val commitJsonRead = {
     import play.api.data.mapping.json.Rules._

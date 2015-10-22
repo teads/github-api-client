@@ -3,14 +3,9 @@ package tv.teads.github.api.models
 import java.time.ZonedDateTime
 
 import play.api.data.mapping._
-import play.api.libs.json.{JsNumber, JsObject, JsValue}
+import play.api.libs.json.JsValue
 
 trait RepositoryUrlsFormats {
-  implicit lazy val repositoryUrlsJsonWrite: Write[RepositoryUrls, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[RepositoryUrls, JsObject]
-  }
-
   implicit lazy val repositoryUrlsJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
     (
@@ -35,11 +30,6 @@ case class RepositoryUrls(
 )
 
 trait BooleanPermissionFormats {
-  implicit lazy val permissionsJsonWrite: Write[BooleanPermissions, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[BooleanPermissions, JsObject]
-  }
-
   implicit lazy val permissionJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
     (
@@ -57,11 +47,6 @@ case class BooleanPermissions(
 )
 
 trait RepositoryStatsFormats {
-  implicit lazy val repositoryStatsJsonWrite: Write[RepositoryStats, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[RepositoryStats, JsObject]
-  }
-
   implicit lazy val repositoryStatsJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
     (
@@ -85,11 +70,6 @@ case class RepositoryStats(
 )
 
 trait RepositoryConfigFormats {
-  implicit lazy val repositoryConfigJsonWrite: Write[RepositoryConfig, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[RepositoryConfig, JsObject]
-  }
-
   implicit lazy val repositoryConfigJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
     (
@@ -111,28 +91,9 @@ case class RepositoryConfig(
 trait RepositoryFormats {
   self: UserFormats with RepositoryUrlsFormats with BooleanPermissionFormats with RepositoryConfigFormats with RepositoryStatsFormats with ParentFormats ⇒
 
-  implicit lazy val repositoryJsonWrite: Write[Repository, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    implicit val dateTimeToLongJsObject = Write[ZonedDateTime, JsValue] { dt ⇒ JsNumber(dt.toInstant.toEpochMilli) }
-    Write.gen[Repository, JsObject]
-  }
-
-  private val TagsPrefix = "tags["
-
   implicit lazy val GHRepoReads: Rule[JsValue, Repository] = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
     import tv.teads.github.api.util.CustomRules._
-
-    val tagsR = Rule.fromMapping[Option[String], List[String]] {
-      case None ⇒ Success(Nil)
-      case Some(str) ⇒
-        if (str.contains(TagsPrefix)) {
-          val tags = str.substring(str.indexOf(TagsPrefix) + TagsPrefix.length, str.indexOf("]"))
-          Success(tags.split(",").toList)
-        } else {
-          Success(Nil)
-        }
-    }
 
     (
       (__ \ "id").read[Long] ~
@@ -152,8 +113,7 @@ trait RepositoryFormats {
       (__ \ "organization").read[Option[User]] ~
       repositoryUrlsJsonRead ~
       repositoryStatsJsonRead ~
-      repositoryConfigJsonRead ~
-      (__ \ "description").read(tagsR)
+      repositoryConfigJsonRead
     )(Repository.apply _)
   }
 }
@@ -176,6 +136,5 @@ case class Repository(
   organization:  Option[User],
   urls:          RepositoryUrls,
   stats:         RepositoryStats,
-  config:        RepositoryConfig,
-  tags:          List[String]               = Nil
+  config:        RepositoryConfig
 )

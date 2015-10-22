@@ -7,11 +7,6 @@ import play.api.data.mapping._
 trait PushPayloadFormats {
   self: UserFormats with RepositoryFormats with CommitFormats with AuthorFormats ⇒
 
-  implicit lazy val pushPayloadJsonWrite: Write[PushPayload, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[PushPayload, JsObject]
-  }
-
   implicit lazy val pushPayloadJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
     // let's no leak implicits everywhere

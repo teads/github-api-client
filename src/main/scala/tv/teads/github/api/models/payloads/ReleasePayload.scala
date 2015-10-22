@@ -8,11 +8,6 @@ import tv.teads.github.api.models.actions.ReleaseActions.ReleaseAction
 trait ReleasePayloadFormats {
   self: UserFormats with RepositoryFormats with ReleaseFormats ⇒
 
-  implicit lazy val releasePayloadJsonWrite: Write[ReleasePayload, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[ReleasePayload, JsObject]
-  }
-
   implicit lazy val releasePayloadJsonRead = {
     import play.api.data.mapping.json.Rules._ // let's no leak implicits everywhere
     Rule.gen[JsValue, ReleasePayload]

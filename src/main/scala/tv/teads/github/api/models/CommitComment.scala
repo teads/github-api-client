@@ -7,11 +7,6 @@ import play.api.libs.json.{JsObject, JsValue}
 
 trait CommitCommentFormats {
   self: UserFormats ⇒
-  implicit lazy val commitCommentJsonWrite: Write[CommitComment, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    import tv.teads.github.api.util.CustomWrites._
-    Write.gen[CommitComment, JsObject]
-  }
 
   implicit lazy val commitCommentJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._

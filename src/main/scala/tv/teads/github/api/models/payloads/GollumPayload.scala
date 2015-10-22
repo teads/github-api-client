@@ -7,11 +7,6 @@ import play.api.data.mapping._
 trait GollumPayloadFormats {
   self: UserFormats with RepositoryFormats with TeamFormats ⇒
 
-  implicit lazy val gollumPayloadJsonWrite: Write[GollumPayload, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[GollumPayload, JsObject]
-  }
-
   implicit lazy val gollumPayloadJsonRead = {
     import play.api.data.mapping.json.Rules._ // let's no leak implicits everywhere
     Rule.gen[JsValue, GollumPayload]

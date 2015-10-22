@@ -7,11 +7,6 @@ import play.api.libs.json.{JsObject, JsValue}
 
 trait CommentFormats {
   self: UserFormats ⇒
-  implicit lazy val commentJsonWrite: Write[Comment, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    import tv.teads.github.api.util.CustomWrites._
-    Write.gen[Comment, JsObject]
-  }
 
   implicit lazy val commentrJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._

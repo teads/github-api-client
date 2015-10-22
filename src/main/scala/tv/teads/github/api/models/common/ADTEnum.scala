@@ -21,10 +21,5 @@ trait ADTEnum[A] {
     case _ ⇒ Failure(Seq(ValidationError(s"error.ADTEnumMustBeAString")))
   }
 
-  implicit lazy val jsonVWrites: Write[A, JsValue] = Write(s ⇒ JsString(s.toString))
-
-  import play.api.libs.json._
-
-  implicit lazy val jsonWrites: play.api.libs.json.Writes[A] = play.api.libs.json.Writes(s ⇒ JsString(s.toString))
-
+  implicit lazy val jsonVWrites = Write[A, JsValue](s ⇒ JsString(s.toString))
 }

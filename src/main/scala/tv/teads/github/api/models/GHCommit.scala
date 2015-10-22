@@ -5,10 +5,6 @@ import play.api.data.mapping._
 
 trait GHCommitFormats {
   self: UserFormats with ParentFormats with CommitDetailFormats ⇒
-  implicit lazy val ghCommitJsonWrite: Write[GHCommit, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[GHCommit, JsObject]
-  }
 
   implicit lazy val ghCommitJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._

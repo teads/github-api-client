@@ -9,11 +9,6 @@ import play.api.data.mapping._
 trait IssueCommentPayloadFormats {
   self: UserFormats with RepositoryFormats with IssueFormats with CommentFormats ⇒
 
-  implicit lazy val issueCommentPayloadJsonWrite: Write[IssueCommentPayload, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[IssueCommentPayload, JsObject]
-  }
-
   implicit lazy val issueCommentPayloadJsonRead = {
     import play.api.data.mapping.json.Rules._ // let's no leak implicits everywhere
     Rule.gen[JsValue, IssueCommentPayload]

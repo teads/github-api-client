@@ -7,11 +7,6 @@ import play.api.libs.json.{JsString, JsObject, JsValue}
 import tv.teads.github.api.models.PullRequestStatuses.PullRequestStatus
 
 trait PullRequestUrlsFormats {
-  implicit lazy val pullRequestUrlsJsonWrite: Write[PullRequestUrls, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[PullRequestUrls, JsObject]
-  }
-
   implicit lazy val pullRequestUrlsJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
     (
@@ -41,13 +36,6 @@ case class PullRequestUrls(
 )
 
 trait TimeMetadataFormats {
-  implicit lazy val timeMetadataJsonWrite: Write[TimeMetadata, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    import tv.teads.github.api.util.CustomWrites._
-
-    Write.gen[TimeMetadata, JsObject]
-  }
-
   implicit lazy val timeMetadataJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
     import tv.teads.github.api.util.CustomRules._
@@ -71,11 +59,6 @@ case class TimeMetadata(
 )
 
 trait ChangeMetadataFormats {
-  implicit lazy val changeMetadataJsonWrite: Write[ChangeMetadata, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[ChangeMetadata, JsObject]
-  }
-
   implicit lazy val changeMetadataJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
     (
@@ -101,10 +84,6 @@ case class ChangeMetadata(
 
 trait PullRequestFormats {
   self: UserFormats with PullRequestUrlsFormats with LinksFormats with TimeMetadataFormats with ChangeMetadataFormats with HeadFormats ⇒
-  implicit lazy val pullRequestJsonWrite: Write[PullRequest, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[PullRequest, JsObject]
-  }
 
   implicit lazy val pullRequestJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._

@@ -5,10 +5,6 @@ import play.api.data.mapping._
 
 trait TagFormats {
   self: UserFormats with TagCommitFormats ⇒
-  implicit lazy val tagJsonWrite: Write[Tag, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[Tag, JsObject]
-  }
 
   implicit lazy val tagJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._

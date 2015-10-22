@@ -5,10 +5,6 @@ import play.api.libs.json.{JsObject, JsValue}
 
 trait HeadFormats {
   self: UserFormats with RepositoryFormats ⇒
-  implicit lazy val headJsonWrite: Write[Head, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[Head, JsObject]
-  }
 
   implicit lazy val headJsonRead = {
     import play.api.data.mapping.json.Rules._
@@ -25,28 +21,16 @@ case class Head(
 )
 
 trait HRefFormats {
-  implicit lazy val selfJsonWrite: Write[HRef, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[HRef, JsObject]
-  }
-
   implicit lazy val selfJsonRead = {
     import play.api.data.mapping.json.Rules._
     Rule.gen[JsValue, HRef]
   }
 }
 
-case class HRef(
-  href: String
-)
+case class HRef(href: String)
 
 trait LinksFormats {
-
   self: UserFormats with HRefFormats ⇒
-  implicit lazy val linkJsonWrite: Write[Links, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[Links, JsObject]
-  }
 
   implicit lazy val linkJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
@@ -76,12 +60,7 @@ case class Links(
 )
 
 trait PullRequestReviewCommentLinksFormats {
-
   self: UserFormats with HRefFormats ⇒
-  implicit lazy val linkPullRequestJsonWrite: Write[PullRequestReviewCommentLinks, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[PullRequestReviewCommentLinks, JsObject]
-  }
 
   implicit lazy val linkPullRequestJsonRead = From[JsValue] { __ ⇒
     import play.api.data.mapping.json.Rules._
@@ -101,11 +80,6 @@ case class PullRequestReviewCommentLinks(
 )
 
 trait LinksContentFormats {
-  implicit lazy val linkContentJsonWrite: Write[LinksContent, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[LinksContent, JsObject]
-  }
-
   implicit lazy val linkContentJsonRead = {
     import play.api.data.mapping.json.Rules._
     Rule.gen[JsValue, LinksContent]
@@ -119,11 +93,6 @@ case class LinksContent(
 )
 
 trait TreeFormats {
-  implicit lazy val treeJsonWrite: Write[Tree, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[Tree, JsObject]
-  }
-
   implicit lazy val treeJsonRead = {
     import play.api.data.mapping.json.Rules._
     Rule.gen[JsValue, Tree]
