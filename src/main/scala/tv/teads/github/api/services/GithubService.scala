@@ -1,6 +1,7 @@
 package tv.teads.github.api.services
 
 import akka.actor.ActorRefFactory
+import com.typesafe.scalalogging.LazyLogging
 import spray.http._
 import spray.httpx.RequestBuilding._
 import spray.httpx.unmarshalling._
@@ -10,7 +11,7 @@ import Configuration.configuration
 
 import scala.concurrent.{Future, ExecutionContext}
 
-trait GithubService extends Service {
+trait GithubService extends LazyLogging with ValidationJsonSupport {
 
   protected val DefaultMediaType = "application/vnd.github.v3+json"
   protected val TestMediaType = "application/vnd.github.moondragon+json"
