@@ -12,7 +12,7 @@ import tv.teads.github.api.models._
 import tv.teads.github.api.models.common.ADTEnum
 import tv.teads.github.api.models.payloads.PayloadFormats
 import tv.teads.github.api.util._
-import tv.teads.github.api.util.ToMapRec._
+import tv.teads.github.api.util.CaseClassToMap._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -126,7 +126,7 @@ object PullRequestService extends GithubService with PayloadFormats {
 
   def fetchPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[PullRequest]] = {
     import play.api.data.mapping.json.Rules._
-    fetchAllPages[PullRequest](s"${configuration.url}/repos/${configuration.organization}/$repository/pulls", filter.toMapRecStringified)
+    fetchAllPages[PullRequest](s"${configuration.url}/repos/${configuration.organization}/$repository/pulls", filter.toMapStringified)
   }
 
   def fetchOpenPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit refFactory: ActorRefFactory, ec: ExecutionContext) =
