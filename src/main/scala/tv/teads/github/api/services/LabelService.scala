@@ -25,14 +25,14 @@ object LabelService extends GithubService with PayloadFormats {
   )
 
   def create(org: String, repository: String, label: LabelParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Label]] = {
-    val url = s"$org/repos/${configuration.organization}/$repository/labels"
+    val url = s"${configuration.url}/repos/$org/$repository/labels"
     val req: HttpRequest = Post(url, label)
     baseRequest(req, Map.empty)
       .executeRequestInto[Label]()
       .map {
         case SuccessfulRequest(i, _) ⇒ Some(i)
         case FailedRequest(statusCode) ⇒
-          logger.error(s"Could not create label, failed with status code ${statusCode.intValue}")
+          logger.error(s"Could not create label $label, url $url, failed with status code ${statusCode.intValue}")
           None
       }
   }
@@ -48,7 +48,7 @@ object LabelService extends GithubService with PayloadFormats {
       .map {
         case SuccessfulRequest(i, _) ⇒ Some(i)
         case FailedRequest(statusCode) ⇒
-          logger.error(s"Could not edit label $name, failed with status code ${statusCode.intValue}")
+          logger.error(s"Could not edit label $name, url $url, failed with status code ${statusCode.intValue}")
           None
       }
   }
@@ -109,7 +109,7 @@ object LabelService extends GithubService with PayloadFormats {
   def addLabelsToIssue(org: String, repository: String, number: Long, labels: List[String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] = {
     import play.api.data.mapping.json.Rules._
     import play.api.data.mapping.json.Writes._
-    val url = s"$org/repos/${configuration.organization}/$repository/issues/$number/labels"
+    val url = s"${configuration.url}/repos/$org/$repository/issues/$number/labels"
     val req: HttpRequest = Post(url, labels)
     baseRequest(req, Map.empty)
       .executeRequestInto[List[Label]]()
@@ -126,7 +126,7 @@ object LabelService extends GithubService with PayloadFormats {
   }
 
   def removeLabelFromIssue(org: String, repository: String, number: Long, name: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"$org/repos/${configuration.organization}/$repository/issues/$number/labels/$name"
+    val url = s"${configuration.url}/repos/$org/$repository/issues/$number/labels/$name"
     val req: HttpRequest = Delete(url)
     baseRequest(req, Map.empty)
       .executeRequest()
@@ -144,7 +144,7 @@ object LabelService extends GithubService with PayloadFormats {
 
   def replaceLabelsFromIssue(org: String, repository: String, number: Long, labels: List[String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
     import play.api.data.mapping.json.Writes._
-    val url = s"$org/repos/${configuration.organization}/$repository/issues/$number/labels"
+    val url = s"${configuration.url}/repos/$org/$repository/issues/$number/labels"
     val req: HttpRequest = Put(url, labels)
     baseRequest(req, Map.empty)
       .executeRequest()
@@ -161,7 +161,7 @@ object LabelService extends GithubService with PayloadFormats {
   }
 
   def removeAllLabelsFromIssue(org: String, repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"$org/repos/${configuration.organization}/$repository/issues/$number/labels"
+    val url = s"${configuration.url}/repos/$org/$repository/issues/$number/labels"
     val req: HttpRequest = Delete(url)
     baseRequest(req, Map.empty)
       .executeRequest()
