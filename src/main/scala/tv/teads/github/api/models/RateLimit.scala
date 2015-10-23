@@ -1,8 +1,7 @@
 package tv.teads.github.api.models
 
-import org.joda.time.DateTime
-import play.api.data.mapping.{Rule, Write}
-import play.api.libs.json.{JsObject, JsValue}
+import play.api.data.mapping.Rule
+import play.api.libs.json.JsValue
 
 trait CoreFormats {
   implicit lazy val coreJsonRead = {
