@@ -38,6 +38,7 @@ trait PayloadFormats extends RepositoryFormats
   with PullRequestCommentFormats
   with FileFormats
   with StatusFormats
+  with CombinedStatusFormats
   with StatusResponseFormats
   with RepositoryPayloadFormats
   with DeletePayloadFormats
