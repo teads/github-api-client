@@ -40,8 +40,26 @@ object PullRequestService extends GithubService with PayloadFormats {
     base:  String
   )
 
+  def createFromBranch(org: String, repository: String, param: PullRequestBranchParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
+    val url = s"${configuration.url}/repos/$org/$repository/pulls"
+    val req: HttpRequest = Post(url, param)
+    baseRequest(req, Map.empty)
+      .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
+      .executeRequestInto[PullRequest]()
+      .map {
+        case SuccessfulRequest(i, _) ⇒ Some(i)
+        case FailedRequest(statusCode) ⇒
+          logger.error(s"Could not create issue, failed with status code ${statusCode.intValue}")
+          None
+      }
+  }
+
   def createFromBranch(repository: String, param: PullRequestBranchParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
-    val url = s"${configuration.url}/repos/${configuration.organization}/$repository/pulls"
+    createFromBranch(configuration.organization, repository, param)
+  }
+
+  def createFromIssue(org: String, repository: String, param: PullRequestIssueParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
+    val url = s"${configuration.url}/repos/$org/$repository/pulls"
     val req: HttpRequest = Post(url, param)
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -55,17 +73,7 @@ object PullRequestService extends GithubService with PayloadFormats {
   }
 
   def createFromIssue(repository: String, param: PullRequestIssueParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
-    val url = s"${configuration.url}/repos/${configuration.organization}/$repository/pulls"
-    val req: HttpRequest = Post(url, param)
-    baseRequest(req, Map.empty)
-      .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
-      .executeRequestInto[PullRequest]()
-      .map {
-        case SuccessfulRequest(i, _) ⇒ Some(i)
-        case FailedRequest(statusCode) ⇒
-          logger.error(s"Could not create issue, failed with status code ${statusCode.intValue}")
-          None
-      }
+    createFromIssue(configuration.organization, repository, param)
   }
 
   case class PullRequestEditParam(
@@ -78,8 +86,8 @@ object PullRequestService extends GithubService with PayloadFormats {
     Write.gen[PullRequestEditParam, JsObject]
   }
 
-  def edit(repository: String, number: Int, param: PullRequestEditParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
-    val url = s"${configuration.url}/repos/${configuration.organization}/$repository/pulls/$number"
+  def edit(org: String, repository: String, number: Int, param: PullRequestEditParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
+    val url = s"${configuration.url}/repos/$org/$repository/pulls/$number"
     val req: HttpRequest = Patch(url, param)
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -90,6 +98,10 @@ object PullRequestService extends GithubService with PayloadFormats {
           logger.error(s"Could not edit pull request, failed with status code ${statusCode.intValue}")
           None
       }
+  }
+
+  def edit(repository: String, number: Int, param: PullRequestEditParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
+    edit(configuration.organization, repository, number, param)
   }
 
   sealed trait Sort
@@ -124,28 +136,44 @@ object PullRequestService extends GithubService with PayloadFormats {
 
   )
 
-  def fetchPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[PullRequest]] = {
+  def fetchPullRequests(org: String, repository: String, filter: PullRequestFilter)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[PullRequest]] = {
     import play.api.data.mapping.json.Rules._
-    fetchAllPages[PullRequest](s"${configuration.url}/repos/${configuration.organization}/$repository/pulls", filter.toMapStringified)
+    fetchAllPages[PullRequest](s"${configuration.url}/repos/$org/$repository/pulls", filter.toMapStringified)
+  }
+  def fetchPullRequests(repository: String, filter: PullRequestFilter)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[PullRequest]] = {
+    fetchPullRequests(configuration.organization, repository, filter)
   }
 
-  def fetchOpenPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit refFactory: ActorRefFactory, ec: ExecutionContext) =
-    fetchPullRequests(repository, filter.copy(state = Some(State.open)))
+  def fetchOpenPullRequests(org: String, repository: String, filter: PullRequestFilter)(implicit refFactory: ActorRefFactory, ec: ExecutionContext) =
+    fetchPullRequests(org, repository, filter.copy(state = Some(State.open)))
 
-  def fetchClosedPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit refFactory: ActorRefFactory, ec: ExecutionContext) =
-    fetchPullRequests(repository, filter.copy(state = Some(State.closed)))
+  def fetchOpenPullRequests(repository: String, filter: PullRequestFilter)(implicit refFactory: ActorRefFactory, ec: ExecutionContext) =
+    fetchPullRequests(configuration.organization, repository, filter.copy(state = Some(State.open)))
+
+  def fetchClosedPullRequests(org: String, repository: String, filter: PullRequestFilter)(implicit refFactory: ActorRefFactory, ec: ExecutionContext) =
+    fetchPullRequests(org, repository, filter.copy(state = Some(State.closed)))
+
+  def fetchClosedPullRequests(repository: String, filter: PullRequestFilter)(implicit refFactory: ActorRefFactory, ec: ExecutionContext) =
+    fetchPullRequests(configuration.organization, repository, filter.copy(state = Some(State.closed)))
+
+  def fetchMatchingOpenPullRequests(org: String, repository: String, author: String, branch: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext) =
+    fetchOpenPullRequests(org, repository, PullRequestFilter(head = Some(Head(author, branch))))
 
   def fetchMatchingOpenPullRequests(repository: String, author: String, branch: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext) =
-    fetchOpenPullRequests(repository, PullRequestFilter(head = Some(Head(author, branch))))
+    fetchOpenPullRequests(configuration.organization, repository, PullRequestFilter(head = Some(Head(author, branch))))
 
-  def byRepositoryAndNumber(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
+  def byRepositoryAndNumber(org: String, repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
     import play.api.data.mapping.json.Rules._
-    val url = s"repos/${configuration.organization}/$repository/pulls/$number"
+    val url = s"repos/$org/$repository/pulls/$number"
     fetchOptional[PullRequest](url, s"Could not fetch Pull Request #$number for repository $repository")
   }
 
-  def isMerged(repository: String, number: Int)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${configuration.url}/repos/${configuration.organization}/$repository/pulls/$number/merge"
+  def byRepositoryAndNumber(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
+    byRepositoryAndNumber(configuration.organization, repository, number)
+  }
+
+  def isMerged(org: String, repository: String, number: Int)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
+    val url = s"${configuration.url}/repos/$org/$repository/pulls/$number/merge"
     val req: HttpRequest = Get(url)
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -160,6 +188,10 @@ object PullRequestService extends GithubService with PayloadFormats {
       }
   }
 
+  def isMerged(repository: String, number: Int)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
+    isMerged(configuration.organization, repository, number)
+  }
+
   case class ToMerge(commit_message: String, sha: String)
 
   implicit lazy val toMergeJsonWrite: Write[ToMerge, JsValue] = {
@@ -167,8 +199,8 @@ object PullRequestService extends GithubService with PayloadFormats {
     Write.gen[ToMerge, JsObject]
   }
 
-  def merge(repository: String, number: Int, toMerge: ToMerge)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${configuration.url}/repos/${configuration.organization}/$repository/pulls/$number/merge"
+  def merge(org: String, repository: String, number: Int, toMerge: ToMerge)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
+    val url = s"${configuration.url}/repos/$org/$repository/pulls/$number/merge"
     val req: HttpRequest = Put(url, toMerge)
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -184,15 +216,27 @@ object PullRequestService extends GithubService with PayloadFormats {
       }
   }
 
-  def fetchFiles(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[File]] = {
+  def merge(repository: String, number: Int, toMerge: ToMerge)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
+    merge(configuration.organization, repository, number, toMerge)
+  }
+
+  def fetchFiles(org: String, repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[File]] = {
     import play.api.data.mapping.json.Rules._
-    val url = s"${configuration.url}/repos/${configuration.organization}/$repository/pulls/$number/files"
+    val url = s"${configuration.url}/repos/$org/$repository/pulls/$number/files"
     fetchAllPages[File](url, Map.empty)
   }
 
-  def fetchCommits(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[GHCommit]] = {
+  def fetchFiles(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[File]] = {
+    fetchFiles(configuration.organization, repository, number)
+  }
+
+  def fetchCommits(org: String, repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[GHCommit]] = {
     import play.api.data.mapping.json.Rules._
-    val url = s"${configuration.url}/repos/${configuration.organization}/$repository/pulls/$number/commits"
+    val url = s"${configuration.url}/repos/$org/$repository/pulls/$number/commits"
     fetchAllPages[GHCommit](url, Map.empty)
+  }
+
+  def fetchCommits(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[GHCommit]] = {
+    fetchCommits(configuration.organization, repository, number)
   }
 }
