@@ -5,13 +5,15 @@ import com.typesafe.scalalogging.LazyLogging
 import spray.http._
 import spray.httpx.RequestBuilding._
 import spray.httpx.unmarshalling._
-import tv.teads.github.api.Configuration
+import tv.teads.github.api.Configuration.configuration
+import tv.teads.github.api.json.CirceSupport
 import tv.teads.github.api.util._
-import Configuration.configuration
 
 import scala.concurrent.{Future, ExecutionContext}
 
-trait GithubService extends LazyLogging with ValidationJsonSupport {
+trait GithubService extends LazyLogging with CirceSupport {
+
+  private type FRU[T] = FromResponseUnmarshaller[T]
 
   protected val DefaultMediaType = "application/vnd.github.v3+json"
   protected val TestMediaType = "application/vnd.github.moondragon+json"
@@ -35,7 +37,7 @@ trait GithubService extends LazyLogging with ValidationJsonSupport {
       .withHeader(HttpHeaders.Authorization.name, s"token ${token.getOrElse(configuration.token)}")
   }
 
-  protected def fetchAllPages[T: FromResponseUnmarshaller](url: String, queryParams: Map[String, String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext, ev: FromResponseUnmarshaller[List[T]]) = {
+  protected def fetchAllPages[T: FRU](url: String, queryParams: Map[String, String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext, ev: FRU[List[T]]) = {
 
     def findNextPageUrl(linkHeader: Option[String]): Option[String] =
       linkHeader.flatMap { links ⇒
@@ -75,11 +77,10 @@ trait GithubService extends LazyLogging with ValidationJsonSupport {
     }
   }
 
-  protected def fetchMultiple[T](route: String, errorMsg: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext, ev: FromResponseUnmarshaller[List[T]]): Future[List[T]] = {
+  protected def fetchMultiple[T](route: String, errorMsg: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext, ev: FRU[List[T]]): Future[List[T]] =
     fetchMultiple(route, errorMsg, Map.empty)
-  }
 
-  protected def fetchOptional[T](route: String, errorMsg: String, params: Map[String, String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext, ev: FromResponseUnmarshaller[Option[T]]): Future[Option[T]] = {
+  protected def fetchOptional[T](route: String, errorMsg: String, params: Map[String, String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext, ev: FRU[Option[T]]): Future[Option[T]] = {
     val url = s"${configuration.url}/$route"
     val req: HttpRequest = Get(url)
     baseRequest(req, params).executeRequestInto[Option[T]]().map {
@@ -90,8 +91,7 @@ trait GithubService extends LazyLogging with ValidationJsonSupport {
     }
   }
 
-  protected def fetchOptional[T](route: String, errorMsg: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext, ev: FromResponseUnmarshaller[Option[T]]): Future[Option[T]] = {
+  protected def fetchOptional[T](route: String, errorMsg: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext, ev: FRU[Option[T]]): Future[Option[T]] =
     fetchOptional(route, errorMsg, Map.empty)
-  }
 
 }

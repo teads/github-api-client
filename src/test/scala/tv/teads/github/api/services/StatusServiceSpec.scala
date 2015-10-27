@@ -15,7 +15,6 @@ class StatusServiceSpec extends BaseSpec {
   it should "be able to fetch combined status for a branch" in {
 
     whenReady(StatusService.fetchStatus("ebuzzing", "github-api-client", "test-pr")) { list ⇒
-      println(list)
       list should not be empty
     }
   }

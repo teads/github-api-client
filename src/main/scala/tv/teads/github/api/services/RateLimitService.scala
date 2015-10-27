@@ -1,21 +1,18 @@
 package tv.teads.github.api.services
 
+import scala.concurrent.{ExecutionContext, Future}
+
 import akka.actor.ActorRefFactory
 import spray.http.HttpRequest
 import spray.httpx.RequestBuilding._
-import tv.teads.github.api.Configuration
-import tv.teads.github.api.models._
-import tv.teads.github.api.models.payloads.PayloadFormats
-import Configuration.configuration
+import tv.teads.github.api.Configuration.configuration
+import tv.teads.github.api.model._
 import tv.teads.github.api.util._
 
-import scala.concurrent.{ExecutionContext, Future}
-
-object RateLimitService extends GithubService with PayloadFormats {
+object RateLimitService extends GithubService with GithubApiCodecs {
 
   def getRateLimit(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[RateLimit] = {
-    val url: String = s"${configuration.url}/rate_limit"
-    val req: HttpRequest = Get(url)
+    val req: HttpRequest = Get(s"${configuration.url}/rate_limit")
     baseRequest(req, Map.empty)
       .executeRequestInto[RateLimit]().map {
         case SuccessfulRequest(rateLimit, _) ⇒ rateLimit

@@ -1,33 +1,20 @@
 package tv.teads.github.api.services
 
-import akka.actor.ActorRefFactory
-import spray.http._
-import spray.httpx.RequestBuilding._
-import tv.teads.github.api.Configuration
-import tv.teads.github.api.models._
-import tv.teads.github.api.models.payloads.PayloadFormats
-import Configuration.configuration
-import tv.teads.github.api.util._
-
 import scala.concurrent.{ExecutionContext, Future}
 
-object OrganizationService extends GithubService with PayloadFormats {
+import akka.actor.ActorRefFactory
+import tv.teads.github.api.Configuration.configuration
+import tv.teads.github.api.model._
 
-  def fetchOrg(org: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Organization]] = {
-    val url = s"orgs/$org"
-    val errorMsg = s"Fetching organization $org failed"
-    fetchOptional[Organization](url, errorMsg)
-  }
+object OrganizationService extends GithubService with GithubApiCodecs {
 
-  def fetchDefaultOrg(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Organization]] = {
+  def fetchOrg(org: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Organization]] =
+    fetchOptional[Organization](s"orgs/$org", s"Fetching organization $org failed")
+
+  def fetchDefaultOrg(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Organization]] =
     fetchOrg(configuration.organization)
-  }
 
-  def fetchUserOrgs(user: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Org]] = {
-    import play.api.data.mapping.json.Rules._
-    val url = s"users/$user/orgs"
-    val errorMsg = s"Fetching organizations for user $user failed"
-    fetchMultiple[Org](url, errorMsg)
-  }
+  def fetchUserOrgs(user: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Org]] =
+    fetchMultiple[Org](s"users/$user/orgs", s"Fetching organizations for user $user failed")
 
 }
