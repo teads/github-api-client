@@ -1,28 +1,20 @@
 package tv.teads.github.api.services
 
 import akka.actor.ActorRefFactory
-import play.api.data.mapping.Write
-import play.api.libs.json.{JsObject, JsValue}
+import io.circe.generic.semiauto._
 import spray.http.{HttpRequest, _}
 import spray.httpx.RequestBuilding._
 import tv.teads.github.api.Configuration.configuration
-import tv.teads.github.api.models._
-import tv.teads.github.api.models.payloads.PayloadFormats
+import tv.teads.github.api.model._
 import tv.teads.github.api.util._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object LabelService extends GithubService with PayloadFormats {
+object LabelService extends GithubService with GithubApiCodecs {
 
-  implicit lazy val labelParamJsonWrite: Write[LabelParam, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[LabelParam, JsObject]
-  }
+  implicit lazy val labelParamEncoder = deriveFor[LabelParam].encoder
 
-  case class LabelParam(
-    name:  String,
-    color: String
-  )
+  case class LabelParam(name: String, color: String)
 
   def create(org: String, repository: String, label: LabelParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Label]] = {
     val url = s"${configuration.url}/repos/$org/$repository/labels"
@@ -36,9 +28,8 @@ object LabelService extends GithubService with PayloadFormats {
           None
       }
   }
-  def create(repository: String, label: LabelParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Label]] = {
+  def create(repository: String, label: LabelParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Label]] =
     create(configuration.organization, repository, label)
-  }
 
   def edit(org: String, repository: String, name: String, label: LabelParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Label]] = {
     val url = s"${configuration.url}/repos/$org/$repository/labels/$name"
@@ -53,9 +44,8 @@ object LabelService extends GithubService with PayloadFormats {
       }
   }
 
-  def edit(repository: String, name: String, label: LabelParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Label]] = {
+  def edit(repository: String, name: String, label: LabelParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Label]] =
     edit(configuration.organization, repository, name, label)
-  }
 
   def delete(org: String, repository: String, name: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
     val url = s"${configuration.url}/repos/$org/$repository/labels/$name"
@@ -69,46 +59,28 @@ object LabelService extends GithubService with PayloadFormats {
           false
       }
   }
-  def delete(repository: String, name: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
+  def delete(repository: String, name: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] =
     delete(configuration.organization, repository, name)
-  }
 
-  def fetchLabelsByRepo(org: String, repository: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] = {
-    import play.api.data.mapping.json.Rules._
-    val url = s"repos/$org/$repository/labels"
-    val errorMsg = s"Fetching labels for repository $repository failed"
-    fetchMultiple[Label](url, errorMsg)
-  }
+  def fetchLabelsByRepo(org: String, repository: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] =
+    fetchMultiple[Label](s"repos/$org/$repository/labels", s"Fetching labels for repository $repository failed")
 
-  def fetchLabelsByRepo(repository: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] = {
+  def fetchLabelsByRepo(repository: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] =
     fetchLabelsByRepo(configuration.organization, repository)
-  }
 
-  def fetchLabel(org: String, repository: String, name: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Label]] = {
-    import play.api.data.mapping.json.Rules._
-    val url = s"repos/$org/$repository/labels/$name"
-    val errorMsg = s"Fetching label $name for repository $repository failed"
-    fetchOptional[Label](url, errorMsg)
-  }
+  def fetchLabel(org: String, repository: String, name: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Label]] =
+    fetchOptional[Label](s"repos/$org/$repository/labels/$name", s"Fetching label $name for repository $repository failed")
 
-  def fetchLabel(repository: String, name: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Label]] = {
+  def fetchLabel(repository: String, name: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Label]] =
     fetchLabel(configuration.organization, repository, name)
-  }
 
-  def fetchLabelsByIssue(org: String, repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] = {
-    import play.api.data.mapping.json.Rules._
-    val url = s"repos/$org/$repository/issues/$number/labels"
-    val errorMsg = s"Fetching labels for issue #$number and repository $repository failed"
-    fetchMultiple[Label](url, errorMsg)
-  }
+  def fetchLabelsByIssue(org: String, repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] =
+    fetchMultiple[Label](s"repos/$org/$repository/issues/$number/labels", s"Fetching labels for issue #$number and repository $repository failed")
 
-  def fetchLabelsByIssue(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] = {
+  def fetchLabelsByIssue(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] =
     fetchLabelsByIssue(configuration.organization, repository, number)
-  }
 
   def addLabelsToIssue(org: String, repository: String, number: Long, labels: List[String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] = {
-    import play.api.data.mapping.json.Rules._
-    import play.api.data.mapping.json.Writes._
     val url = s"${configuration.url}/repos/$org/$repository/issues/$number/labels"
     val req: HttpRequest = Post(url, labels)
     baseRequest(req, Map.empty)
@@ -121,9 +93,8 @@ object LabelService extends GithubService with PayloadFormats {
       }
   }
 
-  def addLabelsToIssue(repository: String, number: Long, labels: List[String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] = {
+  def addLabelsToIssue(repository: String, number: Long, labels: List[String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] =
     addLabelsToIssue(configuration.organization, number, labels)
-  }
 
   def removeLabelFromIssue(org: String, repository: String, number: Long, name: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
     val url = s"${configuration.url}/repos/$org/$repository/issues/$number/labels/$name"
@@ -138,12 +109,10 @@ object LabelService extends GithubService with PayloadFormats {
       }
   }
 
-  def removeLabelFromIssue(repository: String, number: Long, name: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
+  def removeLabelFromIssue(repository: String, number: Long, name: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] =
     removeLabelFromIssue(configuration.organization, number, name)
-  }
 
   def replaceLabelsFromIssue(org: String, repository: String, number: Long, labels: List[String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    import play.api.data.mapping.json.Writes._
     val url = s"${configuration.url}/repos/$org/$repository/issues/$number/labels"
     val req: HttpRequest = Put(url, labels)
     baseRequest(req, Map.empty)
@@ -156,9 +125,8 @@ object LabelService extends GithubService with PayloadFormats {
       }
   }
 
-  def replaceLabelsFromIssue(repository: String, number: Long, labels: List[String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
+  def replaceLabelsFromIssue(repository: String, number: Long, labels: List[String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] =
     replaceLabelsFromIssue(configuration.organization, repository, number, labels)
-  }
 
   def removeAllLabelsFromIssue(org: String, repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
     val url = s"${configuration.url}/repos/$org/$repository/issues/$number/labels"
@@ -173,19 +141,12 @@ object LabelService extends GithubService with PayloadFormats {
       }
   }
 
-  def removeLabelFromIssue(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
+  def removeLabelFromIssue(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] =
     removeAllLabelsFromIssue(configuration.organization, repository, number)
-  }
 
-  def fetchLabelsByMilestone(org: String, repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] = {
-    import play.api.data.mapping.json.Rules._
-    val url = s"repos/$org/$repository/milestones/$number/labels"
-    val errorMsg = s"Fetching labels for milestone v$number and repository $repository failed"
-    fetchMultiple[Label](url, errorMsg)
-  }
+  def fetchLabelsByMilestone(org: String, repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] =
+    fetchMultiple[Label](s"repos/$org/$repository/milestones/$number/labels", s"Fetching labels for milestone v$number and repository $repository failed")
 
-  def fetchLabelsByMilestone(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] = {
+  def fetchLabelsByMilestone(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] =
     fetchLabelsByMilestone(configuration.organization, repository, number)
-  }
-
 }

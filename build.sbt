@@ -6,12 +6,13 @@ scalacOptions   := Seq("-feature", "-deprecation", "-Xlint")
 resolvers += Opts.resolver.sonatypeReleases
 
 val akkaVersion = "2.3.13"
+val circeVersion = "0.1.1"
 
 libraryDependencies += "com.typesafe.akka"          %% "akka-actor"       % akkaVersion % "provided"
+libraryDependencies += "io.circe"                   %% "circe-core"       % circeVersion
+libraryDependencies += "io.circe"                   %% "circe-generic"    % circeVersion
+libraryDependencies += "io.circe"                   %% "circe-jawn"       % circeVersion
 libraryDependencies += "io.spray"                   %%  "spray-client"    % "1.3.2"
-libraryDependencies += "com.typesafe.play"          %%  "play-json"       % "2.3.9"
-libraryDependencies += "io.github.jto"              %%  "validation-core" % "1.0.2"
-libraryDependencies += "io.github.jto"              %%  "validation-json" % "1.0.2"
 libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging"    % "3.1.0"
 libraryDependencies += "com.chuusai"                %%  "shapeless"       % "2.2.5"
 

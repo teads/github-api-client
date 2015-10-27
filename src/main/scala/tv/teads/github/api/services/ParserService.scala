@@ -1,44 +1,34 @@
 package tv.teads.github.api.services
 
-import play.api.data.mapping._
-import play.api.libs.json.{Json, JsValue}
-import tv.teads.github.api.models.payloads._
-import tv.teads.github.api.models.payloads.Events._
+import cats.data.Xor
+import io.circe._, io.circe.jawn._
+import tv.teads.github.api.model.webhook._
 
-object ParserService extends PayloadFormats {
+object ParserService extends WebhooksCodecs {
 
-  private val typeFailure = Failure(Seq(Path → Seq(ValidationError("validation.unknownEvent"))))
-
-  def parsePayload(event: String, payload: String) = {
-
-    val body = Json.parse(payload)
-    val json = Json.obj("event" → event, "payload" → body)
-
-    val rule: Rule[JsValue, Payload] = From[JsValue] { __ ⇒
-      import play.api.data.mapping.json.Rules._
-
-      val payloadJs: Reader[JsValue] = __ \ "payload"
-      val eventJs: Reader[JsValue] = __ \ "event"
-
-      eventJs.read[Event].flatMap[Payload] {
-        case Event.issues                      ⇒ payloadJs.read[IssuePayload].fmap(x ⇒ x)
-        case Event.pull_request                ⇒ payloadJs.read[PullRequestPayload].fmap(x ⇒ x)
-        case Event.push                        ⇒ payloadJs.read[PushPayload].fmap(x ⇒ x)
-        case Event.issue_comment               ⇒ payloadJs.read[IssueCommentPayload].fmap(x ⇒ x)
-        case Event.status                      ⇒ payloadJs.read[StatusPayload].fmap(x ⇒ x)
-        case Event.create                      ⇒ payloadJs.read[CreatePayload].fmap(x ⇒ x)
-        case Event.fork                        ⇒ payloadJs.read[ForkPayload].fmap(x ⇒ x)
-        case Event.pull_request_review_comment ⇒ payloadJs.read[PullRequestCommentReviewPayload].fmap(x ⇒ x)
-        case Event.repository                  ⇒ payloadJs.read[RepositoryPayload].fmap(x ⇒ x)
-        case Event.team_add                    ⇒ payloadJs.read[TeamAddPayload].fmap(x ⇒ x)
-        case Event.commit_comment              ⇒ payloadJs.read[CommitCommentPayload].fmap(x ⇒ x)
-        case Event.membership                  ⇒ payloadJs.read[MembershipPayload].fmap(x ⇒ x)
-        case Event.delete                      ⇒ payloadJs.read[DeletePayload].fmap(x ⇒ x)
-        case _                                 ⇒ Rule(_ ⇒ typeFailure)
-      }
+  def parsePayload(event: String, payload: String): Xor[Error, Payload] =
+    parse(payload).flatMap[Error, Payload] { json ⇒
+      Event.values.find(_.toString == event).map {
+        case Event.issues                      ⇒ json.as[IssuePayload]
+        case Event.pull_request                ⇒ json.as[PullRequestPayload]
+        case Event.push                        ⇒ json.as[PushPayload]
+        case Event.issue_comment               ⇒ json.as[IssueCommentPayload]
+        case Event.status                      ⇒ json.as[StatusPayload]
+        case Event.create                      ⇒ json.as[CreatePayload]
+        case Event.fork                        ⇒ json.as[ForkPayload]
+        case Event.pull_request_review_comment ⇒ json.as[PullRequestCommentReviewPayload]
+        case Event.repository                  ⇒ json.as[RepositoryPayload]
+        case Event.team_add                    ⇒ json.as[TeamAddPayload]
+        case Event.commit_comment              ⇒ json.as[CommitCommentPayload]
+        case Event.membership                  ⇒ json.as[MembershipPayload]
+        case Event.delete                      ⇒ json.as[DeletePayload]
+        case Event.public                      ⇒ json.as[PublicPayload]
+        case Event.watch                       ⇒ json.as[WatchPayload]
+        case Event.deployment                  ⇒ json.as[DeploymentPayload]
+        case Event.deployment_status           ⇒ json.as[DeploymentStatusPayload]
+        case Event.gollum                      ⇒ json.as[GollumPayload]
+        case Event.member                      ⇒ json.as[MemberPayload]
+        case Event.release                     ⇒ json.as[ReleasePayload]
+      }.getOrElse(Xor.left(DecodingFailure("webhook.unknownEvent", json.hcursor.history)))
     }
-
-    rule.validate(json)
-  }
-
 }

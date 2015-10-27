@@ -1,17 +1,14 @@
 package tv.teads.github.api.services
 
 import akka.actor.ActorRefFactory
-import spray.http.HttpRequest
 import spray.httpx.RequestBuilding._
-import tv.teads.github.api.Configuration
-import tv.teads.github.api.models._
-import tv.teads.github.api.models.payloads.PayloadFormats
-import Configuration.configuration
+import tv.teads.github.api.Configuration.configuration
+import tv.teads.github.api.model._
 import tv.teads.github.api.util._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object UserService extends GithubService with PayloadFormats {
+object UserService extends GithubService with GithubApiCodecs {
 
   def getUserInfo(token: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[User]] = {
     val url = s"${configuration.url}/user"

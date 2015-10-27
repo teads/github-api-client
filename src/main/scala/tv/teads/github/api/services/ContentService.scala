@@ -3,18 +3,37 @@ package tv.teads.github.api.services
 import java.util.Base64
 
 import akka.actor.ActorRefFactory
-import play.api.data.mapping.Write
-import play.api.libs.json.{JsObject, JsValue}
+import io.circe.generic.semiauto._
 import spray.http._
 import spray.httpx.RequestBuilding._
-import tv.teads.github.api.Configuration
-import tv.teads.github.api.models._
-import tv.teads.github.api.models.payloads.PayloadFormats
-import Configuration.configuration
+import tv.teads.github.api.Configuration.configuration
+import tv.teads.github.api.model._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object ContentService extends GithubService with PayloadFormats {
+object ContentService extends GithubService with GithubApiCodecs {
+
+  implicit lazy val fileEditParamEncoder = deriveFor[FileEditParam].encoder
+  implicit lazy val fileCreateParamEncoder = deriveFor[FileCreateParam].encoder
+
+  case class FileCreateParam(
+    path:      String,
+    message:   String,
+    content:   String,
+    branch:    Option[String] = None,
+    committer: Option[Author],
+    author:    Option[Author]
+  )
+
+  case class FileEditParam(
+    path:      String,
+    message:   String,
+    content:   String,
+    sha:       String,
+    branch:    Option[String] = None,
+    committer: Option[Author],
+    author:    Option[Author]
+  )
 
   def fetchFile(org: String, repository: String, path: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[String]] = {
     val url = s"${configuration.url}/repos/$org/$repository/contents/$path"
@@ -32,9 +51,8 @@ object ContentService extends GithubService with PayloadFormats {
       }
   }
 
-  def fetchFileDefaultOrg(repository: String, path: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[String]] = {
+  def fetchFileDefaultOrg(repository: String, path: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[String]] =
     fetchFile(configuration.organization, repository, path)
-  }
 
   def fetchReadme(org: String, repository: String, branch: String = "master")(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[String]] = {
     val url = s"${configuration.url}/repos/$org/$repository/readme"
@@ -52,23 +70,8 @@ object ContentService extends GithubService with PayloadFormats {
       }
   }
 
-  def fetchReadmeDefaultOrg(repository: String, branch: String = "master")(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[String]] = {
+  def fetchReadmeDefaultOrg(repository: String, branch: String = "master")(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[String]] =
     fetchReadme(configuration.organization, repository, branch)
-  }
-
-  case class FileCreateParam(
-    path:      String,
-    message:   String,
-    content:   String,
-    branch:    Option[String] = None,
-    committer: Option[Author],
-    author:    Option[Author]
-  )
-
-  implicit lazy val fileCreateParamJsonWrite: Write[FileCreateParam, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[FileCreateParam, JsObject]
-  }
 
   def createFile(org: String, repository: String, file: FileCreateParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
     val url = s"${configuration.url}/repos/$org/$repository/content/${file.path}"
@@ -84,21 +87,6 @@ object ContentService extends GithubService with PayloadFormats {
           logger.error(s"cannot create file  with url $url failed with status code ${response.status.intValue}")
           false
       }
-  }
-
-  case class FileEditParam(
-    path:      String,
-    message:   String,
-    content:   String,
-    sha:       String,
-    branch:    Option[String] = None,
-    committer: Option[Author],
-    author:    Option[Author]
-  )
-
-  implicit lazy val fileEditParamJsonWrite: Write[FileEditParam, JsValue] = {
-    import play.api.data.mapping.json.Writes._
-    Write.gen[FileEditParam, JsObject]
   }
 
   def editFile(org: String, repository: String, file: FileEditParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
