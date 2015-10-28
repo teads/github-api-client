@@ -1,11 +1,10 @@
-package tv.teads.github.api.services
+package tv.teads.github.api
 
 import cats.data.Xor
 import io.circe._, io.circe.jawn._
 import tv.teads.github.api.model.webhook._
 
-class ParserService extends WebhooksCodecs {
-
+object WebhookPayloadParser extends WebhooksCodecs {
   def parsePayload(event: String, payload: String): Xor[Error, Payload] =
     parse(payload).flatMap[Error, Payload] { json ⇒
       Event.values.find(_.toString == event).map {
