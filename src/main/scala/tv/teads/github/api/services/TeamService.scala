@@ -3,14 +3,13 @@ package tv.teads.github.api.services
 import akka.actor.ActorRefFactory
 import spray.http.{HttpHeaders, StatusCodes, HttpRequest}
 import spray.httpx.RequestBuilding._
-import tv.teads.github.api.Configuration.configuration
+import tv.teads.github.api.GithubApiClientConfig
 import tv.teads.github.api.model._
 import tv.teads.github.api.util._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object TeamService extends GithubService with GithubApiCodecs {
-
+object TeamService {
   sealed trait MembershipFilter
   object MembershipFilter extends Enumerated[MembershipFilter] {
     val values = List(member, maintainer, all)
@@ -27,18 +26,18 @@ object TeamService extends GithubService with GithubApiCodecs {
     case object member extends Membership
     case object maintainer extends Membership
   }
+}
+class TeamService(config: GithubApiClientConfig) extends GithubService(config) with GithubApiCodecs {
+  import TeamService._
 
   def fetchTeam(id: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Team]] =
     fetchOptional[Team](s"teams/$id", s"Fetching teams for id $id failed")
 
-  def fetchOrgTeams(org: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Team]] =
-    fetchMultiple[Team](s"orgs/$org/teams", s"Fetching teams for organization $org failed")
-
-  def fetchDefaultOrgTeams(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Team]] =
-    fetchOrgTeams(configuration.organization)
+  def fetchOrgTeams(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Team]] =
+    fetchMultiple[Team](s"orgs/${config.owner}/teams", s"Fetching teams for organization ${config.owner} failed")
 
   def fetchTeamMembers(id: Long, filter: MembershipFilter = MembershipFilter.all)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Member]] = {
-    val req: HttpRequest = Get(s"${configuration.url}/teams/$id/members")
+    val req: HttpRequest = Get(s"${config.apiUrl}/teams/$id/members")
     baseRequest(req, Map.empty, usePermissionMediaType = true)
       .executeRequestInto[List[Member]]().map {
         case SuccessfulRequest(o, _) ⇒ o
@@ -50,7 +49,7 @@ object TeamService extends GithubService with GithubApiCodecs {
 
   @Deprecated
   def isTeamMember(id: Long, username: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url: String = s"${configuration.url}/teams/$id/members/$username"
+    val url: String = s"${config.apiUrl}/teams/$id/members/$username"
     val req: HttpRequest = Get(url)
     baseRequest(req, Map.empty)
       .executeRequest()
@@ -64,7 +63,7 @@ object TeamService extends GithubService with GithubApiCodecs {
 
   @Deprecated
   def addTeamMember(id: Long, username: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url: String = s"${configuration.url}/teams/$id/members/$username"
+    val url: String = s"${config.apiUrl}/teams/$id/members/$username"
     val req: HttpRequest = Put(url)
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.`Content-Length`.name, "0")
@@ -79,7 +78,7 @@ object TeamService extends GithubService with GithubApiCodecs {
 
   @Deprecated
   def deleteTeamMember(id: Long, username: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url: String = s"${configuration.url}/teams/$id/members/$username"
+    val url: String = s"${config.apiUrl}/teams/$id/members/$username"
     val req: HttpRequest = Delete(url)
     baseRequest(req, Map.empty)
       .executeRequest()
@@ -92,7 +91,7 @@ object TeamService extends GithubService with GithubApiCodecs {
   }
 
   def addTeamMembership(id: Long, username: String, membership: Membership)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url: String = s"${configuration.url}/teams/$id/memberships/$username"
+    val url: String = s"${config.apiUrl}/teams/$id/memberships/$username"
     val req: HttpRequest = Put(url, membership)
     baseRequest(req, Map.empty, usePermissionMediaType = true)
       .executeRequest()
@@ -105,7 +104,7 @@ object TeamService extends GithubService with GithubApiCodecs {
   }
 
   def deleteTeamMembership(id: Long, username: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url: String = s"${configuration.url}/teams/$id/memberships/$username"
+    val url: String = s"${config.apiUrl}/teams/$id/memberships/$username"
     val req: HttpRequest = Delete(url)
     baseRequest(req, Map.empty)
       .executeRequest()
@@ -121,7 +120,7 @@ object TeamService extends GithubService with GithubApiCodecs {
     fetchMultiple[Repository](s"teams/$id/repos", s"Fetching repositories for team id $id failed")
 
   def addTeamRepo(id: Long, repository: String, permission: Permission)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url: String = s"${configuration.url}/teams/$id/repos/${configuration.organization}/$repository"
+    val url: String = s"${config.apiUrl}/teams/$id/repos/${config.owner}/$repository"
     val req: HttpRequest = Put(url, permission.toString)
     baseRequest(req, Map.empty, usePermissionMediaType = true)
       .executeRequest()
@@ -134,7 +133,7 @@ object TeamService extends GithubService with GithubApiCodecs {
   }
 
   def deleteTeamRepo(id: Long, repository: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url: String = s"${configuration.url}/teams/$id/repos/${configuration.organization}/$repository"
+    val url: String = s"${config.apiUrl}/teams/$id/repos/${config.owner}/$repository"
     val req: HttpRequest = Delete(url)
     baseRequest(req, Map.empty)
       .executeRequest()
@@ -147,7 +146,7 @@ object TeamService extends GithubService with GithubApiCodecs {
   }
 
   def isRepoManagedByTeam(id: Long, repository: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url: String = s"${configuration.url}/teams/$id/repos/${configuration.organization}/$repository"
+    val url: String = s"${config.apiUrl}/teams/$id/repos/${config.owner}/$repository"
     val req: HttpRequest = Get(url)
     baseRequest(req, Map.empty, usePermissionMediaType = true)
       .executeRequest()
@@ -160,7 +159,7 @@ object TeamService extends GithubService with GithubApiCodecs {
   }
 
   def create(team: Team)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Team]] = {
-    val url = s"${configuration.url}/orgs/${configuration.organization}/teams"
+    val url = s"${config.apiUrl}/orgs/${config.owner}/teams"
     val req: HttpRequest = Post(url, team)
     baseRequest(req, Map.empty, usePermissionMediaType = true)
       .executeRequestInto[Team]()
@@ -173,7 +172,7 @@ object TeamService extends GithubService with GithubApiCodecs {
   }
 
   def edit(id: Long, team: Team)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Team]] = {
-    val url = s"${configuration.url}/teams/$id"
+    val url = s"${config.apiUrl}/teams/$id"
     val req: HttpRequest = Patch(url, team)
     baseRequest(req, Map.empty, usePermissionMediaType = true)
       .executeRequestInto[Team]()
@@ -186,7 +185,7 @@ object TeamService extends GithubService with GithubApiCodecs {
   }
 
   def delete(id: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${configuration.url}/teams/$id"
+    val url = s"${config.apiUrl}/teams/$id"
     val req: HttpRequest = Delete(url)
     baseRequest(req, Map.empty)
       .executeRequest()

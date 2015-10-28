@@ -1,17 +1,17 @@
 package tv.teads.github.api.services
 
 import akka.actor.ActorRefFactory
-import tv.teads.github.api.Configuration.configuration
+import tv.teads.github.api.GithubApiClientConfig
 import tv.teads.github.api.model._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object RepositoryService extends GithubService with GithubApiCodecs {
+class RepositoryService(config: GithubApiClientConfig) extends GithubService(config) with GithubApiCodecs {
 
   def listTags(repository: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Tag]] =
-    fetchMultiple[Tag](s"repos/${configuration.organization}/$repository/tags", s"Fetching tags for repository $repository failed")
+    fetchMultiple[Tag](s"repos/${config.owner}/$repository/tags", s"Fetching tags for repository $repository failed")
 
   def fetchAllRepositories(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Repository]] =
-    fetchAllPages[Repository](s"${configuration.url}/orgs/${configuration.organization}/repos", Map.empty)
+    fetchAllPages[Repository](s"${config.apiUrl}/orgs/${config.owner}/repos", Map.empty)
 
 }

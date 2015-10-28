@@ -4,20 +4,21 @@ import akka.actor.ActorRefFactory
 import io.circe.generic.semiauto._
 import spray.http.{HttpRequest, _}
 import spray.httpx.RequestBuilding._
-import tv.teads.github.api.Configuration.configuration
+import tv.teads.github.api.GithubApiClientConfig
 import tv.teads.github.api.model._
 import tv.teads.github.api.util._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object LabelService extends GithubService with GithubApiCodecs {
-
+object LabelService {
   implicit lazy val labelParamEncoder = deriveFor[LabelParam].encoder
-
   case class LabelParam(name: String, color: String)
+}
+class LabelService(config: GithubApiClientConfig) extends GithubService(config) with GithubApiCodecs {
+  import LabelService._
 
-  def create(org: String, repository: String, label: LabelParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Label]] = {
-    val url = s"${configuration.url}/repos/$org/$repository/labels"
+  def create(repository: String, label: LabelParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Label]] = {
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repository/labels"
     val req: HttpRequest = Post(url, label)
     baseRequest(req, Map.empty)
       .executeRequestInto[Label]()
@@ -28,11 +29,9 @@ object LabelService extends GithubService with GithubApiCodecs {
           None
       }
   }
-  def create(repository: String, label: LabelParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Label]] =
-    create(configuration.organization, repository, label)
 
-  def edit(org: String, repository: String, name: String, label: LabelParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Label]] = {
-    val url = s"${configuration.url}/repos/$org/$repository/labels/$name"
+  def edit(repository: String, name: String, label: LabelParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Label]] = {
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repository/labels/$name"
     val req: HttpRequest = Patch(url, label)
     baseRequest(req, Map.empty)
       .executeRequestInto[Label]()
@@ -44,11 +43,8 @@ object LabelService extends GithubService with GithubApiCodecs {
       }
   }
 
-  def edit(repository: String, name: String, label: LabelParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Label]] =
-    edit(configuration.organization, repository, name, label)
-
-  def delete(org: String, repository: String, name: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${configuration.url}/repos/$org/$repository/labels/$name"
+  def delete(repository: String, name: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repository/labels/$name"
     val req: HttpRequest = Delete(url)
     baseRequest(req, Map.empty)
       .executeRequest()
@@ -59,29 +55,18 @@ object LabelService extends GithubService with GithubApiCodecs {
           false
       }
   }
-  def delete(repository: String, name: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] =
-    delete(configuration.organization, repository, name)
-
-  def fetchLabelsByRepo(org: String, repository: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] =
-    fetchMultiple[Label](s"repos/$org/$repository/labels", s"Fetching labels for repository $repository failed")
 
   def fetchLabelsByRepo(repository: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] =
-    fetchLabelsByRepo(configuration.organization, repository)
-
-  def fetchLabel(org: String, repository: String, name: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Label]] =
-    fetchOptional[Label](s"repos/$org/$repository/labels/$name", s"Fetching label $name for repository $repository failed")
+    fetchMultiple[Label](s"repos/${config.owner}/$repository/labels", s"Fetching labels for repository $repository failed")
 
   def fetchLabel(repository: String, name: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Label]] =
-    fetchLabel(configuration.organization, repository, name)
-
-  def fetchLabelsByIssue(org: String, repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] =
-    fetchMultiple[Label](s"repos/$org/$repository/issues/$number/labels", s"Fetching labels for issue #$number and repository $repository failed")
+    fetchOptional[Label](s"repos/${config.owner}/$repository/labels/$name", s"Fetching label $name for repository $repository failed")
 
   def fetchLabelsByIssue(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] =
-    fetchLabelsByIssue(configuration.organization, repository, number)
+    fetchMultiple[Label](s"repos/${config.owner}/$repository/issues/$number/labels", s"Fetching labels for issue #$number and repository $repository failed")
 
-  def addLabelsToIssue(org: String, repository: String, number: Long, labels: List[String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] = {
-    val url = s"${configuration.url}/repos/$org/$repository/issues/$number/labels"
+  def addLabelsToIssue(repository: String, number: Long, labels: List[String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] = {
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repository/issues/$number/labels"
     val req: HttpRequest = Post(url, labels)
     baseRequest(req, Map.empty)
       .executeRequestInto[List[Label]]()
@@ -93,11 +78,8 @@ object LabelService extends GithubService with GithubApiCodecs {
       }
   }
 
-  def addLabelsToIssue(repository: String, number: Long, labels: List[String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] =
-    addLabelsToIssue(configuration.organization, number, labels)
-
-  def removeLabelFromIssue(org: String, repository: String, number: Long, name: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${configuration.url}/repos/$org/$repository/issues/$number/labels/$name"
+  def removeLabelFromIssue(repository: String, number: Long, name: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repository/issues/$number/labels/$name"
     val req: HttpRequest = Delete(url)
     baseRequest(req, Map.empty)
       .executeRequest()
@@ -109,11 +91,8 @@ object LabelService extends GithubService with GithubApiCodecs {
       }
   }
 
-  def removeLabelFromIssue(repository: String, number: Long, name: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] =
-    removeLabelFromIssue(configuration.organization, number, name)
-
-  def replaceLabelsFromIssue(org: String, repository: String, number: Long, labels: List[String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${configuration.url}/repos/$org/$repository/issues/$number/labels"
+  def replaceLabelsFromIssue(repository: String, number: Long, labels: List[String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repository/issues/$number/labels"
     val req: HttpRequest = Put(url, labels)
     baseRequest(req, Map.empty)
       .executeRequest()
@@ -125,11 +104,8 @@ object LabelService extends GithubService with GithubApiCodecs {
       }
   }
 
-  def replaceLabelsFromIssue(repository: String, number: Long, labels: List[String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] =
-    replaceLabelsFromIssue(configuration.organization, repository, number, labels)
-
-  def removeAllLabelsFromIssue(org: String, repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${configuration.url}/repos/$org/$repository/issues/$number/labels"
+  def removeAllLabelsFromIssue(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repository/issues/$number/labels"
     val req: HttpRequest = Delete(url)
     baseRequest(req, Map.empty)
       .executeRequest()
@@ -141,12 +117,9 @@ object LabelService extends GithubService with GithubApiCodecs {
       }
   }
 
-  def removeLabelFromIssue(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] =
-    removeAllLabelsFromIssue(configuration.organization, repository, number)
-
-  def fetchLabelsByMilestone(org: String, repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] =
-    fetchMultiple[Label](s"repos/$org/$repository/milestones/$number/labels", s"Fetching labels for milestone v$number and repository $repository failed")
-
   def fetchLabelsByMilestone(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Label]] =
-    fetchLabelsByMilestone(configuration.organization, repository, number)
+    fetchMultiple[Label](
+      s"repos/${config.owner}/$repository/milestones/$number/labels",
+      s"Fetching labels for milestone v$number and repository $repository failed"
+    )
 }

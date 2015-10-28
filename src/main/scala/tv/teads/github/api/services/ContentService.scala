@@ -6,13 +6,12 @@ import akka.actor.ActorRefFactory
 import io.circe.generic.semiauto._
 import spray.http._
 import spray.httpx.RequestBuilding._
-import tv.teads.github.api.Configuration.configuration
+import tv.teads.github.api.GithubApiClientConfig
 import tv.teads.github.api.model._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object ContentService extends GithubService with GithubApiCodecs {
-
+object ContentService extends GithubApiCodecs {
   implicit lazy val fileEditParamEncoder = deriveFor[FileEditParam].encoder
   implicit lazy val fileCreateParamEncoder = deriveFor[FileCreateParam].encoder
 
@@ -34,9 +33,12 @@ object ContentService extends GithubService with GithubApiCodecs {
     committer: Option[Author],
     author:    Option[Author]
   )
+}
+class ContentService(config: GithubApiClientConfig) extends GithubService(config) with GithubApiCodecs {
+  import ContentService._
 
-  def fetchFile(org: String, repository: String, path: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[String]] = {
-    val url = s"${configuration.url}/repos/$org/$repository/contents/$path"
+  def fetchFile(repository: String, path: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[String]] = {
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repository/contents/$path"
     val req: HttpRequest = Get(url)
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -51,11 +53,8 @@ object ContentService extends GithubService with GithubApiCodecs {
       }
   }
 
-  def fetchFileDefaultOrg(repository: String, path: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[String]] =
-    fetchFile(configuration.organization, repository, path)
-
-  def fetchReadme(org: String, repository: String, branch: String = "master")(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[String]] = {
-    val url = s"${configuration.url}/repos/$org/$repository/readme"
+  def fetchReadme(repository: String, branch: String = "master")(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[String]] = {
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repository/readme"
     val req: HttpRequest = Get(url)
     baseRequest(req, Map("ref" → branch))
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -70,11 +69,8 @@ object ContentService extends GithubService with GithubApiCodecs {
       }
   }
 
-  def fetchReadmeDefaultOrg(repository: String, branch: String = "master")(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[String]] =
-    fetchReadme(configuration.organization, repository, branch)
-
-  def createFile(org: String, repository: String, file: FileCreateParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${configuration.url}/repos/$org/$repository/content/${file.path}"
+  def createFile(repository: String, file: FileCreateParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repository/content/${file.path}"
     val req: HttpRequest = Put(url, file.copy(content = Base64.getEncoder.encodeToString(file.content.getBytes)))
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -89,8 +85,8 @@ object ContentService extends GithubService with GithubApiCodecs {
       }
   }
 
-  def editFile(org: String, repository: String, file: FileEditParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${configuration.url}/repos/$org/$repository/content/${file.path}"
+  def editFile(repository: String, file: FileEditParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repository/content/${file.path}"
     val req: HttpRequest = Put(url, file.copy(content = Base64.getEncoder.encodeToString(file.content.getBytes)))
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -105,8 +101,8 @@ object ContentService extends GithubService with GithubApiCodecs {
       }
   }
 
-  def deleteFile(org: String, repository: String, file: FileEditParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${configuration.url}/repos/$org/$repository/content/${file.path}"
+  def deleteFile(repository: String, file: FileEditParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repository/content/${file.path}"
     val req: HttpRequest = Delete(url)
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)

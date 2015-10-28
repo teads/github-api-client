@@ -14,6 +14,8 @@ abstract class BaseSpec
     with OptionValues
     with ScalaFutures {
 
+  val ebuzzingClient = GithubApiClientBuilder().apiToken(sys.env("GITHUB_TOKEN")).owner("ebuzzing").build
+
   override implicit val patienceConfig = PatienceConfig(30.seconds, 1.second)
 
   def loadFile(file: String) = scala.io.Source.fromURL(getClass.getClassLoader.getResource(file)).mkString
