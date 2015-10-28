@@ -4,7 +4,7 @@ import akka.actor.ActorRefFactory
 import io.circe.generic.semiauto._
 import spray.http.{HttpRequest, _}
 import spray.httpx.RequestBuilding._
-import tv.teads.github.api.Configuration.configuration
+import tv.teads.github.api.GithubApiClientConfig
 import tv.teads.github.api.filters._
 import tv.teads.github.api.model._
 import tv.teads.github.api.util._
@@ -12,8 +12,7 @@ import tv.teads.github.api.util.CaseClassToMap._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object PullRequestService extends GithubService with GithubApiCodecs {
-
+object PullRequestService {
   implicit lazy val _headEncoder = deriveFor[Head].encoder
   implicit lazy val pullRequestBranchParamEncoder = deriveFor[PullRequestBranchParam].encoder
   implicit lazy val pullRequestIssueParamEncoder = deriveFor[PullRequestIssueParam].encoder
@@ -45,9 +44,12 @@ object PullRequestService extends GithubService with GithubApiCodecs {
     sort:      Option[Sort]       = Some(Sort.created),
     direction: Option[Direction]  = Some(Direction.desc)
   )
+}
+class PullRequestService(config: GithubApiClientConfig) extends GithubService(config) with GithubApiCodecs {
+  import PullRequestService._
 
   def createFromBranch(repository: String, param: PullRequestBranchParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
-    val url = s"${configuration.url}/repos/${configuration.organization}/$repository/pulls"
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repository/pulls"
     val req: HttpRequest = Post(url, param)
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -61,7 +63,7 @@ object PullRequestService extends GithubService with GithubApiCodecs {
   }
 
   def createFromIssue(repository: String, param: PullRequestIssueParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
-    val url = s"${configuration.url}/repos/${configuration.organization}/$repository/pulls"
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repository/pulls"
     val req: HttpRequest = Post(url, param)
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -75,7 +77,7 @@ object PullRequestService extends GithubService with GithubApiCodecs {
   }
 
   def edit(repository: String, number: Int, param: PullRequestEditParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
-    val url = s"${configuration.url}/repos/${configuration.organization}/$repository/pulls/$number"
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repository/pulls/$number"
     val req: HttpRequest = Patch(url, param)
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -89,7 +91,7 @@ object PullRequestService extends GithubService with GithubApiCodecs {
   }
 
   def fetchPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[PullRequest]] =
-    fetchAllPages[PullRequest](s"${configuration.url}/repos/${configuration.organization}/$repository/pulls", filter.toMapStringified)
+    fetchAllPages[PullRequest](s"${config.apiUrl}/repos/${config.owner}/$repository/pulls", filter.toMapStringified)
 
   def fetchOpenPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit refFactory: ActorRefFactory, ec: ExecutionContext) =
     fetchPullRequests(repository, filter.copy(state = Some(IssueState.open)))
@@ -101,10 +103,10 @@ object PullRequestService extends GithubService with GithubApiCodecs {
     fetchOpenPullRequests(repository, PullRequestFilter(head = Some(Head(author, branch))))
 
   def byRepositoryAndNumber(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] =
-    fetchOptional[PullRequest](s"repos/${configuration.organization}/$repository/pulls/$number", s"Could not fetch Pull Request #$number for repository $repository")
+    fetchOptional[PullRequest](s"repos/${config.apiUrl}/$repository/pulls/$number", s"Could not fetch Pull Request #$number for repository $repository")
 
   def isMerged(repository: String, number: Int)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${configuration.url}/repos/${configuration.organization}/$repository/pulls/$number/merge"
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repository/pulls/$number/merge"
     val req: HttpRequest = Get(url)
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -120,7 +122,7 @@ object PullRequestService extends GithubService with GithubApiCodecs {
   }
 
   def merge(repository: String, number: Int, commitMessage: String, sha: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${configuration.url}/repos/${configuration.organization}/$repository/pulls/$number/merge"
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repository/pulls/$number/merge"
     val req: HttpRequest = Put(url, Map("commit_message" → commitMessage, "sha" → sha))
     baseRequest(req, Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
@@ -137,8 +139,8 @@ object PullRequestService extends GithubService with GithubApiCodecs {
   }
 
   def fetchFiles(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[File]] =
-    fetchAllPages[File](s"${configuration.url}/repos/${configuration.organization}/$repository/pulls/$number/files", Map.empty)
+    fetchAllPages[File](s"${config.apiUrl}/repos/${config.owner}/$repository/pulls/$number/files", Map.empty)
 
   def fetchCommits(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[GHCommit]] =
-    fetchAllPages[GHCommit](s"${configuration.url}/repos/${configuration.organization}/$repository/pulls/$number/commits", Map.empty)
+    fetchAllPages[GHCommit](s"${config.apiUrl}/repos/${config.owner}/$repository/pulls/$number/commits", Map.empty)
 }

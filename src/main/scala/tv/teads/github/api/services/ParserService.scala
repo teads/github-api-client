@@ -4,7 +4,7 @@ import cats.data.Xor
 import io.circe._, io.circe.jawn._
 import tv.teads.github.api.model.webhook._
 
-object ParserService extends WebhooksCodecs {
+class ParserService extends WebhooksCodecs {
 
   def parsePayload(event: String, payload: String): Xor[Error, Payload] =
     parse(payload).flatMap[Error, Payload] { json ⇒

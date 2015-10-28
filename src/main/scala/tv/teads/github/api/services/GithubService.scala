@@ -5,13 +5,13 @@ import com.typesafe.scalalogging.LazyLogging
 import spray.http._
 import spray.httpx.RequestBuilding._
 import spray.httpx.unmarshalling._
-import tv.teads.github.api.Configuration.configuration
+import tv.teads.github.api.GithubApiClientConfig
 import tv.teads.github.api.json.CirceSupport
 import tv.teads.github.api.util._
 
 import scala.concurrent.{Future, ExecutionContext}
 
-trait GithubService extends LazyLogging with CirceSupport {
+abstract class GithubService(config: GithubApiClientConfig) extends LazyLogging with CirceSupport {
 
   private type FRU[T] = FromResponseUnmarshaller[T]
 
@@ -29,12 +29,12 @@ trait GithubService extends LazyLogging with CirceSupport {
     usePermissionMediaType: Boolean             = false,
     paginated:              Boolean             = false
   )(implicit refFactory: ActorRefFactory) = {
-    val fullParams = if (paginated) queryParams + configuration.paginationHeader else queryParams
+    val fullParams = if (paginated) queryParams + ("per_page" → config.itemsPerPage.toString) else queryParams
     val mediaType = if (useTestMediaType) TestMediaType else PermissionMediaType
     val uri = req.uri.withQuery(fullParams ++ req.uri.query)
     HttpClient(req.copy(uri = uri))
       .withHeader(HttpHeaders.Accept.name, mediaType)
-      .withHeader(HttpHeaders.Authorization.name, s"token ${token.getOrElse(configuration.token)}")
+      .withHeader(HttpHeaders.Authorization.name, s"token ${token.getOrElse(config.apiToken)}")
   }
 
   protected def fetchAllPages[T: FRU](url: String, queryParams: Map[String, String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext, ev: FRU[List[T]]) = {
@@ -67,7 +67,7 @@ trait GithubService extends LazyLogging with CirceSupport {
   }
 
   protected def fetchMultiple[T](route: String, errorMsg: String, params: Map[String, String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext, ev: FromResponseUnmarshaller[List[T]]): Future[List[T]] = {
-    val url = s"${configuration.url}/$route"
+    val url = s"${config.apiUrl}/$route"
     val req: HttpRequest = Get(url)
     baseRequest(req, params).executeRequestInto[List[T]]().map {
       case SuccessfulRequest(list, _) ⇒ list
@@ -81,7 +81,7 @@ trait GithubService extends LazyLogging with CirceSupport {
     fetchMultiple(route, errorMsg, Map.empty)
 
   protected def fetchOptional[T](route: String, errorMsg: String, params: Map[String, String])(implicit refFactory: ActorRefFactory, ec: ExecutionContext, ev: FRU[Option[T]]): Future[Option[T]] = {
-    val url = s"${configuration.url}/$route"
+    val url = s"${config.apiUrl}/$route"
     val req: HttpRequest = Get(url)
     baseRequest(req, params).executeRequestInto[Option[T]]().map {
       case SuccessfulRequest(o, _) ⇒ o

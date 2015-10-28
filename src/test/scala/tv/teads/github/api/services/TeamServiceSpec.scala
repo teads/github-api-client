@@ -8,31 +8,26 @@ class TeamServiceSpec extends BaseSpec {
 
   "Team Service" should "be able to fetch an organization teams" in {
 
-    whenReady(TeamService.fetchOrgTeams("ebuzzing")) { list ⇒
+    whenReady(ebuzzingClient.teams.fetchOrgTeams) { list ⇒
       list should not be empty
     }
   }
-  it should "be able to fetch default organization teams" in {
 
-    whenReady(TeamService.fetchDefaultOrgTeams) { list ⇒
-      list should not be empty
-    }
-  }
   it should "be able to fetch teams member" in {
 
-    whenReady(TeamService.fetchTeamMembers(1276819)) { list ⇒
+    whenReady(ebuzzingClient.teams.fetchTeamMembers(1276819)) { list ⇒
       list should not be empty
     }
   }
   it should "be able to fetch a team" in {
 
-    whenReady(TeamService.fetchTeam(1276819)) { list ⇒
+    whenReady(ebuzzingClient.teams.fetchTeam(1276819)) { list ⇒
       list should not be empty
     }
   }
   it should "be able to fetch teams repositories" in {
 
-    whenReady(TeamService.fetchTeamRepos(1600886)) { list ⇒
+    whenReady(ebuzzingClient.teams.fetchTeamRepos(1600886)) { list ⇒
       list should not be empty
     }
   }

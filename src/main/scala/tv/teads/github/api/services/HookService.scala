@@ -3,33 +3,27 @@ package tv.teads.github.api.services
 import akka.actor.ActorRefFactory
 import spray.http.{HttpHeaders, StatusCodes}
 import spray.httpx.RequestBuilding._
-import tv.teads.github.api.Configuration.configuration
+import tv.teads.github.api.GithubApiClientConfig
 import tv.teads.github.api.model._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-object HookService extends GithubService with GithubApiCodecs {
+class HookService(config: GithubApiClientConfig) extends GithubService(config) with GithubApiCodecs {
 
-  def fetchOrgHooks(org: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Hook]] =
-    fetchMultiple[Hook](s"orgs/$org/hooks", s"Fetching hooks for organization $org failed")
-
-  def fetchDefaultOrgHooks(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Hook]] =
-    fetchOrgHooks(configuration.organization)
+  def fetchOrgHooks(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Hook]] =
+    fetchMultiple[Hook](s"orgs/${config.owner}/hooks", s"Fetching hooks for organization ${config.owner} failed")
 
   def fetchRepoHooks(repo: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[Hook]] =
-    fetchMultiple[Hook](s"repos/${configuration.organization}/$repo/hooks", s"Fetching hooks for repository $repo failed")
+    fetchMultiple[Hook](s"repos/${config.owner}/$repo/hooks", s"Fetching hooks for repository $repo failed")
 
-  def fetchOrgHook(org: String, id: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Hook]] =
-    fetchOptional[Hook](s"orgs/$org/hooks/$id", s"Fetching hook $id for organization $org failed")
-
-  def fetchDefaultOrgHook(id: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Hook]] =
-    fetchOrgHook(configuration.organization, id)
+  def fetchOrgHook(id: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Hook]] =
+    fetchOptional[Hook](s"orgs/${config.owner}/hooks/$id", s"Fetching hook $id for organization ${config.owner} failed")
 
   def fetchRepoHook(repo: String, id: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[Hook]] =
-    fetchOptional[Hook](s"repos/${configuration.organization}/$repo/hooks/$id", s"Fetching hook $id for repository $repo failed")
+    fetchOptional[Hook](s"repos/${config.owner}/$repo/hooks/$id", s"Fetching hook $id for repository $repo failed")
 
-  def deleteOrgHook(org: String, id: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${configuration.url}/orgs/$org/hooks/$id"
+  def deleteOrgHook(id: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
+    val url = s"${config.apiUrl}/orgs/${config.owner}/hooks/$id"
     baseRequest(Delete(url), Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
       .executeRequest()
@@ -40,12 +34,9 @@ object HookService extends GithubService with GithubApiCodecs {
           false
       }
   }
-
-  def deleteDefaultOrgHook(id: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] =
-    deleteOrgHook(configuration.organization, id)
 
   def deleteRepoHook(repo: String, id: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${configuration.url}/repos/${configuration.organization}/$repo/hooks/$id"
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repo/hooks/$id"
     baseRequest(Delete(url), Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
       .executeRequest()
@@ -57,8 +48,8 @@ object HookService extends GithubService with GithubApiCodecs {
       }
   }
 
-  def pingOrgHook(org: String, id: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${configuration.url}/orgs/$org/hooks/$id/pings"
+  def pingOrgHook(id: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
+    val url = s"${config.apiUrl}/orgs/${config.owner}/hooks/$id/pings"
     baseRequest(Post(url), Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
       .executeRequest()
@@ -70,11 +61,8 @@ object HookService extends GithubService with GithubApiCodecs {
       }
   }
 
-  def pingDefaultOrgHook(id: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] =
-    pingOrgHook(configuration.organization, id)
-
   def pingRepoHook(repo: String, id: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${configuration.url}/repos/${configuration.organization}/$repo/hooks/$id"
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repo/hooks/$id"
     baseRequest(Post(url), Map.empty)
       .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
       .executeRequest()
