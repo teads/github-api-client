@@ -16,7 +16,6 @@ case class GithubApiClient private[api] (config: GithubApiClientConfig) {
   val labels = new LabelService(config)
   val members = new MemberService(config)
   val organizations = new OrganizationService(config)
-  val webhookPayloads = new ParserService
   val pullRequests = new PullRequestService(config)
   val rateLimit = new RateLimitService(config)
   val repositories = new RepositoryService(config)
