@@ -1,16 +1,15 @@
 package tv.teads.github.api.services
 
-import akka.actor.ActorRefFactory
+import scala.concurrent.{ExecutionContext, Future}
+
+import com.squareup.okhttp.Request
 import io.circe.generic.semiauto._
-import spray.http.{HttpRequest, _}
-import spray.httpx.RequestBuilding._
 import tv.teads.github.api.GithubApiClientConfig
 import tv.teads.github.api.filters._
+import tv.teads.github.api.http._
 import tv.teads.github.api.model._
 import tv.teads.github.api.util._
 import tv.teads.github.api.util.CaseClassToMap._
-
-import scala.concurrent.{ExecutionContext, Future}
 
 object PullRequestService {
   implicit lazy val _headEncoder = deriveFor[Head].encoder
@@ -48,99 +47,93 @@ object PullRequestService {
 class PullRequestService(config: GithubApiClientConfig) extends GithubService(config) with GithubApiCodecs {
   import PullRequestService._
 
-  def createFromBranch(repository: String, param: PullRequestBranchParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
+  def createFromBranch(repository: String, param: PullRequestBranchParam)(implicit ec: ExecutionContext): Future[Option[PullRequest]] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/pulls"
-    val req: HttpRequest = Post(url, param)
-    baseRequest(req, Map.empty)
-      .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
-      .executeRequestInto[PullRequest]()
-      .map {
-        case SuccessfulRequest(i, _) ⇒ Some(i)
-        case FailedRequest(statusCode) ⇒
-          logger.error(s"Could not create issue, failed with status code ${statusCode.intValue}")
-          None
-      }
+    val requestBuilder = new Request.Builder().url(url).post(param.toJson)
+    baseRequest(requestBuilder).map {
+      _.as[PullRequest].fold(
+        code ⇒ failedRequest(s"Creating pull request from branch $param on repository $repository failed", code, None),
+        decodedResponse ⇒ Some(decodedResponse.decoded)
+      )
+    }
   }
 
-  def createFromIssue(repository: String, param: PullRequestIssueParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
+  def createFromIssue(repository: String, param: PullRequestIssueParam)(implicit ec: ExecutionContext): Future[Option[PullRequest]] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/pulls"
-    val req: HttpRequest = Post(url, param)
-    baseRequest(req, Map.empty)
-      .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
-      .executeRequestInto[PullRequest]()
-      .map {
-        case SuccessfulRequest(i, _) ⇒ Some(i)
-        case FailedRequest(statusCode) ⇒
-          logger.error(s"Could not create issue, failed with status code ${statusCode.intValue}")
-          None
-      }
+    val requestBuilder = new Request.Builder().url(url).post(param.toJson)
+    baseRequest(requestBuilder).map {
+      _.as[PullRequest].fold(
+        code ⇒ failedRequest(s"Creating pull request from issue $param on repository $repository failed", code, None),
+        decodedResponse ⇒ Some(decodedResponse.decoded)
+      )
+    }
   }
 
-  def edit(repository: String, number: Int, param: PullRequestEditParam)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] = {
+  def edit(repository: String, number: Int, param: PullRequestEditParam)(implicit ec: ExecutionContext): Future[Option[PullRequest]] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/pulls/$number"
-    val req: HttpRequest = Patch(url, param)
-    baseRequest(req, Map.empty)
-      .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
-      .executeRequestInto[PullRequest]()
-      .map {
-        case SuccessfulRequest(i, _) ⇒ Some(i)
-        case FailedRequest(statusCode) ⇒
-          logger.error(s"Could not edit pull request, failed with status code ${statusCode.intValue}")
-          None
-      }
+    val requestBuilder = new Request.Builder().url(url).patch(param.toJson)
+    baseRequest(requestBuilder).map {
+      _.as[PullRequest].fold(
+        code ⇒ failedRequest(s"Editing pull request #$number on repository $repository failed", code, None),
+        decodedResponse ⇒ Some(decodedResponse.decoded)
+      )
+    }
   }
 
-  def fetchPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[PullRequest]] =
-    fetchAllPages[PullRequest](s"${config.apiUrl}/repos/${config.owner}/$repository/pulls", filter.toMapStringified)
+  def fetchPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit ec: ExecutionContext): Future[List[PullRequest]] =
+    fetchAllPages[PullRequest](
+      s"repos/${config.owner}/$repository/pulls",
+      s"Fetching pull requests on repository $repository using filter $filter failed",
+      filter.toMapStringified
+    )
 
-  def fetchOpenPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit refFactory: ActorRefFactory, ec: ExecutionContext) =
+  def fetchOpenPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit ec: ExecutionContext) =
     fetchPullRequests(repository, filter.copy(state = Some(IssueState.open)))
 
-  def fetchClosedPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit refFactory: ActorRefFactory, ec: ExecutionContext) =
+  def fetchClosedPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit ec: ExecutionContext) =
     fetchPullRequests(repository, filter.copy(state = Some(IssueState.closed)))
 
-  def fetchMatchingOpenPullRequests(repository: String, author: String, branch: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext) =
+  def fetchMatchingOpenPullRequests(repository: String, author: String, branch: String)(implicit ec: ExecutionContext) =
     fetchOpenPullRequests(repository, PullRequestFilter(head = Some(Head(author, branch))))
 
-  def byRepositoryAndNumber(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Option[PullRequest]] =
-    fetchOptional[PullRequest](s"repos/${config.apiUrl}/$repository/pulls/$number", s"Could not fetch Pull Request #$number for repository $repository")
+  def byRepositoryAndNumber(repository: String, number: Long)(implicit ec: ExecutionContext): Future[Option[PullRequest]] =
+    fetchOptional[PullRequest](
+      s"repos/${config.apiUrl}/$repository/pulls/$number",
+      s"Fethcing pull request #$number for repository $repository failed"
+    )
 
-  def isMerged(repository: String, number: Int)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
+  def isMerged(repository: String, number: Int)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/pulls/$number/merge"
-    val req: HttpRequest = Get(url)
-    baseRequest(req, Map.empty)
-      .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
-      .executeRequest()
-      .map {
-        case response if response.status == StatusCodes.NoContent ⇒ true
-        case response if response.status == StatusCodes.NotFound  ⇒ false
-        case response ⇒
-          logger.error(s"Could not retrieve pull request merged status, failed with status code ${response.status}")
-          false
-
-      }
+    val requestBuilder = new Request.Builder().url(url).get()
+    baseRequest(requestBuilder).map {
+      case response if response.code() == 204 ⇒ true
+      case response if response.code() == 404 ⇒ false
+      case response ⇒
+        failedRequest(s"Retrieving pull request #$number on $repository merged status failed", response.code(), false)
+    }
   }
 
-  def merge(repository: String, number: Int, commitMessage: String, sha: String)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[Boolean] = {
+  def merge(repository: String, number: Int, commitMessage: String, sha: String)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/pulls/$number/merge"
-    val req: HttpRequest = Put(url, Map("commit_message" → commitMessage, "sha" → sha))
-    baseRequest(req, Map.empty)
-      .withHeader(HttpHeaders.Accept.name, RawContentMediaType)
-      .executeRequest()
-      .map {
-        case response if response.status == StatusCodes.OK               ⇒ true
-        case response if response.status == StatusCodes.MethodNotAllowed ⇒ false
-        case response if response.status == StatusCodes.Conflict         ⇒ false
-        case response ⇒
-          logger.error(s"Could not merge pull request, failed with status code ${response.status}")
-          false
-
-      }
+    val requestBuilder = new Request.Builder().url(url).put(Map("commit_message" → commitMessage, "sha" → sha).toJson)
+    baseRequest(requestBuilder).map {
+      case response if response.code() == 204 ⇒ true
+      case response if response.code() == 404 ⇒ false
+      case response if response.code() == 409 ⇒ false
+      case response ⇒
+        failedRequest(s"Merging pull request #$number on repository $repository failed", response.code(), false)
+    }
   }
 
-  def fetchFiles(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[File]] =
-    fetchAllPages[File](s"${config.apiUrl}/repos/${config.owner}/$repository/pulls/$number/files", Map.empty)
+  def fetchFiles(repository: String, number: Long)(implicit ec: ExecutionContext): Future[List[File]] =
+    fetchAllPages[File](
+      s"repos/${config.owner}/$repository/pulls/$number/files",
+      s"Fetching pull request #$number files failed"
+    )
 
-  def fetchCommits(repository: String, number: Long)(implicit refFactory: ActorRefFactory, ec: ExecutionContext): Future[List[GHCommit]] =
-    fetchAllPages[GHCommit](s"${config.apiUrl}/repos/${config.owner}/$repository/pulls/$number/commits", Map.empty)
+  def fetchCommits(repository: String, number: Long)(implicit ec: ExecutionContext): Future[List[GHCommit]] =
+    fetchAllPages[GHCommit](
+      s"repos/${config.owner}/$repository/pulls/$number/commits",
+      s"Fetching pull request #$number commits failed"
+    )
 }

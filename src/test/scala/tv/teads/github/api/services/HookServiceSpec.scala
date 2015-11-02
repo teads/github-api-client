@@ -8,13 +8,13 @@ class HookServiceSpec extends BaseSpec {
 
   "Hook Service" should "be able to fetch an organization hooks" in {
 
-    whenReady(ebuzzingClient.hooks.fetchOrgHooks) { list ⇒
+    whenReady(ebuzzingClient.hooks.fetchOrganizationHooks) { list ⇒
       list should not be empty
     }
   }
 
   it should "be able to fetch repository github-api-client hooks" in {
-    whenReady(ebuzzingClient.hooks.fetchRepoHooks("github-api-client")) { list ⇒
+    whenReady(ebuzzingClient.hooks.fetchRepositoriesHooks("github-api-client")) { list ⇒
       list should not be empty
     }
   }

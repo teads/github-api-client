@@ -13,7 +13,7 @@ class TeamServiceSpec extends BaseSpec {
     }
   }
 
-  it should "be able to fetch teams member" in {
+  it should "be able to fetch teams members" in {
 
     whenReady(ebuzzingClient.teams.fetchTeamMembers(1276819)) { list ⇒
       list should not be empty
