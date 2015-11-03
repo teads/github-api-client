@@ -72,6 +72,16 @@ class IssueService(config: GithubApiClientConfig) extends GithubService(config) 
     }
   }
 
+  def comment(repository: String, number: Long, comment: String)(implicit ec: ExecutionContext): Future[Boolean] = {
+    val url = s"repos/${config.owner}/$repository/issues/$number/comments"
+    val requestBuilder = new Request.Builder().url(url).post(Map("body" → comment).toJson)
+    baseRequest(requestBuilder).map {
+      case response if response.code() == 201 ⇒ true
+      case response ⇒
+        failedRequest(s"Commenting on issue #$number for repository $repository failed", response.code(), false)
+    }
+  }
+
   def close(repository: String, number: Long, issue: IssueParam)(implicit ec: ExecutionContext): Future[Option[Issue]] =
     edit(repository, number, issue.copy(state = Some(IssueState.closed)))
 
