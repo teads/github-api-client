@@ -27,6 +27,7 @@ trait GithubApiCodecs
   with LinksCodec
   with TimeMetadataCodec
   with ChangeMetadataCodec
+  with MilestoneCodec
   with PullRequestCodec
   with ReleaseCodec
   with BranchCodec
