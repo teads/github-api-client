@@ -79,7 +79,7 @@ case class ChangeMetadata(
 )
 
 trait PullRequestCodec {
-  self: UserCodec with PullRequestUrlsCodec with LinksCodec with TimeMetadataCodec with ChangeMetadataCodec with HeadCodec ⇒
+  self: UserCodec with PullRequestUrlsCodec with LinksCodec with TimeMetadataCodec with ChangeMetadataCodec with HeadCodec with MilestoneCodec ⇒
 
   implicit lazy val pullRequestDecoder = Decoder.instance { cursor ⇒
     for {
@@ -92,7 +92,7 @@ trait PullRequestCodec {
       user ← cursor.downField("user").as[User]
       body ← cursor.downField("body").as[String]
       assignee ← cursor.downField("assignee").as[Option[User]]
-      milestone ← cursor.downField("milestone").as[Option[String]]
+      milestone ← cursor.downField("milestone").as[Option[Milestone]]
       head ← cursor.downField("head").as[Head]
       base ← cursor.downField("base").as[Head]
       merged ← cursor.downField("merged").as[Option[Boolean]]
@@ -120,7 +120,7 @@ case class PullRequest(
     user:           User,
     body:           String,
     assignee:       Option[User],
-    milestone:      Option[String],
+    milestone:      Option[Milestone],
     head:           Head,
     base:           Head,
     merged:         Option[Boolean],
