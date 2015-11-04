@@ -12,7 +12,7 @@ abstract class GithubService(config: GithubApiClientConfig) extends LazyLogging 
 
   protected def emptyRequestBody = RequestBody.create(null, new Array[Byte](0))
 
-  private val PagesNavRegex = """(?:\s*)<(.+)>; rel=(.+)""".r
+  private val PagesNavRegex = """(?:\s*)<(.+)>; rel="(.+)"""".r
 
   protected def baseRequest(
     requestBuilder: Request.Builder,

@@ -10,6 +10,7 @@ class RepositoryServiceSpec extends BaseSpec {
 
     whenReady(ebuzzingClient.repositories.fetchAllRepositories) { list ⇒
       list should not be empty
+      list.size should be > 100
     }
   }
   it should "be able to fetch ccc-service-rtb Tags" in {
