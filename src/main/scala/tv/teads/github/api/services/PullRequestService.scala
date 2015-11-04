@@ -98,7 +98,7 @@ class PullRequestService(config: GithubApiClientConfig) extends GithubService(co
 
   def byRepositoryAndNumber(repository: String, number: Long)(implicit ec: ExecutionContext): Future[Option[PullRequest]] =
     fetchOptional[PullRequest](
-      s"repos/${config.apiUrl}/$repository/pulls/$number",
+      s"repos/${config.owner}/$repository/pulls/$number",
       s"Fethcing pull request #$number for repository $repository failed"
     )
 
