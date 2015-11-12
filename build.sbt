@@ -5,7 +5,7 @@ scalacOptions   := Seq("-feature", "-deprecation", "-Xlint")
 
 resolvers += Opts.resolver.sonatypeReleases
 
-val circeVersion = "0.1.1"
+val circeVersion = "0.2.0"
 
 libraryDependencies += "io.circe"                   %% "circe-core"       % circeVersion
 libraryDependencies += "io.circe"                   %% "circe-generic"    % circeVersion
