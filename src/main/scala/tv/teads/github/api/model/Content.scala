@@ -2,8 +2,8 @@ package tv.teads.github.api.model
 
 import io.circe._
 
-trait ContentFormats {
-  self: UserCodec with LinksContentFormats ⇒
+trait ContentCodec {
+  self: UserCodec with LinksContentCodec ⇒
 
   implicit lazy val contentDecoder = Decoder.instance { cursor ⇒
     for {

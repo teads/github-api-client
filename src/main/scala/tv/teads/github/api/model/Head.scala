@@ -58,7 +58,7 @@ trait PullRequestReviewCommentLinksCodec {
 
 case class PullRequestReviewCommentLinks(self: String, html: String, pullRequest: String)
 
-trait LinksContentFormats {
+trait LinksContentCodec {
   implicit lazy val linkContentDecoder = deriveFor[LinksContent].decoder
 }
 
