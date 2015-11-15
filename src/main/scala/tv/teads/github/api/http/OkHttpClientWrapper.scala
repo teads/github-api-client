@@ -23,4 +23,6 @@ private[api] class OkHttpClientWrapper(authenticator: Option[Authenticator], max
     })
     promise.future
   }
+
+  def clearCache(): Unit = okHttpClient.getCache.evictAll()
 }

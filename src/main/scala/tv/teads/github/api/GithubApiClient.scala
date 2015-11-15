@@ -29,4 +29,6 @@ case class GithubApiClient private[api] (config: GithubApiClientConfig) {
   val statuses = new StatusService(config)
   val teams = new TeamService(config)
   val users = new UserService(config)
+
+  def clearCache(): Unit = config.client.clearCache()
 }

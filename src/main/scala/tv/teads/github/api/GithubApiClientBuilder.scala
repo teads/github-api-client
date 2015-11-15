@@ -14,7 +14,7 @@ private[api] case class GithubApiClientConfigBuilder(
   credentials:  Option[Credentials] = None,
   itemsPerPage: Int                 = 30,
   maxCacheSize: Long                = Long.MaxValue,
-  cacheRoot:    File                = new File(Properties.tmpDir)
+  cacheRoot:    File                = new File(Properties.tmpDir, "github-api-client")
 )
 
 object GithubApiClientBuilder {
