@@ -10,7 +10,7 @@ abstract class BaseSpec
     with OptionValues
     with ScalaFutures {
 
-  val ebuzzingClient = GithubApiClientBuilder().apiToken(sys.env("GITHUB_TOKEN")).owner("ebuzzing").build
+  val teadsClient = GithubApiClientBuilder().apiToken(sys.env("GITHUB_TOKEN")).owner("teads").build
 
   override implicit val patienceConfig = PatienceConfig(30.seconds, 1.second)
 

@@ -14,17 +14,17 @@ class IssueServiceSpec extends BaseSpec {
     val repository = "github-api-client"
     val issue = IssueParam(title = "IssueServiceSpec.createTest", body = Some("html body with some `markup`"))
 
-    whenReady(ebuzzingClient.issues.create(repository, issue)) { res ⇒
+    whenReady(teadsClient.issues.create(repository, issue)) { res ⇒
       res should not be empty
       val issueNumber = res.get.number
 
-      whenReady(ebuzzingClient.issues.close(repository, issueNumber, issue)) { res1 ⇒
+      whenReady(teadsClient.issues.close(repository, issueNumber, issue)) { res1 ⇒
         res1 should not be empty
 
-        whenReady(ebuzzingClient.issues.open(repository, issueNumber, issue)) { res2 ⇒
+        whenReady(teadsClient.issues.open(repository, issueNumber, issue)) { res2 ⇒
           res2 should not be empty
 
-          whenReady(ebuzzingClient.issues.close(repository, issueNumber, issue)) { res3 ⇒
+          whenReady(teadsClient.issues.close(repository, issueNumber, issue)) { res3 ⇒
             res3 should not be empty
           }
         }

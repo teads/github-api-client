@@ -8,7 +8,7 @@ class OrganizationServiceSpec extends BaseSpec {
 
   "Organization Service" should "be able to fetch the client organization" in {
 
-    whenReady(ebuzzingClient.organizations.fetchOrg) { org ⇒
+    whenReady(teadsClient.organizations.fetchOrg) { org ⇒
       org should not be empty
       org.get.name === "ebuzzing"
     }
@@ -16,7 +16,7 @@ class OrganizationServiceSpec extends BaseSpec {
 
   it should "be able to fetch user BobTheBot-teads' organization" in {
 
-    whenReady(ebuzzingClient.organizations.fetchUserOrgs("BobTheBot-teads")) { list ⇒
+    whenReady(teadsClient.organizations.fetchUserOrgs("BobTheBot-teads")) { list ⇒
       list should not be empty
     }
   }

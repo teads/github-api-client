@@ -8,14 +8,13 @@ class RepositoryServiceSpec extends BaseSpec {
 
   "Repository Service" should "be able to fetch all repositories" in {
 
-    whenReady(ebuzzingClient.repositories.fetchAllRepositories) { list ⇒
+    whenReady(teadsClient.repositories.fetchAllRepositories) { list ⇒
       list should not be empty
-      list.size should be > 100
     }
   }
-  it should "be able to fetch ccc-service-rtb Tags" in {
+  it should "be able to fetch github-api-client Tags" in {
 
-    whenReady(ebuzzingClient.repositories.listTags("ccc-service-rtb")) { list ⇒
+    whenReady(teadsClient.repositories.listTags("github-api-client")) { list ⇒
       list should not be empty
     }
   }
