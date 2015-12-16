@@ -84,9 +84,9 @@ class TeamService(config: GithubApiClientConfig) extends GithubService(config) w
 
   def addTeamMembership(id: Long, username: String, membership: Membership)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/teams/$id/memberships/$username"
-    val requestBuilder = new Request.Builder().url(url).put(membership.toJson)
+    val requestBuilder = new Request.Builder().url(url).put(Map("body" → membership).toJson)
     baseRequest(requestBuilder, GithubMediaTypes.PermissionMediaType).map {
-      case response if response.code() == 204 ⇒ true
+      case response if response.code() == 200 ⇒ true
       case response ⇒
         failedRequest(s"Adding user $username as member of team $id failed", response.code(), false)
     }
@@ -110,7 +110,7 @@ class TeamService(config: GithubApiClientConfig) extends GithubService(config) w
 
   def addTeamRepo(id: Long, repository: String, permission: Permission)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/teams/$id/repos/${config.owner}/$repository"
-    val requestBuilder = new Request.Builder().url(url).put(permission.toJson)
+    val requestBuilder = new Request.Builder().url(url).put(Map("body" → permission).toJson)
     baseRequest(requestBuilder, GithubMediaTypes.PermissionMediaType).map {
       case response if response.code() == 204 ⇒ true
       case response ⇒
