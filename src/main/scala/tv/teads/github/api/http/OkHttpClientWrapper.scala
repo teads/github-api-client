@@ -14,7 +14,7 @@ private[api] class OkHttpClientWrapper(authenticator: Option[Authenticator], max
   }
 
   def executeAsync(requestBuilder: Request.Builder, customAuthenticator: Option[Authenticator]): Future[Response] = {
-    val auth = authenticator orElse customAuthenticator
+    val auth = customAuthenticator orElse authenticator
     val authenticatedRequest = auth.map(_(requestBuilder)).getOrElse(requestBuilder).build()
     val promise = Promise[Response]()
     okHttpClient.newCall(authenticatedRequest).enqueue(new Callback {
