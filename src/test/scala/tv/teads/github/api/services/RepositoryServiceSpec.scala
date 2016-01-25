@@ -18,5 +18,11 @@ class RepositoryServiceSpec extends BaseSpec {
       list should not be empty
     }
   }
+  it should "be able to fetch github-api-client Languages" in {
+
+    whenReady(teadsClient.repositories.listLanguages("github-api-client")) { list ⇒
+      list should not be empty
+    }
+  }
 
 }

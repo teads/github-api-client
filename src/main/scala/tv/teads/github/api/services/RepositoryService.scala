@@ -19,4 +19,10 @@ class RepositoryService(config: GithubApiClientConfig) extends GithubService(con
       s"Fetching all repositories failed"
     )
 
+  def listLanguages(repository: String)(implicit ec: ExecutionContext): Future[List[LanguageStat]] =
+    fetchMultiple[LanguageStat](
+      s"repos/${config.owner}/$repository/languages",
+      s"Fetching languages for repository $repository failed"
+    )
+
 }
