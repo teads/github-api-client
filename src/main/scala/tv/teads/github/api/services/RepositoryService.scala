@@ -25,4 +25,10 @@ class RepositoryService(config: GithubApiClientConfig) extends GithubService(con
       s"Fetching languages for repository $repository failed"
     )
 
+  def listContributors(repository: String)(implicit ec: ExecutionContext): Future[List[User]] =
+    fetchMultiple[User](
+      s"repos/${config.owner}/$repository/contributors",
+      s"Fetching contributors for repository $repository failed"
+    )
+
 }

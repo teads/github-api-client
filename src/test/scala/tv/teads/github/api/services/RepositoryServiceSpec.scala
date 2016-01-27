@@ -24,5 +24,11 @@ class RepositoryServiceSpec extends BaseSpec {
       list should not be empty
     }
   }
+  it should "be able to fetch github-api-client Contributors" in {
+
+    whenReady(teadsClient.repositories.listContributors("github-api-client")) { list ⇒
+      list should not be empty
+    }
+  }
 
 }
