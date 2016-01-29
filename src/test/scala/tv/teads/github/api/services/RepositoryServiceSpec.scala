@@ -30,5 +30,23 @@ class RepositoryServiceSpec extends BaseSpec {
       list should not be empty
     }
   }
+  it should "be able to fetch github-api-client Branches" in {
+
+    whenReady(teadsClient.repositories.listBranches("github-api-client")) { list ⇒
+      list should not be empty
+    }
+  }
+  it should "be able to fetch github-api-client master Branch" in {
+
+    whenReady(teadsClient.repositories.fetchBranch("github-api-client", "master")) { list ⇒
+      list should not be empty
+    }
+  }
+  it should "be able to fetch github-api-client repository" in {
+
+    whenReady(teadsClient.repositories.fetch("github-api-client")) { list ⇒
+      list should not be empty
+    }
+  }
 
 }
