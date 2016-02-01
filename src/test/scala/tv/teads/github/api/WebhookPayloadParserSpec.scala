@@ -69,4 +69,9 @@ class WebhookPayloadParserSpec extends BaseSpec {
     WebhookPayloadParser.parsePayload("delete", lines).toOption.value shouldBe a[DeletePayload]
   }
 
+  it should "parse Release payload" in {
+    val lines = loadFile(s"files/release.json")
+    WebhookPayloadParser.parsePayload("release", lines).toOption.value shouldBe a[ReleasePayload]
+  }
+
 }

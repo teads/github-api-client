@@ -29,6 +29,7 @@ trait GithubApiCodecs
   with ChangeMetadataCodec
   with MilestoneCodec
   with PullRequestCodec
+  with AssetCodec
   with ReleaseCodec
   with BranchCodec
   with RateLimitCodec

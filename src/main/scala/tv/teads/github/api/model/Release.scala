@@ -7,7 +7,7 @@ import io.circe._
 import tv.teads.github.api.json.ZonedDateTimeCodec
 
 trait ReleaseCodec {
-  self: UserCodec with AuthorCodec with ZonedDateTimeCodec ⇒
+  self: UserCodec with AssetCodec with ZonedDateTimeCodec ⇒
 
   implicit lazy val releaseDecoder = Decoder.instance { cursor ⇒
     for {
@@ -18,16 +18,16 @@ trait ReleaseCodec {
       id ← cursor.downField("id").as[Long]
       tagName ← cursor.downField("tag_name").as[String]
       targetComitish ← cursor.downField("target_commitish").as[String]
-      name ← cursor.downField("name").as[String]
+      name ← cursor.downField("name").as[Option[String]]
       draft ← cursor.downField("draft").as[Boolean]
-      author ← cursor.downField("author").as[Author]
+      author ← cursor.downField("author").as[User]
       prerelease ← cursor.downField("prerelease").as[Boolean]
       createdAt ← cursor.downField("created_at").as[ZonedDateTime]
       publishedAt ← cursor.downField("published_at").as[ZonedDateTime]
-      assets ← cursor.downField("assets").as[List[String]]
+      assets ← cursor.downField("assets").as[List[Asset]]
       tarballUrl ← cursor.downField("tarball_url").as[String]
       zipballUrl ← cursor.downField("zipball_url").as[String]
-      body ← cursor.downField("body").as[String]
+      body ← cursor.downField("body").as[Option[String]]
     } yield Release(
       url, assetsUrl, uploadUrl, htmlUrl, id, tagName, targetComitish, name, draft, author,
       prerelease, createdAt, publishedAt, assets, tarballUrl, zipballUrl, body
@@ -43,14 +43,14 @@ case class Release(
   id:              Long,
   tagName:         String,
   targetCommitish: String,
-  name:            String,
+  name:            Option[String],
   draft:           Boolean,
-  author:          Author,
+  author:          User,
   prerelease:      Boolean,
   createdAt:       ZonedDateTime,
   publishedAt:     ZonedDateTime,
-  assets:          List[String],
+  assets:          List[Asset],
   tarballUrl:      String,
   zipballUrl:      String,
-  body:            String
+  body:            Option[String]
 )
