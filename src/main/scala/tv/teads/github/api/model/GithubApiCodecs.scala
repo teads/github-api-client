@@ -36,6 +36,7 @@ trait GithubApiCodecs
   with PullRequestReviewCommentLinksCodec
   with PullRequestCommentCodec
   with FileCodec
+  with ComparisonCodec
   with StatusCodec
   with CombinedStatusCodec
   with StatusResponseCodec
