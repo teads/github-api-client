@@ -73,7 +73,7 @@ class IssueService(config: GithubApiClientConfig) extends GithubService(config) 
   }
 
   def comment(repository: String, number: Long, comment: String)(implicit ec: ExecutionContext): Future[Boolean] = {
-    val url = s"repos/${config.owner}/$repository/issues/$number/comments"
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repository/issues/$number/comments"
     val requestBuilder = new Request.Builder().url(url).post(Map("body" → comment).toJson)
     baseRequest(requestBuilder).map {
       case response if response.code() == 201 ⇒ true
