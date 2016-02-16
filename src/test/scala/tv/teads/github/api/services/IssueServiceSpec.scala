@@ -64,8 +64,8 @@ class IssueServiceSpec extends BaseSpec {
 
     val commentId = 150513228
 
-    whenReady(teadsClient.issues.fetchComment("github-api-client", commentId)) { list ⇒
-      list should not be empty
+    whenReady(teadsClient.issues.fetchComment("github-api-client", commentId)) { opt ⇒
+      opt should not be empty
     }
   }
 
