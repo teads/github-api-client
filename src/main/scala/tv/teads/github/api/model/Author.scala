@@ -3,8 +3,8 @@ package tv.teads.github.api.model
 import io.circe.generic.semiauto._
 
 trait AuthorCodec {
-  implicit lazy val authorEncoder = deriveFor[Author].encoder
-  implicit lazy val authorDecoder = deriveFor[Author].decoder
+  implicit lazy val authorEncoder = deriveEncoder[Author]
+  implicit lazy val authorDecoder = deriveDecoder[Author]
 }
 
 case class Author(

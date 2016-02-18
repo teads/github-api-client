@@ -1,6 +1,6 @@
 package tv.teads.github.api.http
 
-import com.squareup.okhttp.Request
+import okhttp3.Request
 
 object Authenticator {
   def fromFunction(f: Request.Builder ⇒ Request.Builder): Authenticator =

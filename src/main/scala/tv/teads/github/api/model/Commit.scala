@@ -5,7 +5,7 @@ import io.circe.generic.semiauto._
 trait CommitCodec {
   self: UserCodec with AuthorCodec ⇒
 
-  implicit lazy val commitDecoder = deriveFor[Commit].decoder
+  implicit lazy val commitDecoder = deriveDecoder[Commit]
 }
 
 case class Commit(

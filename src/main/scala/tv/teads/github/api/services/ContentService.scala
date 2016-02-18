@@ -4,7 +4,7 @@ import java.util.Base64
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import com.squareup.okhttp.{HttpUrl, Request}
+import okhttp3.{HttpUrl, Request}
 import io.circe.generic.semiauto._
 import tv.teads.github.api.GithubApiClientConfig
 import tv.teads.github.api.http._
@@ -12,8 +12,8 @@ import tv.teads.github.api.model._
 import tv.teads.github.api.util.IO.withCloseable
 
 object ContentService extends GithubApiCodecs {
-  implicit lazy val fileEditParamEncoder = deriveFor[FileEditParam].encoder
-  implicit lazy val fileCreateParamEncoder = deriveFor[FileCreateParam].encoder
+  implicit lazy val fileEditParamEncoder = deriveEncoder[FileEditParam]
+  implicit lazy val fileCreateParamEncoder = deriveEncoder[FileCreateParam]
 
   case class FileCreateParam(
     path:      String,

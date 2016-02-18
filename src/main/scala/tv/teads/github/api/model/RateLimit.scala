@@ -3,9 +3,9 @@ package tv.teads.github.api.model
 import io.circe.generic.semiauto._
 
 trait RateLimitCodec {
-  implicit lazy val coreDecoder = deriveFor[Core].decoder
-  implicit lazy val resourcesDecoder = deriveFor[Resources].decoder
-  implicit lazy val rateLimitDecoder = deriveFor[RateLimit].decoder
+  implicit lazy val coreDecoder = deriveDecoder[Core]
+  implicit lazy val resourcesDecoder = deriveDecoder[Resources]
+  implicit lazy val rateLimitDecoder = deriveDecoder[RateLimit]
 }
 
 case class Core(limit: Long, remaining: Long, reset: Long)

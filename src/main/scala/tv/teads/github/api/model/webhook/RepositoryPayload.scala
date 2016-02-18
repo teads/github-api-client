@@ -7,7 +7,7 @@ import tv.teads.github.api.model._
 trait RepositoryPayloadCodec {
   self: UserCodec with RepositoryCodec ⇒
 
-  implicit lazy val repositoryPayloadDecoder = deriveFor[RepositoryPayload].decoder
+  implicit lazy val repositoryPayloadDecoder = deriveDecoder[RepositoryPayload]
 }
 case class RepositoryPayload(
   action:       RepositoryAction,

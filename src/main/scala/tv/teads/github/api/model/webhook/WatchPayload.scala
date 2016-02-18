@@ -7,7 +7,7 @@ import tv.teads.github.api.model._
 trait WatchPayloadCodec {
   self: UserCodec with RepositoryCodec ⇒
 
-  implicit lazy val watchPayloadDecoder = deriveFor[WatchPayload].decoder
+  implicit lazy val watchPayloadDecoder = deriveDecoder[WatchPayload]
 }
 case class WatchPayload(
   action:     WatchAction,

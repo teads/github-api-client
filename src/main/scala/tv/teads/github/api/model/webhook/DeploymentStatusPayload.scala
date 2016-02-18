@@ -7,7 +7,7 @@ import tv.teads.github.api.model._
 trait DeploymentStatusPayloadCodec {
   self: UserCodec with RepositoryCodec with TeamCodec ⇒
 
-  implicit lazy val deploymentStatusPayloadDecoder = deriveFor[DeploymentStatusPayload].decoder
+  implicit lazy val deploymentStatusPayloadDecoder = deriveDecoder[DeploymentStatusPayload]
 }
 case class DeploymentStatusPayload(
   team:         Team,

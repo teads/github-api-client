@@ -1,6 +1,6 @@
 package tv.teads.github.api.services
 
-import com.squareup.okhttp.Request
+import okhttp3.Request
 import io.circe._, io.circe.syntax._
 
 import scala.concurrent.{ExecutionContext, Future}

@@ -2,7 +2,7 @@ package tv.teads.github.api.services
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import com.squareup.okhttp.Request
+import okhttp3.Request
 import tv.teads.github.api.GithubApiClientConfig
 import tv.teads.github.api.http._
 import tv.teads.github.api.model._

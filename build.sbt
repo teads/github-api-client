@@ -3,14 +3,12 @@ organization    := "tv.teads"
 scalaVersion    := "2.11.7"
 scalacOptions   := Seq("-feature", "-deprecation", "-Xlint")
 
-resolvers += Opts.resolver.sonatypeReleases
-
-val circeVersion = "0.2.0"
+val circeVersion = "0.3.0"
 
 libraryDependencies += "io.circe"                   %% "circe-core"       % circeVersion
 libraryDependencies += "io.circe"                   %% "circe-generic"    % circeVersion
 libraryDependencies += "io.circe"                   %% "circe-jawn"       % circeVersion
-libraryDependencies += "com.squareup.okhttp"         % "okhttp"           % "2.5.0"
+libraryDependencies += "com.squareup.okhttp3"        % "okhttp"           % "3.1.2"
 libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging"    % "3.1.0"
 
 libraryDependencies += "org.scalatest"     %% "scalatest"       % "2.2.5"     % "test"
