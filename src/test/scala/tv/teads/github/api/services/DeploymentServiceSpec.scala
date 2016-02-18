@@ -51,12 +51,11 @@ class DeploymentServiceSpec extends BaseSpec {
   it should "be able to fetch github-api-client deployments" in {
 
     whenReady(teadsClient.deployments.list("github-api-client", DeploymentFilter())) { list ⇒
-      list.foreach(d ⇒ println(s"${d.id} ${d.description}"))
       list should not be empty
     }
   }
 
-  it should "create a deployment statuss" in {
+  it should "create a deployment status" in {
     val status = DeploymentStatusParam(
       state = DeploymentStatusState.error,
       description = Some("github-api-client/DeploymentServiceSpec Unit test - create Deployment Status")
@@ -70,7 +69,6 @@ class DeploymentServiceSpec extends BaseSpec {
   it should "be able to fetch github-api-client deployments statuses" in {
 
     whenReady(teadsClient.deployments.listStatuses("github-api-client", 3775791)) { list ⇒
-      list.foreach(d ⇒ println(s"${d.id} ${d.state} ${d.description}"))
       list should not be empty
     }
   }
