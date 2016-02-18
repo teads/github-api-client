@@ -1,7 +1,7 @@
 package tv.teads.github.api
 
 import cats.data.Xor
-import com.squareup.okhttp._
+import okhttp3._
 import com.typesafe.scalalogging.LazyLogging
 import io.circe._, io.circe.jawn._
 import tv.teads.github.api.util.IO.withCloseable
@@ -15,7 +15,7 @@ package object http extends LazyLogging {
       val json = parse(bodyString)
 
       json.flatMap(Decoder[T].decodeJson).bimap(
-        error ⇒ logFailedDecoding(error, underlying.request().urlString(), bodyString, underlying.code()),
+        error ⇒ logFailedDecoding(error, underlying.request().url().toString(), bodyString, underlying.code()),
         decoded ⇒ DecodedResponse(decoded, underlying)
       )
     }

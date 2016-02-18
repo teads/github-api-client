@@ -2,7 +2,7 @@ package tv.teads.github.api.services
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import com.squareup.okhttp.Request
+import okhttp3.Request
 import io.circe.generic.semiauto._
 import tv.teads.github.api.GithubApiClientConfig
 import tv.teads.github.api.filters._
@@ -12,10 +12,10 @@ import tv.teads.github.api.util._
 import tv.teads.github.api.util.CaseClassToMap._
 
 object PullRequestService {
-  implicit lazy val _headEncoder = deriveFor[Head].encoder
-  implicit lazy val pullRequestBranchParamEncoder = deriveFor[PullRequestBranchParam].encoder
-  implicit lazy val pullRequestIssueParamEncoder = deriveFor[PullRequestIssueParam].encoder
-  implicit lazy val pullRequestEditParamEncoder = deriveFor[PullRequestEditParam].encoder
+  implicit lazy val _headEncoder = deriveEncoder[Head]
+  implicit lazy val pullRequestBranchParamEncoder = deriveEncoder[PullRequestBranchParam]
+  implicit lazy val pullRequestIssueParamEncoder = deriveEncoder[PullRequestIssueParam]
+  implicit lazy val pullRequestEditParamEncoder = deriveEncoder[PullRequestEditParam]
 
   case class Head(author: String, branch: String) {
     override def toString = s"$author:$branch"

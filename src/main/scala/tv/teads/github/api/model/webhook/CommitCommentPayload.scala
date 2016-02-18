@@ -7,7 +7,7 @@ import tv.teads.github.api.model._
 trait CommitCommentPayloadCodec {
   self: UserCodec with CommitCommentCodec with RepositoryCodec ⇒
 
-  implicit lazy val commitCommentPayloadDecoder = deriveFor[CommitCommentPayload].decoder
+  implicit lazy val commitCommentPayloadDecoder = deriveDecoder[CommitCommentPayload]
 }
 case class CommitCommentPayload(
   comment:      CommitComment,

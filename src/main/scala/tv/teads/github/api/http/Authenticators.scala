@@ -1,6 +1,6 @@
 package tv.teads.github.api.http
 
-import com.squareup.okhttp.{Credentials ⇒ OkHttpCredentials}
+import okhttp3.{Credentials ⇒ OkHttpCredentials}
 
 object Authenticators {
 

@@ -4,7 +4,7 @@ import java.time.ZonedDateTime
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import com.squareup.okhttp.Request
+import okhttp3.Request
 import io.circe.generic.semiauto._
 import tv.teads.github.api.GithubApiClientConfig
 import tv.teads.github.api.filters._
@@ -14,7 +14,7 @@ import tv.teads.github.api.util._
 import tv.teads.github.api.util.CaseClassToMap._
 
 object IssueService {
-  implicit lazy val issueParamEncoder = deriveFor[IssueParam].encoder
+  implicit lazy val issueParamEncoder = deriveEncoder[IssueParam]
 
   case class IssueParam(
     title:     String,

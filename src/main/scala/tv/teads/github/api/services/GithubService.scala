@@ -2,7 +2,7 @@ package tv.teads.github.api.services
 
 import scala.concurrent.{Future, ExecutionContext}
 
-import com.squareup.okhttp._
+import okhttp3._
 import com.typesafe.scalalogging.LazyLogging
 import io.circe._
 import tv.teads.github.api.GithubApiClientConfig

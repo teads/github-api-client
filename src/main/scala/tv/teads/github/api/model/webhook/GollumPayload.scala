@@ -7,7 +7,7 @@ import tv.teads.github.api.model._
 trait GollumPayloadCodec {
   self: UserCodec with RepositoryCodec with TeamCodec ⇒
 
-  implicit lazy val gollumPayloadDecoder = deriveFor[GollumPayload].decoder
+  implicit lazy val gollumPayloadDecoder = deriveDecoder[GollumPayload]
 }
 case class GollumPayload(
   team:         Team,

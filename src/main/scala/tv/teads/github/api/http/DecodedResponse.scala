@@ -1,5 +1,5 @@
 package tv.teads.github.api.http
 
-import com.squareup.okhttp.Response
+import okhttp3.Response
 
 case class DecodedResponse[T](decoded: T, rawResponse: Response)

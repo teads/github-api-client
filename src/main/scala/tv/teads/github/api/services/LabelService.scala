@@ -2,14 +2,14 @@ package tv.teads.github.api.services
 
 import scala.concurrent.{ExecutionContext, Future}
 
-import com.squareup.okhttp.Request
+import okhttp3.Request
 import io.circe.generic.semiauto._
 import tv.teads.github.api.GithubApiClientConfig
 import tv.teads.github.api.http._
 import tv.teads.github.api.model._
 
 object LabelService {
-  implicit lazy val labelParamEncoder = deriveFor[LabelParam].encoder
+  implicit lazy val labelParamEncoder = deriveEncoder[LabelParam]
   case class LabelParam(name: String, color: String)
 }
 class LabelService(config: GithubApiClientConfig) extends GithubService(config) with GithubApiCodecs {

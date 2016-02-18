@@ -7,7 +7,7 @@ import tv.teads.github.api.model._
 trait PageBuildPayloadCodec {
   self: UserCodec with RepositoryCodec with TeamCodec ⇒
 
-  implicit lazy val pageBuildPayloadDecoder = deriveFor[PageBuildPayload].decoder
+  implicit lazy val pageBuildPayloadDecoder = deriveDecoder[PageBuildPayload]
 }
 case class PageBuildPayload(
   team:         Team,

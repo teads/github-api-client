@@ -5,7 +5,7 @@ import io.circe._, io.circe.generic.semiauto._
 trait HeadCodec {
   self: UserCodec with RepositoryCodec ⇒
 
-  implicit lazy val headDecoder = deriveFor[Head].decoder
+  implicit lazy val headDecoder = deriveDecoder[Head]
 }
 
 case class Head(
@@ -59,13 +59,13 @@ trait PullRequestReviewCommentLinksCodec {
 case class PullRequestReviewCommentLinks(self: String, html: String, pullRequest: String)
 
 trait LinksContentCodec {
-  implicit lazy val linkContentDecoder = deriveFor[LinksContent].decoder
+  implicit lazy val linkContentDecoder = deriveDecoder[LinksContent]
 }
 
 case class LinksContent(self: String, html: String, git: String)
 
 trait TreeCodec {
-  implicit lazy val treeDecoder = deriveFor[Tree].decoder
+  implicit lazy val treeDecoder = deriveDecoder[Tree]
 }
 
 case class Tree(sha: String, url: String)
