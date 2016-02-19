@@ -49,5 +49,7 @@ trait GithubApiCodecs
   with LanguageStatCodec
   with DeploymentCodec
   with DeploymentStatusCodec
+  with ReferenceCodec
+  with ReferenceObjectCodec
 
 object GithubApiCodecs extends GithubApiCodecs
