@@ -100,4 +100,22 @@ class IssueService(config: GithubApiClientConfig) extends GithubService(config) 
       s"repos/${config.owner}/$repository/issues/$number",
       s"Fetching issue #$number for repository $repository failed"
     )
+
+  def fetchComment(repository: String, number: Long)(implicit ec: ExecutionContext): Future[Option[Comment]] =
+    fetchOptional[Comment](
+      s"repos/${config.owner}/$repository/issues/comments/$number",
+      s"Fetching issue #$number for repository $repository failed"
+    )
+
+  def fetchIssueComments(repository: String, number: Long)(implicit ec: ExecutionContext): Future[List[Comment]] =
+    fetchMultiple[Comment](
+      s"repos/${config.owner}/$repository/issues/$number/comments",
+      s"Fetching issue #$number comments for repository $repository failed"
+    )
+
+  def fetchComments(repository: String)(implicit ec: ExecutionContext): Future[List[Comment]] =
+    fetchMultiple[Comment](
+      s"repos/${config.owner}/$repository/issues/comments",
+      s"Fetching issues comments for repository $repository failed"
+    )
 }

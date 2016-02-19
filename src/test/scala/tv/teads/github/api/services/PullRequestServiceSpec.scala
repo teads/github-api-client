@@ -20,4 +20,11 @@ class PullRequestServiceSpec extends BaseSpec {
     }
   }
 
+  it should "be able to fetch github-api-client Pull Request comments" in {
+
+    whenReady(teadsClient.pullRequests.fetchComments("github-api-client")) { list ⇒
+      list should not be empty
+    }
+  }
+
 }

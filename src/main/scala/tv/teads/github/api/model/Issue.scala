@@ -6,7 +6,7 @@ import io.circe._
 import tv.teads.github.api.json.ZonedDateTimeCodec
 
 trait IssueCodec {
-  self: UserCodec with LabelCodec with ZonedDateTimeCodec ⇒
+  self: MilestoneCodec with UserCodec with LabelCodec with ZonedDateTimeCodec ⇒
 
   implicit lazy val issueDecoder = Decoder.instance { cursor ⇒
     for {
@@ -23,7 +23,7 @@ trait IssueCodec {
       state ← cursor.downField("state").as[String]
       locked ← cursor.downField("locked").as[Boolean]
       assignee ← cursor.downField("assignee").as[Option[User]]
-      milestone ← cursor.downField("milestone").as[Option[String]]
+      milestone ← cursor.downField("milestone").as[Option[Milestone]]
       comments ← cursor.downField("comments").as[Long]
       createdAt ← cursor.downField("created_at").as[ZonedDateTime]
       updatedAt ← cursor.downField("updated_at").as[ZonedDateTime]
@@ -50,7 +50,7 @@ case class Issue(
   state:       String,
   locked:      Boolean,
   assignee:    Option[User],
-  milestone:   Option[String],
+  milestone:   Option[Milestone],
   comments:    Long,
   createdAt:   ZonedDateTime,
   updatedAt:   ZonedDateTime,
