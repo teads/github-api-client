@@ -5,13 +5,11 @@ import io.circe.generic.semiauto._
 import tv.teads.github.api.model._
 
 trait DeploymentPayloadCodec {
-  self: UserCodec with RepositoryCodec with TeamCodec ⇒
+  self: UserCodec with RepositoryCodec with DeploymentCodec ⇒
 
   implicit lazy val deploymentPayloadDecoder = deriveDecoder[DeploymentPayload]
 }
 case class DeploymentPayload(
-  team:         Team,
-  repository:   Repository,
-  organization: Option[User],
-  sender:       User
+  deployment: Deployment,
+  repository: Repository
 ) extends Payload

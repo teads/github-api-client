@@ -17,7 +17,7 @@ trait DeploymentCodec {
       task ← cursor.downField("task").as[String]
       payload ← cursor.downField("payload").as[Option[Json]]
       environment ← cursor.downField("environment").as[String]
-      description ← cursor.downField("description").as[String]
+      description ← cursor.downField("description").as[Option[String]]
       creator ← cursor.downField("creator").as[User]
       createdAt ← cursor.downField("created_at").as[ZonedDateTime]
       updatedAt ← cursor.downField("updated_at").as[ZonedDateTime]
@@ -35,7 +35,7 @@ case class Deployment(
   task:          String,
   payload:       Option[Json],
   environment:   String,
-  description:   String,
+  description:   Option[String],
   creator:       User,
   createdAt:     ZonedDateTime,
   updatedAt:     ZonedDateTime,
