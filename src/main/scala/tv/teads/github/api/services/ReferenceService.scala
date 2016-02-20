@@ -33,7 +33,7 @@ class ReferenceService(config: GithubApiClientConfig) extends GithubService(conf
     )
 
   def create(repository: String, param: CreateReferenceParam)(implicit ec: ExecutionContext): Future[Option[Reference]] = {
-    val url = s"${config.apiUrl}/repos/${config.owner}/repos/$repository/git/refs"
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repository/git/refs"
     val requestBuilder = new Request.Builder().url(url).post(param.toJson)
     baseRequest(requestBuilder).map {
       _.as[Reference].fold(
@@ -44,7 +44,7 @@ class ReferenceService(config: GithubApiClientConfig) extends GithubService(conf
   }
 
   def update(repository: String, ref: String, param: UpdateReferenceParam)(implicit ec: ExecutionContext): Future[Option[Reference]] = {
-    val url = s"${config.apiUrl}/repos/${config.owner}/repos/$repository/git/refs/$ref"
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repository/git/refs/$ref"
     val requestBuilder = new Request.Builder().url(url).patch(param.toJson)
     baseRequest(requestBuilder).map {
       _.as[Reference].fold(
@@ -55,7 +55,7 @@ class ReferenceService(config: GithubApiClientConfig) extends GithubService(conf
   }
 
   def delete(repository: String, ref: String)(implicit ec: ExecutionContext): Future[Boolean] = {
-    val url = s"${config.apiUrl}/repos/${config.owner}/repos/$repository/git/refs/$ref"
+    val url = s"${config.apiUrl}/repos/${config.owner}/$repository/git/refs/$ref"
     val requestBuilder = new Request.Builder().url(url).delete()
     baseRequest(requestBuilder).map {
       case response if response.code() == 204 ⇒ true
