@@ -37,6 +37,14 @@ object ContentService extends GithubApiCodecs {
 class ContentService(config: GithubApiClientConfig) extends GithubService(config) with GithubApiCodecs {
   import ContentService._
 
+  /**
+   * @see https://developer.github.com/v3/repos/contents/#get-contents
+   * @param repository
+   * @param path
+   * @param branch
+   * @param ec
+   * @return
+   */
   def getContents(repository: String, path: String, branch: String = "master")(implicit ec: ExecutionContext): Future[Option[String]] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/contents/$path"
     val httpUrl = HttpUrl.parse(url).newBuilder().addEncodedQueryParameter("ref", branch).build()
@@ -48,6 +56,13 @@ class ContentService(config: GithubApiClientConfig) extends GithubService(config
     }
   }
 
+  /**
+   * @see https://developer.github.com/v3/repos/contents/#get-the-readme
+   * @param repository
+   * @param branch
+   * @param ec
+   * @return
+   */
   def getReadme(repository: String, branch: String = "master")(implicit ec: ExecutionContext): Future[Option[String]] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/readme"
     val httpUrl = HttpUrl.parse(url).newBuilder().addEncodedQueryParameter("ref", branch).build()
@@ -59,6 +74,13 @@ class ContentService(config: GithubApiClientConfig) extends GithubService(config
     }
   }
 
+  /**
+   * @see https://developer.github.com/v3/repos/contents/#create-a-file
+   * @param repository
+   * @param file
+   * @param ec
+   * @return
+   */
   def createFile(repository: String, file: FileCreateParam)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/contents/${file.path}"
     val encodedFile = file.copy(content = Base64.getEncoder.encodeToString(file.content.getBytes))
@@ -70,6 +92,13 @@ class ContentService(config: GithubApiClientConfig) extends GithubService(config
     }
   }
 
+  /**
+   * @see https://developer.github.com/v3/repos/contents/#update-a-file
+   * @param repository
+   * @param file
+   * @param ec
+   * @return
+   */
   def updateFile(repository: String, file: FileEditParam)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/contents/${file.path}"
     val encodedFile = file.copy(content = Base64.getEncoder.encodeToString(file.content.getBytes))
@@ -81,6 +110,13 @@ class ContentService(config: GithubApiClientConfig) extends GithubService(config
     }
   }
 
+  /**
+   * @see https://developer.github.com/v3/repos/contents/#delete-a-file
+   * @param repository
+   * @param file
+   * @param ec
+   * @return
+   */
   def deleteFile(repository: String, file: FileEditParam)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/contents/${file.path}"
     val requestBuilder = new Request.Builder().url(url).delete()

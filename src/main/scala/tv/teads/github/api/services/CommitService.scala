@@ -21,6 +21,13 @@ object CommitService {
 class CommitService(config: GithubApiClientConfig) extends GithubService(config) with GithubApiCodecs {
   import CommitService._
 
+  /**
+   * @see https://developer.github.com/v3/repos/commits/#list-commits-on-a-repository
+   * @param repository
+   * @param filter
+   * @param ec
+   * @return
+   */
   def list(repository: String, filter: CommitFilter)(implicit ec: ExecutionContext): Future[List[GHCommit]] =
     fetchMultiple[GHCommit](
       s"repos/${config.owner}/$repository/commits",
@@ -28,12 +35,27 @@ class CommitService(config: GithubApiClientConfig) extends GithubService(config)
       filter.toMapStringified
     )
 
+  /**
+   * @see https://developer.github.com/v3/repos/commits/#get-a-single-commit
+   * @param repository
+   * @param sha
+   * @param ec
+   * @return
+   */
   def get(repository: String, sha: String)(implicit ec: ExecutionContext): Future[Option[GHCommit]] =
     fetchOptional[GHCommit](
       s"repos/${config.owner}/$repository/commits/$sha",
       s"Fetching $repository commit $sha failed"
     )
 
+  /**
+   * @see https://developer.github.com/v3/repos/commits/#compare-two-commits
+   * @param repository
+   * @param base
+   * @param head
+   * @param ec
+   * @return
+   */
   def compare(repository: String, base: String, head: String)(implicit ec: ExecutionContext): Future[Option[Comparison]] =
     fetchOptional[Comparison](
       s"repos/${config.owner}/$repository/compare/$base...$head",

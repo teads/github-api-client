@@ -20,18 +20,39 @@ object ReferenceService {
 class ReferenceService(config: GithubApiClientConfig) extends GithubService(config) with GithubApiCodecs {
   import ReferenceService._
 
+  /**
+   * @see https://developer.github.com/v3/git/refs/#get-a-reference
+   * @param repository
+   * @param ref
+   * @param ec
+   * @return
+   */
   def get(repository: String, ref: String)(implicit ec: ExecutionContext): Future[Option[Reference]] =
     fetchOptional[Reference](
       s"repos/${config.owner}/$repository/git/refs/$ref",
       s"Fetching reference $ref in repository $repository failed"
     )
 
+  /**
+   * @see https://developer.github.com/v3/git/refs/#get-all-references
+   * @param repository
+   * @param typeFilter
+   * @param ec
+   * @return
+   */
   def list(repository: String, typeFilter: Option[String])(implicit ec: ExecutionContext): Future[List[Reference]] =
     fetchMultiple[Reference](
       s"repos/${config.owner}/$repository/git/refs${typeFilter.map("/" + _).getOrElse("")}",
       s"Fetching references in repository $repository failed"
     )
 
+  /**
+   * @see https://developer.github.com/v3/git/refs/#create-a-reference
+   * @param repository
+   * @param param
+   * @param ec
+   * @return
+   */
   def create(repository: String, param: CreateReferenceParam)(implicit ec: ExecutionContext): Future[Option[Reference]] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/git/refs"
     val requestBuilder = new Request.Builder().url(url).post(param.toJson)
@@ -43,6 +64,14 @@ class ReferenceService(config: GithubApiClientConfig) extends GithubService(conf
     }
   }
 
+  /**
+   * @see https://developer.github.com/v3/git/refs/#update-a-reference
+   * @param repository
+   * @param ref
+   * @param param
+   * @param ec
+   * @return
+   */
   def update(repository: String, ref: String, param: UpdateReferenceParam)(implicit ec: ExecutionContext): Future[Option[Reference]] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/git/refs/$ref"
     val requestBuilder = new Request.Builder().url(url).patch(param.toJson)
@@ -54,6 +83,13 @@ class ReferenceService(config: GithubApiClientConfig) extends GithubService(conf
     }
   }
 
+  /**
+   * @see https://developer.github.com/v3/git/refs/#delete-a-reference
+   * @param repository
+   * @param ref
+   * @param ec
+   * @return
+   */
   def delete(repository: String, ref: String)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/git/refs/$ref"
     val requestBuilder = new Request.Builder().url(url).delete()

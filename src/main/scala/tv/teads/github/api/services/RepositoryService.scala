@@ -47,42 +47,84 @@ object RepositoryService {
 class RepositoryService(config: GithubApiClientConfig) extends GithubService(config) with GithubApiCodecs {
   import RepositoryService._
 
+  /**
+   * @see https://developer.github.com/v3/repos/#list-tags
+   * @param repository
+   * @param ec
+   * @return
+   */
   def listTags(repository: String)(implicit ec: ExecutionContext): Future[List[Tag]] =
     fetchMultiple[Tag](
       s"repos/${config.owner}/$repository/tags",
       s"Fetching tags for repository $repository failed"
     )
 
+  /**
+   * @see https://developer.github.com/v3/repos/#list-organization-repositories
+   * @param ec
+   * @return
+   */
   def list(implicit ec: ExecutionContext): Future[List[Repository]] =
     fetchAllPages[Repository](
       s"orgs/${config.owner}/repos",
       s"Fetching all repositories failed"
     )
 
+  /**
+   * @see https://developer.github.com/v3/repos/#list-languages
+   * @param repository
+   * @param ec
+   * @return
+   */
   def listLanguages(repository: String)(implicit ec: ExecutionContext): Future[List[LanguageStat]] =
     fetchMultiple[LanguageStat](
       s"repos/${config.owner}/$repository/languages",
       s"Fetching languages for repository $repository failed"
     )
 
+  /**
+   * @see https://developer.github.com/v3/repos/#list-contributors
+   * @param repository
+   * @param ec
+   * @return
+   */
   def listContributors(repository: String)(implicit ec: ExecutionContext): Future[List[User]] =
     fetchMultiple[User](
       s"repos/${config.owner}/$repository/contributors",
       s"Fetching contributors for repository $repository failed"
     )
 
+  /**
+   * @see https://developer.github.com/v3/repos/#list-branches
+   * @param repository
+   * @param ec
+   * @return
+   */
   def listBranches(repository: String)(implicit ec: ExecutionContext): Future[List[Branch]] =
     fetchMultiple[Branch](
       s"repos/${config.owner}/$repository/branches",
       s"Fetching branches for repository $repository failed"
     )
 
+  /**
+   * @see https://developer.github.com/v3/repos/#get-branch
+   * @param repository
+   * @param branch
+   * @param ec
+   * @return
+   */
   def getBranch(repository: String, branch: String)(implicit ec: ExecutionContext): Future[Option[Branch]] =
     fetchOptional[Branch](
       s"repos/${config.owner}/$repository/branches/$branch",
       s"Fetching branch $branch for repository $repository failed"
     )
 
+  /**
+   * @see https://developer.github.com/v3/repos/#delete-a-repository
+   * @param repository
+   * @param ec
+   * @return
+   */
   def delete(repository: String)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository"
     val requestBuilder = new Request.Builder().url(url).delete()
@@ -93,12 +135,24 @@ class RepositoryService(config: GithubApiClientConfig) extends GithubService(con
     }
   }
 
+  /**
+   * @see https://developer.github.com/v3/repos/#get
+   * @param repository
+   * @param ec
+   * @return
+   */
   def get(repository: String)(implicit ec: ExecutionContext): Future[Option[Repository]] =
     fetchOptional[Repository](
       s"repos/${config.owner}/$repository",
       s"Fetching repository $repository failed"
     )
 
+  /**
+   * @see https://developer.github.com/v3/repos/#create
+   * @param repo
+   * @param ec
+   * @return
+   */
   def create(repo: RepoParam)(implicit ec: ExecutionContext): Future[Option[Repository]] = {
     val url = s"${config.apiUrl}/orgs/${config.owner}/repos"
     val requestBuilder = new Request.Builder().url(url).post(repo.toJson)
@@ -110,6 +164,13 @@ class RepositoryService(config: GithubApiClientConfig) extends GithubService(con
     }
   }
 
+  /**
+   * @see https://developer.github.com/v3/repos/#edit
+   * @param id
+   * @param repo
+   * @param ec
+   * @return
+   */
   def edit(id: Long, repo: RepoParam)(implicit ec: ExecutionContext): Future[Option[Repository]] = {
     val url = s"${config.apiUrl}/repos/$id"
     val requestBuilder = new Request.Builder().url(url).patch(repo.toJson)

@@ -50,6 +50,13 @@ object IssueService {
 class IssueService(config: GithubApiClientConfig) extends GithubService(config) with GithubApiCodecs {
   import IssueService._
 
+  /**
+   * @see https://developer.github.com/v3/issues/#create-an-issue
+   * @param repository
+   * @param issue
+   * @param ec
+   * @return
+   */
   def create(repository: String, issue: IssueParam)(implicit ec: ExecutionContext): Future[Option[Issue]] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/issues"
     val requestBuilder = new Request.Builder().url(url).post(issue.toJson)
@@ -61,6 +68,14 @@ class IssueService(config: GithubApiClientConfig) extends GithubService(config) 
     }
   }
 
+  /**
+   * @see https://developer.github.com/v3/issues/#edit-an-issue
+   * @param repository
+   * @param number
+   * @param issue
+   * @param ec
+   * @return
+   */
   def edit(repository: String, number: Long, issue: IssueParam)(implicit ec: ExecutionContext): Future[Option[Issue]] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/issues/$number"
     val requestBuilder = new Request.Builder().url(url).patch(issue.toJson)
@@ -72,6 +87,14 @@ class IssueService(config: GithubApiClientConfig) extends GithubService(config) 
     }
   }
 
+  /**
+   * @see https://developer.github.com/v3/issues/comments/#create-a-comment
+   * @param repository
+   * @param issueNumber
+   * @param comment
+   * @param ec
+   * @return
+   */
   def createComment(repository: String, issueNumber: Long, comment: String)(implicit ec: ExecutionContext): Future[Option[Comment]] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/issues/$issueNumber/comments"
     val requestBuilder = new Request.Builder().url(url).post(Map("body" → comment).toJson)
@@ -83,6 +106,15 @@ class IssueService(config: GithubApiClientConfig) extends GithubService(config) 
     }
   }
 
+  /**
+   * @see https://developer.github.com/v3/issues/comments/#edit-a-comment
+   * @param repository
+   * @param issueNumber
+   * @param commentId
+   * @param comment
+   * @param ec
+   * @return
+   */
   def updateComment(repository: String, issueNumber: Long, commentId: Long, comment: String)(implicit ec: ExecutionContext): Future[Option[Comment]] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/issues/$issueNumber/comments/$commentId"
     val requestBuilder = new Request.Builder().url(url).patch(Map("body" → comment).toJson)
@@ -94,12 +126,35 @@ class IssueService(config: GithubApiClientConfig) extends GithubService(config) 
     }
   }
 
+  /**
+   * @see https://developer.github.com/v3/issues/#edit-an-issue
+   * @param repository
+   * @param number
+   * @param issue
+   * @param ec
+   * @return
+   */
   def close(repository: String, number: Long, issue: IssueParam)(implicit ec: ExecutionContext): Future[Option[Issue]] =
     edit(repository, number, issue.copy(state = Some(IssueState.closed)))
 
+  /**
+   * @see https://developer.github.com/v3/issues/#edit-an-issue
+   * @param repository
+   * @param number
+   * @param issue
+   * @param ec
+   * @return
+   */
   def open(repository: String, number: Long, issue: IssueParam)(implicit ec: ExecutionContext): Future[Option[Issue]] =
     edit(repository, number, issue.copy(state = Some(IssueState.open)))
 
+  /**
+   * @see https://developer.github.com/v3/issues/#list-issues
+   * @param repository
+   * @param issueFilter
+   * @param ec
+   * @return
+   */
   def list(repository: String, issueFilter: IssueFilter)(implicit ec: ExecutionContext): Future[List[Issue]] =
     fetchMultiple[Issue](
       s"repos/${config.owner}/$repository/issues",
@@ -107,24 +162,51 @@ class IssueService(config: GithubApiClientConfig) extends GithubService(config) 
       issueFilter.toMapStringified
     )
 
+  /**
+   * @see https://developer.github.com/v3/issues/#get-a-single-issue
+   * @param repository
+   * @param number
+   * @param ec
+   * @return
+   */
   def get(repository: String, number: Long)(implicit ec: ExecutionContext): Future[Option[Issue]] =
     fetchOptional[Issue](
       s"repos/${config.owner}/$repository/issues/$number",
       s"Fetching issue #$number for repository $repository failed"
     )
 
+  /**
+   * @see https://developer.github.com/v3/issues/comments/#get-a-single-comment
+   * @param repository
+   * @param number
+   * @param ec
+   * @return
+   */
   def getComment(repository: String, number: Long)(implicit ec: ExecutionContext): Future[Option[Comment]] =
     fetchOptional[Comment](
       s"repos/${config.owner}/$repository/issues/comments/$number",
       s"Fetching issue #$number for repository $repository failed"
     )
 
+  /**
+   * @see https://developer.github.com/v3/issues/comments/#list-comments-on-an-issue
+   * @param repository
+   * @param number
+   * @param ec
+   * @return
+   */
   def listIssueComments(repository: String, number: Long)(implicit ec: ExecutionContext): Future[List[Comment]] =
     fetchMultiple[Comment](
       s"repos/${config.owner}/$repository/issues/$number/comments",
       s"Fetching issue #$number comments for repository $repository failed"
     )
 
+  /**
+   * @see https://developer.github.com/v3/issues/comments/#list-comments-in-a-repository
+   * @param repository
+   * @param ec
+   * @return
+   */
   def listComments(repository: String)(implicit ec: ExecutionContext): Future[List[Comment]] =
     fetchMultiple[Comment](
       s"repos/${config.owner}/$repository/issues/comments",
