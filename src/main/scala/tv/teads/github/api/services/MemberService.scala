@@ -8,13 +8,13 @@ import tv.teads.github.api.model._
 
 class MemberService(config: GithubApiClientConfig) extends GithubService(config) with GithubApiCodecs {
 
-  def fetchOrgMembers(implicit ec: ExecutionContext): Future[List[Member]] =
+  def listOrganizationMembers(implicit ec: ExecutionContext): Future[List[Member]] =
     fetchMultiple[Member](
       s"orgs/${config.owner}/members",
       s"Fetching organization ${config.owner} members failed"
     )
 
-  def isMemberOfOrg(username: String)(implicit ec: ExecutionContext): Future[Boolean] = {
+  def checkMembership(username: String)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/orgs/${config.owner}/members/$username"
     val requestBuilder = new Request.Builder().url(url).get()
     baseRequest(requestBuilder).map {
@@ -25,13 +25,13 @@ class MemberService(config: GithubApiClientConfig) extends GithubService(config)
     }
   }
 
-  def fetchOrgPublicMembers(implicit ec: ExecutionContext): Future[List[Member]] =
+  def listPublicMembers(implicit ec: ExecutionContext): Future[List[Member]] =
     fetchMultiple[Member](
       s"orgs/${config.owner}/public_members",
       s"Fetching organization ${config.owner} public members failed"
     )
 
-  def isPublicMemberOfOrg(username: String)(implicit ec: ExecutionContext): Future[Boolean] = {
+  def checkPublicMembership(username: String)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/orgs/${config.owner}/public_members/$username"
     val requestBuilder = new Request.Builder().url(url).get()
     baseRequest(requestBuilder).map {

@@ -26,7 +26,7 @@ class LabelService(config: GithubApiClientConfig) extends GithubService(config) 
     }
   }
 
-  def edit(repository: String, name: String, label: LabelParam)(implicit ec: ExecutionContext): Future[Option[Label]] = {
+  def update(repository: String, name: String, label: LabelParam)(implicit ec: ExecutionContext): Future[Option[Label]] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/labels/$name"
     val requestBuilder = new Request.Builder().url(url).patch(label.toJson)
     baseRequest(requestBuilder).map {
@@ -47,19 +47,19 @@ class LabelService(config: GithubApiClientConfig) extends GithubService(config) 
     }
   }
 
-  def fetchLabelsByRepo(repository: String)(implicit ec: ExecutionContext): Future[List[Label]] =
+  def list(repository: String)(implicit ec: ExecutionContext): Future[List[Label]] =
     fetchMultiple[Label](
       s"repos/${config.owner}/$repository/labels",
       s"Fetching labels for repository $repository failed"
     )
 
-  def fetchLabel(repository: String, name: String)(implicit ec: ExecutionContext): Future[Option[Label]] =
+  def get(repository: String, name: String)(implicit ec: ExecutionContext): Future[Option[Label]] =
     fetchOptional[Label](
       s"repos/${config.owner}/$repository/labels/$name",
       s"Fetching label $name for repository $repository failed"
     )
 
-  def fetchLabelsByIssue(repository: String, number: Long)(implicit ec: ExecutionContext): Future[List[Label]] =
+  def listOnIssue(repository: String, number: Long)(implicit ec: ExecutionContext): Future[List[Label]] =
     fetchMultiple[Label](
       s"repos/${config.owner}/$repository/issues/$number/labels",
       s"Fetching labels for issue #$number and repository $repository failed"
@@ -86,7 +86,7 @@ class LabelService(config: GithubApiClientConfig) extends GithubService(config) 
     }
   }
 
-  def replaceLabelsFromIssue(repository: String, number: Long, labels: List[String])(implicit ec: ExecutionContext): Future[Boolean] = {
+  def replaceLabelsForIssue(repository: String, number: Long, labels: List[String])(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/issues/$number/labels"
     val requestBuilder = new Request.Builder().url(url).put(labels.toJson)
     baseRequest(requestBuilder).map {
@@ -106,7 +106,7 @@ class LabelService(config: GithubApiClientConfig) extends GithubService(config) 
     }
   }
 
-  def fetchLabelsByMilestone(repository: String, number: Long)(implicit ec: ExecutionContext): Future[List[Label]] =
+  def listInMilestone(repository: String, number: Long)(implicit ec: ExecutionContext): Future[List[Label]] =
     fetchMultiple[Label](
       s"repos/${config.owner}/$repository/milestones/$number/labels",
       s"Fetching labels for milestone v$number in repository $repository failed"

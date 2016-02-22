@@ -83,7 +83,7 @@ class IssueService(config: GithubApiClientConfig) extends GithubService(config) 
     }
   }
 
-  def editComment(repository: String, issueNumber: Long, commentId: Long, comment: String)(implicit ec: ExecutionContext): Future[Option[Comment]] = {
+  def updateComment(repository: String, issueNumber: Long, commentId: Long, comment: String)(implicit ec: ExecutionContext): Future[Option[Comment]] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/issues/$issueNumber/comments/$commentId"
     val requestBuilder = new Request.Builder().url(url).patch(Map("body" → comment).toJson)
     baseRequest(requestBuilder).map {
@@ -100,32 +100,32 @@ class IssueService(config: GithubApiClientConfig) extends GithubService(config) 
   def open(repository: String, number: Long, issue: IssueParam)(implicit ec: ExecutionContext): Future[Option[Issue]] =
     edit(repository, number, issue.copy(state = Some(IssueState.open)))
 
-  def byRepository(repository: String, issueFilter: IssueFilter)(implicit ec: ExecutionContext): Future[List[Issue]] =
+  def list(repository: String, issueFilter: IssueFilter)(implicit ec: ExecutionContext): Future[List[Issue]] =
     fetchMultiple[Issue](
       s"repos/${config.owner}/$repository/issues",
       s"Fetching issues for repository $repository failed",
       issueFilter.toMapStringified
     )
 
-  def byRepositoryAndNumber(repository: String, number: Long)(implicit ec: ExecutionContext): Future[Option[Issue]] =
+  def get(repository: String, number: Long)(implicit ec: ExecutionContext): Future[Option[Issue]] =
     fetchOptional[Issue](
       s"repos/${config.owner}/$repository/issues/$number",
       s"Fetching issue #$number for repository $repository failed"
     )
 
-  def fetchComment(repository: String, number: Long)(implicit ec: ExecutionContext): Future[Option[Comment]] =
+  def getComment(repository: String, number: Long)(implicit ec: ExecutionContext): Future[Option[Comment]] =
     fetchOptional[Comment](
       s"repos/${config.owner}/$repository/issues/comments/$number",
       s"Fetching issue #$number for repository $repository failed"
     )
 
-  def fetchIssueComments(repository: String, number: Long)(implicit ec: ExecutionContext): Future[List[Comment]] =
+  def listIssueComments(repository: String, number: Long)(implicit ec: ExecutionContext): Future[List[Comment]] =
     fetchMultiple[Comment](
       s"repos/${config.owner}/$repository/issues/$number/comments",
       s"Fetching issue #$number comments for repository $repository failed"
     )
 
-  def fetchComments(repository: String)(implicit ec: ExecutionContext): Future[List[Comment]] =
+  def listComments(repository: String)(implicit ec: ExecutionContext): Future[List[Comment]] =
     fetchMultiple[Comment](
       s"repos/${config.owner}/$repository/issues/comments",
       s"Fetching issues comments for repository $repository failed"

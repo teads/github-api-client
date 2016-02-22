@@ -77,7 +77,7 @@ class PullRequestService(config: GithubApiClientConfig) extends GithubService(co
     }
   }
 
-  def edit(repository: String, number: Int, param: PullRequestEditParam)(implicit ec: ExecutionContext): Future[Option[PullRequest]] = {
+  def update(repository: String, number: Int, param: PullRequestEditParam)(implicit ec: ExecutionContext): Future[Option[PullRequest]] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/pulls/$number"
     val requestBuilder = new Request.Builder().url(url).patch(param.toJson)
     baseRequest(requestBuilder).map {
@@ -88,23 +88,20 @@ class PullRequestService(config: GithubApiClientConfig) extends GithubService(co
     }
   }
 
-  def fetchPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit ec: ExecutionContext): Future[List[PullRequest]] =
+  def list(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit ec: ExecutionContext): Future[List[PullRequest]] =
     fetchAllPages[PullRequest](
       s"repos/${config.owner}/$repository/pulls",
       s"Fetching pull requests on repository $repository using filter $filter failed",
       filter.toMapStringified
     )
 
-  def fetchOpenPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit ec: ExecutionContext) =
-    fetchPullRequests(repository, filter.copy(state = Some(IssueState.open)))
+  def listOpen(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit ec: ExecutionContext) =
+    list(repository, filter.copy(state = Some(IssueState.open)))
 
-  def fetchClosedPullRequests(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit ec: ExecutionContext) =
-    fetchPullRequests(repository, filter.copy(state = Some(IssueState.closed)))
+  def listClosed(repository: String, filter: PullRequestFilter = PullRequestFilter())(implicit ec: ExecutionContext) =
+    list(repository, filter.copy(state = Some(IssueState.closed)))
 
-  def fetchMatchingOpenPullRequests(repository: String, author: String, branch: String)(implicit ec: ExecutionContext) =
-    fetchOpenPullRequests(repository, PullRequestFilter(head = Some(Head(author, branch))))
-
-  def byRepositoryAndNumber(repository: String, number: Long)(implicit ec: ExecutionContext): Future[Option[PullRequest]] =
+  def get(repository: String, number: Long)(implicit ec: ExecutionContext): Future[Option[PullRequest]] =
     fetchOptional[PullRequest](
       s"repos/${config.owner}/$repository/pulls/$number",
       s"Fetching pull request #$number for repository $repository failed"
@@ -133,25 +130,25 @@ class PullRequestService(config: GithubApiClientConfig) extends GithubService(co
     }
   }
 
-  def fetchFiles(repository: String, number: Long)(implicit ec: ExecutionContext): Future[List[File]] =
+  def listFiles(repository: String, number: Long)(implicit ec: ExecutionContext): Future[List[File]] =
     fetchAllPages[File](
       s"repos/${config.owner}/$repository/pulls/$number/files",
       s"Fetching pull request #$number files failed"
     )
 
-  def fetchCommits(repository: String, number: Long)(implicit ec: ExecutionContext): Future[List[GHCommit]] =
+  def listCommits(repository: String, number: Long)(implicit ec: ExecutionContext): Future[List[GHCommit]] =
     fetchAllPages[GHCommit](
       s"repos/${config.owner}/$repository/pulls/$number/commits",
       s"Fetching pull request #$number commits failed"
     )
 
-  def fetchComment(repository: String, commentId: Long)(implicit ec: ExecutionContext): Future[Option[PullRequestReviewComment]] =
+  def getComment(repository: String, commentId: Long)(implicit ec: ExecutionContext): Future[Option[PullRequestReviewComment]] =
     fetchOptional[PullRequestReviewComment](
       s"repos/${config.owner}/$repository/pulls/comments/$commentId",
       s"Fetching pull request comment #$commentId for repository $repository failed"
     )
 
-  def fetchComments(repository: String, pullRequestCommentFilter: PullRequestCommentFilter = PullRequestCommentFilter())(implicit ec: ExecutionContext): Future[List[PullRequestReviewComment]] =
+  def listComments(repository: String, pullRequestCommentFilter: PullRequestCommentFilter = PullRequestCommentFilter())(implicit ec: ExecutionContext): Future[List[PullRequestReviewComment]] =
     fetchMultiple[PullRequestReviewComment](
       s"repos/${config.owner}/$repository/pulls/comments",
       s"Fetching pull request comments for repository $repository failed",

@@ -28,7 +28,7 @@ class CommitService(config: GithubApiClientConfig) extends GithubService(config)
       filter.toMapStringified
     )
 
-  def fetch(repository: String, sha: String)(implicit ec: ExecutionContext): Future[Option[GHCommit]] =
+  def get(repository: String, sha: String)(implicit ec: ExecutionContext): Future[Option[GHCommit]] =
     fetchOptional[GHCommit](
       s"repos/${config.owner}/$repository/commits/$sha",
       s"Fetching $repository commit $sha failed"

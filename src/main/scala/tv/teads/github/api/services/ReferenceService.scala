@@ -20,13 +20,13 @@ object ReferenceService {
 class ReferenceService(config: GithubApiClientConfig) extends GithubService(config) with GithubApiCodecs {
   import ReferenceService._
 
-  def fetch(repository: String, ref: String)(implicit ec: ExecutionContext): Future[Option[Reference]] =
+  def get(repository: String, ref: String)(implicit ec: ExecutionContext): Future[Option[Reference]] =
     fetchOptional[Reference](
       s"repos/${config.owner}/$repository/git/refs/$ref",
       s"Fetching reference $ref in repository $repository failed"
     )
 
-  def fetchAll(repository: String, typeFilter: Option[String])(implicit ec: ExecutionContext): Future[List[Reference]] =
+  def list(repository: String, typeFilter: Option[String])(implicit ec: ExecutionContext): Future[List[Reference]] =
     fetchMultiple[Reference](
       s"repos/${config.owner}/$repository/git/refs${typeFilter.map("/" + _).getOrElse("")}",
       s"Fetching references in repository $repository failed"

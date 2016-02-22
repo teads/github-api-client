@@ -10,13 +10,13 @@ class ReferenceServiceSpec extends BaseSpec {
 
   "ReferenceService" should "be able to fetch a single reference" in {
 
-    whenReady(teadsClient.references.fetch("github-api-client", "heads/master")) { ref ⇒
+    whenReady(teadsClient.references.get("github-api-client", "heads/master")) { ref ⇒
       ref should not be empty
     }
   }
 
   it should "be able to fetch all branches" in {
-    whenReady(teadsClient.references.fetchAll("github-api-client", "heads".some)) { list ⇒
+    whenReady(teadsClient.references.list("github-api-client", "heads".some)) { list ⇒
       list should not be empty
     }
   }

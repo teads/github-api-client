@@ -53,7 +53,7 @@ class RepositoryService(config: GithubApiClientConfig) extends GithubService(con
       s"Fetching tags for repository $repository failed"
     )
 
-  def fetchAllRepositories(implicit ec: ExecutionContext): Future[List[Repository]] =
+  def list(implicit ec: ExecutionContext): Future[List[Repository]] =
     fetchAllPages[Repository](
       s"orgs/${config.owner}/repos",
       s"Fetching all repositories failed"
@@ -77,7 +77,7 @@ class RepositoryService(config: GithubApiClientConfig) extends GithubService(con
       s"Fetching branches for repository $repository failed"
     )
 
-  def fetchBranch(repository: String, branch: String)(implicit ec: ExecutionContext): Future[Option[Branch]] =
+  def getBranch(repository: String, branch: String)(implicit ec: ExecutionContext): Future[Option[Branch]] =
     fetchOptional[Branch](
       s"repos/${config.owner}/$repository/branches/$branch",
       s"Fetching branch $branch for repository $repository failed"
@@ -93,7 +93,7 @@ class RepositoryService(config: GithubApiClientConfig) extends GithubService(con
     }
   }
 
-  def fetch(repository: String)(implicit ec: ExecutionContext): Future[Option[Repository]] =
+  def get(repository: String)(implicit ec: ExecutionContext): Future[Option[Repository]] =
     fetchOptional[Repository](
       s"repos/${config.owner}/$repository",
       s"Fetching repository $repository failed"

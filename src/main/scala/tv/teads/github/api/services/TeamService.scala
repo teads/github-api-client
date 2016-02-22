@@ -29,19 +29,19 @@ object TeamService {
 class TeamService(config: GithubApiClientConfig) extends GithubService(config) with GithubApiCodecs {
   import TeamService._
 
-  def fetchTeam(id: Long)(implicit ec: ExecutionContext): Future[Option[Team]] =
+  def get(id: Long)(implicit ec: ExecutionContext): Future[Option[Team]] =
     fetchOptional[Team](
       s"teams/$id",
       s"Fetching teams for id $id failed"
     )
 
-  def fetchOrgTeams(implicit ec: ExecutionContext): Future[List[Team]] =
+  def list(implicit ec: ExecutionContext): Future[List[Team]] =
     fetchMultiple[Team](
       s"orgs/${config.owner}/teams",
       s"Fetching teams for organization ${config.owner} failed"
     )
 
-  def fetchTeamMembers(id: Long)(implicit ec: ExecutionContext): Future[List[Member]] = {
+  def listMembers(id: Long)(implicit ec: ExecutionContext): Future[List[Member]] = {
     fetchMultiple[Member](
       s"teams/$id/members",
       s"Fetching team $id members failed"
@@ -49,7 +49,7 @@ class TeamService(config: GithubApiClientConfig) extends GithubService(config) w
   }
 
   @Deprecated
-  def isTeamMember(id: Long, username: String)(implicit ec: ExecutionContext): Future[Boolean] = {
+  def isMember(id: Long, username: String)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/teams/$id/members/$username"
     val requestBuilder = new Request.Builder().url(url).get()
     baseRequest(requestBuilder).map {
@@ -60,7 +60,7 @@ class TeamService(config: GithubApiClientConfig) extends GithubService(config) w
   }
 
   @Deprecated
-  def addTeamMember(id: Long, username: String)(implicit ec: ExecutionContext): Future[Boolean] = {
+  def addMember(id: Long, username: String)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/teams/$id/members/$username"
     val requestBuilder = new Request.Builder().url(url).put(emptyRequestBody)
     baseRequest(requestBuilder).map {
@@ -71,7 +71,7 @@ class TeamService(config: GithubApiClientConfig) extends GithubService(config) w
   }
 
   @Deprecated
-  def deleteTeamMember(id: Long, username: String)(implicit ec: ExecutionContext): Future[Boolean] = {
+  def removeMember(id: Long, username: String)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/teams/$id/members/$username"
     val requestBuilder = new Request.Builder().url(url).delete()
     baseRequest(requestBuilder).map {
@@ -81,7 +81,7 @@ class TeamService(config: GithubApiClientConfig) extends GithubService(config) w
     }
   }
 
-  def addTeamMembership(id: Long, username: String, membership: Membership)(implicit ec: ExecutionContext): Future[Boolean] = {
+  def addMembership(id: Long, username: String, membership: Membership)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/teams/$id/memberships/$username"
     val requestBuilder = new Request.Builder().url(url).put(Map("body" → membership).toJson)
     baseRequest(requestBuilder).map {
@@ -91,7 +91,7 @@ class TeamService(config: GithubApiClientConfig) extends GithubService(config) w
     }
   }
 
-  def deleteTeamMembership(id: Long, username: String)(implicit ec: ExecutionContext): Future[Boolean] = {
+  def deleteMembership(id: Long, username: String)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/teams/$id/memberships/$username"
     val requestBuilder = new Request.Builder().url(url).delete()
     baseRequest(requestBuilder).map {
@@ -101,13 +101,13 @@ class TeamService(config: GithubApiClientConfig) extends GithubService(config) w
     }
   }
 
-  def fetchTeamRepos(id: Long)(implicit ec: ExecutionContext): Future[List[Repository]] =
+  def listRepositories(id: Long)(implicit ec: ExecutionContext): Future[List[Repository]] =
     fetchMultiple[Repository](
       s"teams/$id/repos",
       s"Fetching repositories for team id $id failed"
     )
 
-  def addTeamRepo(id: Long, repository: String, permission: Permission)(implicit ec: ExecutionContext): Future[Boolean] = {
+  def addRepository(id: Long, repository: String, permission: Permission)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/teams/$id/repos/${config.owner}/$repository"
     val requestBuilder = new Request.Builder().url(url).put(Map("body" → permission).toJson)
     baseRequest(requestBuilder).map {
@@ -117,7 +117,7 @@ class TeamService(config: GithubApiClientConfig) extends GithubService(config) w
     }
   }
 
-  def deleteTeamRepo(id: Long, repository: String)(implicit ec: ExecutionContext): Future[Boolean] = {
+  def removeRepository(id: Long, repository: String)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/teams/$id/repos/${config.owner}/$repository"
     val requestBuilder = new Request.Builder().url(url).delete()
     baseRequest(requestBuilder).map {
@@ -127,7 +127,7 @@ class TeamService(config: GithubApiClientConfig) extends GithubService(config) w
     }
   }
 
-  def isRepoManagedByTeam(id: Long, repository: String)(implicit ec: ExecutionContext): Future[Boolean] = {
+  def isRepositoryManagedByTeam(id: Long, repository: String)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/teams/$id/repos/${config.owner}/$repository"
     val requestBuilder = new Request.Builder().url(url).get()
     baseRequest(requestBuilder).map {

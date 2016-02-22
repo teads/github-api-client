@@ -8,25 +8,25 @@ import tv.teads.github.api.model._
 
 class HookService(config: GithubApiClientConfig) extends GithubService(config) with GithubApiCodecs {
 
-  def fetchOrganizationHooks(implicit ec: ExecutionContext): Future[List[Hook]] =
+  def listByOrganization(implicit ec: ExecutionContext): Future[List[Hook]] =
     fetchMultiple[Hook](
       s"orgs/${config.owner}/hooks",
       s"Fetching hooks for organization ${config.owner} failed"
     )
 
-  def fetchRepositoriesHooks(repository: String)(implicit ec: ExecutionContext): Future[List[Hook]] =
+  def listByRepository(repository: String)(implicit ec: ExecutionContext): Future[List[Hook]] =
     fetchMultiple[Hook](
       s"repos/${config.owner}/$repository/hooks",
       s"Fetching hooks for repository $repository failed"
     )
 
-  def fetchOrganizationHook(id: Long)(implicit ec: ExecutionContext): Future[Option[Hook]] =
+  def getByOrganization(id: Long)(implicit ec: ExecutionContext): Future[Option[Hook]] =
     fetchOptional[Hook](
       s"orgs/${config.owner}/hooks/$id",
       s"Fetching hook $id for organization ${config.owner} failed"
     )
 
-  def fetchRepositoryHook(repository: String, id: Long)(implicit ec: ExecutionContext): Future[Option[Hook]] =
+  def getByRepository(repository: String, id: Long)(implicit ec: ExecutionContext): Future[Option[Hook]] =
     fetchOptional[Hook](
       s"repos/${config.owner}/$repository/hooks/$id",
       s"Fetching hook $id for repository $repository failed"

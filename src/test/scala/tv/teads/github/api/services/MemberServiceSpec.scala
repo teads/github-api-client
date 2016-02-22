@@ -8,7 +8,7 @@ class MemberServiceSpec extends BaseSpec {
 
   "Member Service" should "be able to fetch the client's organization members" in {
 
-    whenReady(teadsClient.members.fetchOrgMembers) { org ⇒
+    whenReady(teadsClient.members.listOrganizationMembers) { org ⇒
       org should not be empty
     }
   }

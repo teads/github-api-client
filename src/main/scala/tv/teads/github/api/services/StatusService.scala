@@ -20,13 +20,13 @@ class StatusService(config: GithubApiClientConfig) extends GithubService(config)
     }
   }
 
-  def fetchStatuses(repository: String, sha: String)(implicit ec: ExecutionContext): Future[List[Status]] =
+  def list(repository: String, sha: String)(implicit ec: ExecutionContext): Future[List[Status]] =
     fetchMultiple[Status](
       s"repos/${config.owner}/$repository/commits/$sha/statuses",
       s"Fetching statuses for sha $sha failed"
     )
 
-  def fetchStatus(repository: String, sha: String)(implicit ec: ExecutionContext): Future[Option[CombinedStatus]] =
+  def get(repository: String, sha: String)(implicit ec: ExecutionContext): Future[Option[CombinedStatus]] =
     fetchOptional[CombinedStatus](
       s"repos/${config.owner}/$repository/commits/$sha/status",
       s"Fetching status for sha $sha failed"

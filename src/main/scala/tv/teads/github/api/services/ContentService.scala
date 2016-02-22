@@ -37,25 +37,25 @@ object ContentService extends GithubApiCodecs {
 class ContentService(config: GithubApiClientConfig) extends GithubService(config) with GithubApiCodecs {
   import ContentService._
 
-  def fetchFile(repository: String, path: String, branch: String = "master")(implicit ec: ExecutionContext): Future[Option[String]] = {
+  def getContents(repository: String, path: String, branch: String = "master")(implicit ec: ExecutionContext): Future[Option[String]] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/contents/$path"
     val httpUrl = HttpUrl.parse(url).newBuilder().addEncodedQueryParameter("ref", branch).build()
     val requestBuilder = new Request.Builder().url(httpUrl).get()
     baseRequest(requestBuilder, GithubMediaTypes.RawContentMediaType).map {
       case response if response.code() == 200 ⇒ Some(withCloseable(response.body())(_.string()))
       case response ⇒
-        failedRequest(s"Fetching file at path $path in $repository failed", response.code(), None)
+        failedRequest(s"Fetching contents at path $path in $repository failed", response.code(), None)
     }
   }
 
-  def fetchReadme(repository: String, branch: String = "master")(implicit ec: ExecutionContext): Future[Option[String]] = {
+  def getReadme(repository: String, branch: String = "master")(implicit ec: ExecutionContext): Future[Option[String]] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/readme"
     val httpUrl = HttpUrl.parse(url).newBuilder().addEncodedQueryParameter("ref", branch).build()
     val requestBuilder = new Request.Builder().url(httpUrl).get()
     baseRequest(requestBuilder, GithubMediaTypes.RawContentMediaType).map {
       case response if response.code() == 200 ⇒ Some(withCloseable(response.body())(_.string()))
       case response ⇒
-        failedRequest(s"Fetching readme on branch $branch in $repository failed", response.code(), None)
+        failedRequest(s"Fetching README on branch $branch in $repository failed", response.code(), None)
     }
   }
 
@@ -70,7 +70,7 @@ class ContentService(config: GithubApiClientConfig) extends GithubService(config
     }
   }
 
-  def editFile(repository: String, file: FileEditParam)(implicit ec: ExecutionContext): Future[Boolean] = {
+  def updateFile(repository: String, file: FileEditParam)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/contents/${file.path}"
     val encodedFile = file.copy(content = Base64.getEncoder.encodeToString(file.content.getBytes))
     val requestBuilder = new Request.Builder().url(url).put(encodedFile.toJson)

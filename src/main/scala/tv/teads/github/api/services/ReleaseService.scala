@@ -37,25 +37,25 @@ class ReleaseService(config: GithubApiClientConfig) extends GithubService(config
 
   import ReleaseService._
 
-  def listReleases(repository: String)(implicit ec: ExecutionContext): Future[List[Release]] =
+  def list(repository: String)(implicit ec: ExecutionContext): Future[List[Release]] =
     fetchMultiple[Release](
       s"repos/${config.owner}/$repository/releases",
       s"Fetching releases for repository $repository failed"
     )
 
-  def fetch(repository: String, id: Long)(implicit ec: ExecutionContext): Future[Option[Release]] =
+  def get(repository: String, id: Long)(implicit ec: ExecutionContext): Future[Option[Release]] =
     fetchOptional[Release](
       s"repos/${config.owner}/$repository/releases/$id",
       s"Fetching release $id for repository $repository failed"
     )
 
-  def latest(repository: String)(implicit ec: ExecutionContext): Future[Option[Release]] =
+  def getLatest(repository: String)(implicit ec: ExecutionContext): Future[Option[Release]] =
     fetchOptional[Release](
       s"repos/${config.owner}/$repository/releases/latest",
       s"Fetching latest release for repository $repository failed"
     )
 
-  def fetchByTag(repository: String, tag: String)(implicit ec: ExecutionContext): Future[Option[Release]] =
+  def getByTag(repository: String, tag: String)(implicit ec: ExecutionContext): Future[Option[Release]] =
     fetchOptional[Release](
       s"repos/${config.owner}/$repository/releases/tags/$tag",
       s"Fetching release by tag $tag for repository $repository failed"
@@ -99,7 +99,7 @@ class ReleaseService(config: GithubApiClientConfig) extends GithubService(config
       s"Fetching assets for release $id for repository $repository failed"
     )
 
-  def fetchAsset(repository: String, id: Long)(implicit ec: ExecutionContext): Future[Option[Asset]] =
+  def getAsset(repository: String, id: Long)(implicit ec: ExecutionContext): Future[Option[Asset]] =
     fetchOptional[Asset](
       s"repos/${config.owner}/$repository/releases/assets/$id",
       s"Fetching release asset $id for repository $repository failed"
