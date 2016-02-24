@@ -58,7 +58,8 @@ class DeploymentServiceSpec extends BaseSpec {
   it should "create a deployment status" in {
     val status = DeploymentStatusParam(
       state = DeploymentStatusState.error,
-      description = Some("github-api-client/DeploymentServiceSpec Unit test - create Deployment Status")
+      description = Some("github-api-client/DeploymentServiceSpec Unit test - create Deployment Status"),
+      target_url = Some("https://www.google.com")
     )
 
     whenReady(teadsClient.deployments.createStatus("github-api-client", 3775791, status)) { opt ⇒
