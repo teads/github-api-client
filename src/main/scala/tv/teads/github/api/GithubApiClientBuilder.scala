@@ -44,7 +44,15 @@ class GithubApiClientBuilder private[api] (builder: GithubApiClientConfigBuilder
     if (builder.owner.isEmpty) throw new IllegalStateException("User/Organization has not been configured.")
     val authenticator = builder.apiToken.map(apiTokenAuthenticator) orElse builder.credentials.map(credentialsAuthenticator)
 
-    val config = GithubApiClientConfig(builder.owner.get, builder.apiUrl, authenticator, builder.itemsPerPage, builder.maxCacheSize, builder.cacheRoot)
-    GithubApiClient(config)
+    GithubApiClient(
+      GithubApiClientConfig(
+        builder.owner.get,
+        builder.apiUrl,
+        authenticator,
+        builder.itemsPerPage,
+        builder.maxCacheSize,
+        builder.cacheRoot
+      )
+    )
   }
 }

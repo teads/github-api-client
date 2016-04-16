@@ -9,7 +9,11 @@ import scala.concurrent.{Promise, Future}
 
 import okhttp3._
 
-private[api] class OkHttpClientWrapper(authenticator: Option[Authenticator], maxCacheSize: Long, cacheRoot: File) extends LazyLogging {
+private[api] class OkHttpClientWrapper(
+    authenticator: Option[Authenticator],
+    maxCacheSize:  Long,
+    cacheRoot:     File
+) extends LazyLogging {
 
   private[this] val okHttpClient = {
     val builder = new Builder()
@@ -21,6 +25,7 @@ private[api] class OkHttpClientWrapper(authenticator: Option[Authenticator], max
     val auth = customAuthenticator orElse authenticator
     val authenticatedRequest = auth.map(_(requestBuilder)).getOrElse(requestBuilder).build()
     logger.debug(s"${authenticatedRequest.method()} ${authenticatedRequest.url()}")
+
     val promise = Promise[Response]()
     okHttpClient.newCall(authenticatedRequest).enqueue(new Callback {
       override def onFailure(call: Call, e: IOException): Unit = promise.failure(e)

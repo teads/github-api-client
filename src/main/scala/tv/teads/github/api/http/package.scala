@@ -7,7 +7,7 @@ import io.circe._, io.circe.jawn._
 import tv.teads.github.api.util.IO.withCloseable
 
 package object http extends LazyLogging {
-  private val JsonPrinter = Printer(preserveOrder = true, dropNullKeys = true, "")
+  private val JsonPrinter = Printer(preserveOrder = true, dropNullKeys = true, indent = "")
 
   implicit class RichResponse(val underlying: Response) extends AnyVal {
     def as[T: Decoder]: Xor[Int, DecodedResponse[T]] = {
@@ -15,7 +15,7 @@ package object http extends LazyLogging {
       val json = parse(bodyString)
 
       json.flatMap(Decoder[T].decodeJson).bimap(
-        error ⇒ logFailedDecoding(error, underlying.request().url().toString(), bodyString, underlying.code()),
+        error ⇒ logFailedDecoding(error, underlying.request().url().toString, bodyString, underlying.code()),
         decoded ⇒ DecodedResponse(decoded, underlying)
       )
     }
