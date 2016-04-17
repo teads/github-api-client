@@ -9,7 +9,7 @@ private[api] object CaseClassToMap {
 
   implicit class ToMapOps[A <: Product](val a: A) extends AnyVal {
 
-    def toMapStringified[L <: HList, KS <: HList, VS <: HList](
+    def toStringMap[L <: HList, KS <: HList, VS <: HList](
       implicit
       gen:    LabelledGeneric.Aux[A, L],
       keys:   Keys.Aux[L, KS],
