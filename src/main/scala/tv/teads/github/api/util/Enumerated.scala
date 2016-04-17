@@ -10,9 +10,11 @@ abstract class Enumerated[T: ClassTag] {
 
   lazy implicit val enumDecoder = Decoder.instance { cursor ⇒
     cursor.as[String].flatMap { s ⇒
-      values
-        .find(_.toString == s).map(Xor.right).
-        getOrElse(Xor.left(DecodingFailure(implicitly[ClassTag[T]].runtimeClass.getName, cursor.history)))
+      values.find(_.toString == s).map(Xor.right)
+        .getOrElse(Xor.left {
+          val className = implicitly[ClassTag[T]].runtimeClass.getName
+          DecodingFailure(s"Failed to decode $className", cursor.history)
+        })
     }
   }
 
