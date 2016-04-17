@@ -5,7 +5,7 @@ import scala.reflect.ClassTag
 import cats.data.Xor
 import io.circe._
 
-abstract class Enumerated[T: ClassTag] {
+private[api] abstract class Enumerated[T: ClassTag] {
   def values: List[T]
 
   lazy implicit val enumDecoder = Decoder.instance { cursor ⇒

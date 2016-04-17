@@ -5,7 +5,7 @@ import shapeless.record._
 import shapeless.ops.record._
 import shapeless._
 
-object CaseClassToMap {
+private[api] object CaseClassToMap {
 
   implicit class ToMapOps[A <: Product](val a: A) extends AnyVal {
 

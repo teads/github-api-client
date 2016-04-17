@@ -1,12 +1,13 @@
-package tv.teads.github.api
+package tv.teads.github.api.http
 
 import cats.data.Xor
 import okhttp3._
 import com.typesafe.scalalogging.LazyLogging
-import io.circe._, io.circe.jawn._
+import io.circe._
+import io.circe.jawn._
 import tv.teads.github.api.util.IO.withCloseable
 
-package object http extends LazyLogging {
+private[api] object Implicits extends LazyLogging {
   private val JsonPrinter = Printer(preserveOrder = true, dropNullKeys = true, indent = "")
 
   implicit class RichResponse(val underlying: Response) extends AnyVal {

@@ -10,7 +10,7 @@ import scala.util.Try
 import cats.data.Xor
 import io.circe._, io.circe.syntax._
 
-trait ZonedDateTimeCodec {
+private[api] trait ZonedDateTimeCodec {
   private implicit def toTemporalQuery[R](f: TemporalAccessor ⇒ R): TemporalQuery[R] = new TemporalQuery[R] {
     override def queryFrom(temporal: TemporalAccessor): R = f(temporal)
   }
