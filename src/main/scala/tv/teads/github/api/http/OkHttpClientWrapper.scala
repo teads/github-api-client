@@ -21,9 +21,8 @@ private[api] class OkHttpClientWrapper(
     builder.build()
   }
 
-  def executeAsync(requestBuilder: Request.Builder, customAuthenticator: Option[Authenticator]): Future[Response] = {
-    val auth = customAuthenticator orElse authenticator
-    val authenticatedRequest = auth.map(_(requestBuilder)).getOrElse(requestBuilder).build()
+  def executeAsync(requestBuilder: Request.Builder): Future[Response] = {
+    val authenticatedRequest = authenticator.map(_(requestBuilder)).getOrElse(requestBuilder).build()
     logger.debug(s"${authenticatedRequest.method()} ${authenticatedRequest.url()}")
 
     val promise = Promise[Response]()
