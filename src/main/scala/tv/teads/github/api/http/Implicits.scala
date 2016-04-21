@@ -1,32 +1,11 @@
 package tv.teads.github.api.http
 
-import cats.data.Xor
 import okhttp3._
 import com.typesafe.scalalogging.LazyLogging
 import io.circe._
-import io.circe.jawn._
-import tv.teads.github.api.util.IO.withCloseable
 
 private[api] object Implicits extends LazyLogging {
   private val JsonPrinter = Printer(preserveOrder = true, dropNullKeys = true, indent = "")
-
-  implicit class RichResponse(val underlying: Response) extends AnyVal {
-    def as[T: Decoder]: Xor[Int, DecodedResponse[T]] = {
-      val bodyString = withCloseable(underlying.body())(_.string())
-      val json = parse(bodyString)
-
-      json.flatMap(Decoder[T].decodeJson).bimap(
-        error ⇒ logFailedDecoding(error, underlying.request().url().toString, bodyString, underlying.code()),
-        decoded ⇒ DecodedResponse(decoded, underlying)
-      )
-    }
-
-    private def logFailedDecoding(error: Error, uri: String, body: String, statusCode: Int) = {
-      logger.error(s"Failed to unmarshal response body from $uri: ${error.getMessage}")
-      logger.debug(s"Response body was: $body")
-      underlying.code()
-    }
-  }
 
   implicit class TypeToResponseBody[T](val value: T) extends AnyVal {
     def toJson(implicit encoder: Encoder[T]) =

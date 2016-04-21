@@ -21,14 +21,14 @@ private[api] class OkHttpClientWrapper(
     builder.build()
   }
 
-  def executeAsync(requestBuilder: Request.Builder): Future[Response] = {
+  def executeAsync(requestBuilder: Request.Builder): Future[ResponseWrapper] = {
     val authenticatedRequest = authenticator.map(_(requestBuilder)).getOrElse(requestBuilder).build()
     logger.debug(s"${authenticatedRequest.method()} ${authenticatedRequest.url()}")
 
-    val promise = Promise[Response]()
+    val promise = Promise[ResponseWrapper]()
     okHttpClient.newCall(authenticatedRequest).enqueue(new Callback {
       override def onFailure(call: Call, e: IOException): Unit = promise.failure(e)
-      override def onResponse(call: Call, response: Response): Unit = promise.success(response)
+      override def onResponse(call: Call, response: Response): Unit = promise.success(new ResponseWrapper(response))
     })
     promise.future
   }
