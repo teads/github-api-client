@@ -37,6 +37,9 @@ class GithubApiClientBuilder private[api] (builder: GithubApiClientConfigBuilder
   def userCredentials(username: String, password: String, twoFactorAuthCode: Option[String] = None) =
     new GithubApiClientBuilder(builder.copy(credentials = Some(Credentials(username, password, twoFactorAuthCode))))
 
+  def disableCache =
+    new GithubApiClientBuilder(builder.copy(maxCacheSize = 0))
+
   def maxCacheSize(maxCacheSize: Long) =
     new GithubApiClientBuilder(builder.copy(maxCacheSize = maxCacheSize))
 
