@@ -16,11 +16,10 @@ private[api] class ResponseWrapper(val response: Response) extends LazyLogging {
 
   def as[T: Decoder]: Validated[Int, DecodedResponse[T]] = {
     rawIfExists.andThen { raw ⇒
-      val bodyString = withCloseable(response.body())(_.string())
       val json = parse(raw).toValidated.toValidatedNel
 
       json.map(_.hcursor.acursor).andThen(Decoder[T].tryDecodeAccumulating).bimap(
-        errors ⇒ logFailedDecoding(errors, response.request().url().toString, bodyString, response.code()),
+        errors ⇒ logFailedDecoding(errors, response.request().url().toString, raw, response.code()),
         decoded ⇒ DecodedResponse(decoded, response)
       )
     }
