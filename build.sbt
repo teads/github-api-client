@@ -1,7 +1,7 @@
 organization    := "tv.teads"
 name            := "github-api-client"
 scalaVersion    := "2.11.8"
-scalacOptions   := Seq("-feature", "-deprecation", "-Xlint")
+scalacOptions   := Seq("-feature", "-deprecation", "-Xlint", "-Xlint:-missing-interpolator")
 
 val circeVersion      = "0.4.1"
 val enumeratumVersion = "1.4.0"

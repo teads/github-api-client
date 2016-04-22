@@ -9,6 +9,10 @@ import tv.teads.github.api.util.IO.withCloseable
 
 class ResponseWrapper(val response: Response) extends LazyLogging {
 
+  def rawOptional: Option[String] =
+    if (response.isSuccessful) Some(withCloseable(response.body())(_.string()))
+    else None
+
   def as[T: Decoder]: Validated[Int, DecodedResponse[T]] = {
     if (response.isSuccessful) {
       val bodyString = withCloseable(response.body())(_.string())
