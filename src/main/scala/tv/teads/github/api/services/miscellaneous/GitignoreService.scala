@@ -10,22 +10,22 @@ class GitignoreService(config: GithubApiClientConfig) extends AbstractGithubServ
     with GitignoreTemplateCodec {
 
   def listAll(implicit ec: ExecutionContext): Future[Set[String]] =
-    get[Set[String]](
-      "gitignore/templates",
+    json[Set[String]](
+      getCall("gitignore/templates"),
+
       "Could not fetch all gitignore templates"
     )
 
   def get(templateName: String)(implicit ec: ExecutionContext): Future[Option[GitignoreTemplate]] =
-    getOptional[GitignoreTemplate](
-      s"gitignore/templates/$templateName",
+    jsonOptional[GitignoreTemplate](
+      getCall(s"gitignore/templates/$templateName"),
       s"Could not fetch Gitignore template $templateName"
     )
 
   def getRaw(templateName: String)(implicit ec: ExecutionContext): Future[Option[String]] =
-    getRawOptional(
-      s"gitignore/templates/$templateName",
-      s"Could not fetch Gitignore template $templateName",
-      "application/vnd.github.v3.raw"
+    rawOptional(
+      getCall(s"gitignore/templates/$templateName", "application/vnd.github.v3.raw"),
+      s"Could not fetch Gitignore template $templateName"
     )
 
 }

@@ -1,55 +1,99 @@
 package tv.teads.github.api.services
 
+import cats.syntax.option._
 import com.typesafe.scalalogging.StrictLogging
 import io.circe.Decoder
-import okhttp3.{Request, RequestBody}
+import okhttp3.{HttpUrl, Request, RequestBody}
 import tv.teads.github.api.GithubApiClientConfig
 import tv.teads.github.api.http.ResponseWrapper
+import tv.teads.github.api.http.Implicits.RichHttpUrlBuilder
 
 import scala.concurrent.{ExecutionContext, Future}
 
-abstract class AbstractGithubService(config: GithubApiClientConfig) extends StrictLogging {
+private[services] abstract class AbstractGithubService(config: GithubApiClientConfig) extends StrictLogging {
+
+  protected type EC = ExecutionContext
+  protected type FutureResponse = Future[ResponseWrapper]
+  protected type RequestBuilderF = Request.Builder ⇒ Request.Builder
+
   protected val DefaultMediaType = "application/vnd.github.v3+json"
 
   private def emptyRequestBody = RequestBody.create(null, new Array[Byte](0))
 
-  private def baseRequestBuilder(route: String): Request.Builder =
-    new Request.Builder().url(s"${config.apiUrl}/$route")
+  private def baseRequestBuilder(route: String, mediaType: String, params: Map[String, String]): Request.Builder = {
+    val url = HttpUrl.parse(s"${config.apiUrl}/$route").newBuilder.addAllParams(params).build
+    new Request.Builder().url(url).addHeader("Accept", mediaType)
+  }
 
-  private def baseRequest(requestBuilder: Request.Builder, mediaType: String): Future[ResponseWrapper] =
-    config.client.executeAsync(requestBuilder.addHeader("Accept", mediaType))
+  private def exec(
+    route:     String,
+    mediaType: String,
+    params:    Map[String, String],
+    f:         RequestBuilderF
+  ): FutureResponse = config.client.executeAsync(f(baseRequestBuilder(route, mediaType, params)))
 
-  protected def baseGet(route: String, mediaType: String): Future[ResponseWrapper] =
-    baseRequest(baseRequestBuilder(route).get(), mediaType)
+  //////////////////
+  // HTTP METHODS //
+  //////////////////
 
-  protected def get[T: Decoder](
-    route:        String,
-    errorMessage: String,
-    mediaType:    String = DefaultMediaType
-  )(implicit ec: ExecutionContext): Future[T] =
-    baseGet(route, mediaType).flatMap {
+  protected def getCall(
+    route:     String,
+    mediaType: String              = DefaultMediaType,
+    params:    Map[String, String] = Map.empty
+  ): FutureResponse = exec(route, mediaType, params, _.get())
+
+  protected def postCall(
+    route:     String,
+    mediaType: String              = DefaultMediaType,
+    params:    Map[String, String] = Map.empty,
+    body:      RequestBody         = emptyRequestBody
+  ): FutureResponse = exec(route, mediaType, params, _.post(body))
+
+  protected def patchCall(
+    route:     String,
+    mediaType: String              = DefaultMediaType,
+    params:    Map[String, String] = Map.empty,
+    body:      RequestBody         = emptyRequestBody
+  ): FutureResponse = exec(route, mediaType, params, _.patch(body))
+
+  protected def deleteCall(
+    route:     String,
+    mediaType: String              = DefaultMediaType,
+    params:    Map[String, String] = Map.empty,
+    body:      RequestBody         = emptyRequestBody
+  ): FutureResponse = exec(route, mediaType, params, _.delete(body))
+
+  ///////////////////////
+  // RESPONSE HANDLING //
+  ///////////////////////
+
+  protected def isSuccessful(future: FutureResponse)(implicit ec: EC): Future[Boolean] =
+    future.map(_.isSuccessful)
+
+  protected def json[T: Decoder](future: FutureResponse, errorMsg: String)(implicit ec: EC): Future[T] =
+    future.flatMap {
       _.as[T].fold(
-        code ⇒ Future.failed(new RuntimeException(s"$errorMessage, status code: $code")),
+        code ⇒ Future.failed(new RuntimeException(s"$errorMsg, status code: $code")),
         resp ⇒ Future.successful(resp.decoded)
       )
     }
 
-  protected def getRawOptional(
-    route:        String,
-    errorMessage: String,
-    mediaType:    String = DefaultMediaType
-  )(implicit ec: ExecutionContext): Future[Option[String]] =
-    baseGet(route, mediaType).map(_.rawOptional)
+  protected def jsonOptional[T: Decoder](future: FutureResponse, errorMsg: String)(implicit ec: EC): Future[Option[T]] =
+    future.map {
+      _.as[T].fold(
+        code ⇒ failedRequestWithDefaultValue(errorMsg, code, None),
+        _.decoded.some
+      )
+    }
 
-  protected def getOptional[T: Decoder](
-    route:        String,
-    errorMessage: String,
-    mediaType:    String = DefaultMediaType
-  )(implicit ec: ExecutionContext): Future[Option[T]] =
-    baseGet(route, mediaType).map {
-      _.as[Option[T]].fold(
-        code ⇒ failedRequestWithDefaultValue(errorMessage, code, None),
-        _.decoded
+  protected def raw(future: FutureResponse)(implicit ec: EC): Future[String] =
+    future.map(_.raw)
+
+  protected def rawOptional(future: FutureResponse, errorMsg: String)(implicit ec: EC): Future[Option[String]] =
+    future.map {
+      _.rawIfExists.fold(
+        code ⇒ failedRequestWithDefaultValue(errorMsg, code, None),
+        _.some
       )
     }
 

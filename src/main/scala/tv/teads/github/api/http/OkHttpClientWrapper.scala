@@ -17,7 +17,7 @@ private[api] class OkHttpClientWrapper(
 
   private[this] val okHttpClient = {
     val builder = new Builder()
-    if (maxCacheSize != 0) builder.cache(new Cache(cacheRoot, maxCacheSize))
+    if (maxCacheSize > 0) builder.cache(new Cache(cacheRoot, maxCacheSize))
     builder.build()
   }
 

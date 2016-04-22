@@ -10,8 +10,8 @@ class MetaService(config: GithubApiClientConfig) extends AbstractGithubService(c
     with GithubApiInfoCodec {
 
   def get(implicit ec: ExecutionContext): Future[GithubApiInfo] =
-    get[GithubApiInfo](
-      "meta",
+    json[GithubApiInfo](
+      getCall("meta"),
       "Could not fetch Github API information"
     )
 

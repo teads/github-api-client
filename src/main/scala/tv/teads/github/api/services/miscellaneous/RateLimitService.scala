@@ -10,8 +10,8 @@ class RateLimitService(config: GithubApiClientConfig) extends AbstractGithubServ
     with RateLimitCodec {
 
   def get(implicit ec: ExecutionContext): Future[RateLimit] =
-    get[RateLimit](
-      "rate_limit",
+    json[RateLimit](
+      getCall("rate_limit"),
       "Could not fetch rate limit"
     )
 }

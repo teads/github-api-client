@@ -13,17 +13,15 @@ class LicensesService(config: GithubApiClientConfig) extends AbstractGithubServi
   private val licensePreviewMediaType = "application/vnd.github.drax-preview+json"
 
   def listAll(implicit ec: ExecutionContext): Future[Set[LicenseSummary]] =
-    get[Set[LicenseSummary]](
-      "licenses",
-      "Could not fetch all licenses",
-      licensePreviewMediaType
+    json[Set[LicenseSummary]](
+      getCall("licenses", licensePreviewMediaType),
+      "Could not fetch all licenses"
     )
 
   def get(licenseKey: String)(implicit ec: ExecutionContext): Future[Option[LicenseFull]] =
-    getOptional[LicenseFull](
-      s"licenses/$licenseKey",
-      s"Could not fetch license $licenseKey",
-      licensePreviewMediaType
+    jsonOptional[LicenseFull](
+      getCall(s"licenses/$licenseKey", licensePreviewMediaType),
+      s"Could not fetch license $licenseKey"
     )
 
 }

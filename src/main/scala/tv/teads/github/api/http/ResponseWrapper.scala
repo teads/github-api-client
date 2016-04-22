@@ -7,24 +7,22 @@ import io.circe.jawn._
 import okhttp3.Response
 import tv.teads.github.api.util.IO.withCloseable
 
-class ResponseWrapper(val response: Response) extends LazyLogging {
+private[api] class ResponseWrapper(val response: Response) extends LazyLogging {
 
-  def rawOptional: Option[String] =
-    if (response.isSuccessful) Some(withCloseable(response.body())(_.string()))
-    else None
+  def isSuccessful = response.isSuccessful
+  def raw: String = withCloseable(response.body())(_.string())
+  def rawIfExists: Validated[Int, String] =
+    if (response.isSuccessful) Validated.Valid(raw) else Validated.invalid(response.code())
 
   def as[T: Decoder]: Validated[Int, DecodedResponse[T]] = {
-    if (response.isSuccessful) {
+    rawIfExists.andThen { raw ⇒
       val bodyString = withCloseable(response.body())(_.string())
-      val json = parse(bodyString).toValidated.toValidatedNel
+      val json = parse(raw).toValidated.toValidatedNel
 
       json.map(_.hcursor.acursor).andThen(Decoder[T].tryDecodeAccumulating).bimap(
         errors ⇒ logFailedDecoding(errors, response.request().url().toString, bodyString, response.code()),
         decoded ⇒ DecodedResponse(decoded, response)
       )
-    } else {
-      response.body().close()
-      Validated.Invalid(response.code())
     }
   }
 
