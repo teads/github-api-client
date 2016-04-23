@@ -13,6 +13,7 @@ libraryDependencies += "com.squareup.okhttp3"        % "okhttp"           % "3.2
 libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging"    % "3.1.0"
 libraryDependencies += "com.beachape"               %% "enumeratum"       % enumeratumVersion
 libraryDependencies += "com.beachape"               %% "enumeratum-circe" % enumeratumVersion
+libraryDependencies += "org.slf4j"                   % "jul-to-slf4j"     % "1.7.21"          % "runtime"
 
 
 libraryDependencies += "org.scalatest"     %% "scalatest"       % "2.2.6"     % "test"
