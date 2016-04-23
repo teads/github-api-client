@@ -58,6 +58,13 @@ private[services] abstract class AbstractGithubService(config: GithubApiClientCo
     body:      RequestBody         = emptyRequestBody
   ): FutureResponse = exec(route, mediaType, params, _.post(body))
 
+  protected def putCall(
+    route:     String,
+    mediaType: String              = DefaultMediaType,
+    params:    Map[String, String] = Map.empty,
+    body:      RequestBody         = emptyRequestBody
+  ): FutureResponse = exec(route, mediaType, params, _.put(body))
+
   protected def patchCall(
     route:     String,
     mediaType: String              = DefaultMediaType,
