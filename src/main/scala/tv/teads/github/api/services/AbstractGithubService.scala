@@ -11,13 +11,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
 private[services] abstract class AbstractGithubService(config: GithubApiClientConfig) extends StrictLogging {
 
-  private val JsonPrinter = Printer(preserveOrder = true, dropNullKeys = true, indent = "")
-
   protected type EC = ExecutionContext
   protected type FutureResponse = Future[ResponseWrapper]
   protected type RequestBuilderF = Request.Builder ⇒ Request.Builder
 
-  protected val DefaultMediaType = "application/vnd.github.v3+json"
+  private val JsonPrinter = Printer(preserveOrder = true, dropNullKeys = true, indent = "")
+  private val DefaultMediaType = "application/vnd.github.v3+json"
+
 
   private def emptyRequestBody = RequestBody.create(null, new Array[Byte](0))
 
