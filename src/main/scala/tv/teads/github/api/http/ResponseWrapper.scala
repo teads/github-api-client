@@ -12,7 +12,11 @@ private[api] class ResponseWrapper(val response: Response) extends LazyLogging {
   def isSuccessful = response.isSuccessful
   def raw: String = withCloseable(response.body())(_.string())
   def rawIfExists: Validated[Int, String] =
-    if (response.isSuccessful) Validated.Valid(raw) else Validated.invalid(response.code())
+    if (response.isSuccessful) Validated.Valid(raw)
+    else {
+      response.body().close() // Response body must always be closed
+      Validated.invalid(response.code())
+    }
 
   def as[T: Decoder]: Validated[Int, DecodedResponse[T]] = {
     rawIfExists.andThen { raw ⇒
