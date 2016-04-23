@@ -2,12 +2,13 @@ package tv.teads.github.api.model.miscellaneous
 
 import enumeratum._
 import io.circe.generic.semiauto._
+import tv.teads.github.api.model.JsonEnum
 
 sealed abstract class MarkdownRenderMode(name: String) extends EnumEntry {
   override def entryName = name
 }
 
-object MarkdownRenderMode extends CirceEnum[MarkdownRenderMode] with Enum[MarkdownRenderMode] {
+object MarkdownRenderMode extends JsonEnum[MarkdownRenderMode] {
   override val values: Seq[MarkdownRenderMode] = findValues
 
   case object PlainMarkdown extends MarkdownRenderMode("markdown")

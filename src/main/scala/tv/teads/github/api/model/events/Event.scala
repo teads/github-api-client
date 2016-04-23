@@ -2,10 +2,11 @@ package tv.teads.github.api.model.events
 
 import enumeratum._
 import enumeratum.EnumEntry.Snakecase
+import tv.teads.github.api.model.JsonEnum
 
 sealed abstract class Event extends EnumEntry with Snakecase
 
-object Event extends CirceEnum[Event] with Enum[Event] {
+object Event extends JsonEnum[Event] {
   override val values: Seq[Event] = findValues
 
   case object CommitComment extends Event
