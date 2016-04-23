@@ -8,7 +8,7 @@ class RepositoryServiceSpec extends BaseSpec {
 
   "Repository Service" should "be able to fetch all repositories" in {
 
-    whenReady(teadsClient.repositories.fetchAllRepositories) { list ⇒
+    whenReady(teadsClient.repositories.list) { list ⇒
       list should not be empty
     }
   }
@@ -38,13 +38,13 @@ class RepositoryServiceSpec extends BaseSpec {
   }
   it should "be able to fetch github-api-client master Branch" in {
 
-    whenReady(teadsClient.repositories.fetchBranch("github-api-client", "master")) { list ⇒
+    whenReady(teadsClient.repositories.getBranch("github-api-client", "master")) { list ⇒
       list should not be empty
     }
   }
   it should "be able to fetch github-api-client repository" in {
 
-    whenReady(teadsClient.repositories.fetch("github-api-client")) { list ⇒
+    whenReady(teadsClient.repositories.get("github-api-client")) { list ⇒
       list should not be empty
     }
   }

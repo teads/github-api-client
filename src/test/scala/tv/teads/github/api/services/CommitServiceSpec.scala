@@ -15,7 +15,7 @@ class CommitServiceSpec extends BaseSpec {
   }
   it should "be able to fetch github-api-client commit cd0a8c2d4093ae78fa8587106622740249674bdc" in {
 
-    whenReady(teadsClient.commits.fetch("github-api-client", "cd0a8c2d4093ae78fa8587106622740249674bdc")) { list ⇒
+    whenReady(teadsClient.commits.get("github-api-client", "cd0a8c2d4093ae78fa8587106622740249674bdc")) { list ⇒
       list should not be empty
     }
   }

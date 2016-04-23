@@ -37,30 +37,63 @@ class ReleaseService(config: GithubApiClientConfig) extends GithubService(config
 
   import ReleaseService._
 
-  def listReleases(repository: String)(implicit ec: ExecutionContext): Future[List[Release]] =
+  /**
+   * @see https://developer.github.com/v3/repos/releases/#list-releases-for-a-repository
+   * @param repository
+   * @param ec
+   * @return
+   */
+  def list(repository: String)(implicit ec: ExecutionContext): Future[List[Release]] =
     fetchMultiple[Release](
       s"repos/${config.owner}/$repository/releases",
       s"Fetching releases for repository $repository failed"
     )
 
-  def fetch(repository: String, id: Long)(implicit ec: ExecutionContext): Future[Option[Release]] =
+  /**
+   * @see https://developer.github.com/v3/repos/releases/#get-a-single-release
+   * @param repository
+   * @param id
+   * @param ec
+   * @return
+   */
+  def get(repository: String, id: Long)(implicit ec: ExecutionContext): Future[Option[Release]] =
     fetchOptional[Release](
       s"repos/${config.owner}/$repository/releases/$id",
       s"Fetching release $id for repository $repository failed"
     )
 
-  def latest(repository: String)(implicit ec: ExecutionContext): Future[Option[Release]] =
+  /**
+   * @see https://developer.github.com/v3/repos/releases/#get-the-latest-release
+   * @param repository
+   * @param ec
+   * @return
+   */
+  def getLatest(repository: String)(implicit ec: ExecutionContext): Future[Option[Release]] =
     fetchOptional[Release](
       s"repos/${config.owner}/$repository/releases/latest",
       s"Fetching latest release for repository $repository failed"
     )
 
-  def fetchByTag(repository: String, tag: String)(implicit ec: ExecutionContext): Future[Option[Release]] =
+  /**
+   * @see https://developer.github.com/v3/repos/releases/#get-a-release-by-tag-name
+   * @param repository
+   * @param tag
+   * @param ec
+   * @return
+   */
+  def getByTag(repository: String, tag: String)(implicit ec: ExecutionContext): Future[Option[Release]] =
     fetchOptional[Release](
       s"repos/${config.owner}/$repository/releases/tags/$tag",
       s"Fetching release by tag $tag for repository $repository failed"
     )
 
+  /**
+   * @see https://developer.github.com/v3/repos/releases/#create-a-release
+   * @param repository
+   * @param release
+   * @param ec
+   * @return
+   */
   def create(repository: String, release: ReleaseParam)(implicit ec: ExecutionContext): Future[Option[Release]] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/releases"
     val requestBuilder = new Request.Builder().url(url).post(release.toJson)
@@ -72,6 +105,14 @@ class ReleaseService(config: GithubApiClientConfig) extends GithubService(config
     }
   }
 
+  /**
+   * @see https://developer.github.com/v3/repos/releases/#edit-a-release
+   * @param repository
+   * @param id
+   * @param release
+   * @param ec
+   * @return
+   */
   def edit(repository: String, id: Long, release: ReleaseParam)(implicit ec: ExecutionContext): Future[Option[Release]] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/releases/$id"
     val requestBuilder = new Request.Builder().url(url).patch(release.toJson)
@@ -83,6 +124,13 @@ class ReleaseService(config: GithubApiClientConfig) extends GithubService(config
     }
   }
 
+  /**
+   * @see https://developer.github.com/v3/repos/releases/#delete-a-release
+   * @param repository
+   * @param id
+   * @param ec
+   * @return
+   */
   def delete(repository: String, id: Long)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/releases/$id"
     val requestBuilder = new Request.Builder().url(url).delete()
@@ -93,18 +141,39 @@ class ReleaseService(config: GithubApiClientConfig) extends GithubService(config
     }
   }
 
+  /**
+   * @see https://developer.github.com/v3/repos/releases/#list-assets-for-a-release
+   * @param repository
+   * @param id
+   * @param ec
+   * @return
+   */
   def listAssets(repository: String, id: Long)(implicit ec: ExecutionContext): Future[List[Asset]] =
     fetchMultiple[Asset](
       s"repos/${config.owner}/$repository/releases/$id/assets",
       s"Fetching assets for release $id for repository $repository failed"
     )
 
-  def fetchAsset(repository: String, id: Long)(implicit ec: ExecutionContext): Future[Option[Asset]] =
+  /**
+   * @see https://developer.github.com/v3/repos/releases/#get-a-single-release-asset
+   * @param repository
+   * @param id
+   * @param ec
+   * @return
+   */
+  def getAsset(repository: String, id: Long)(implicit ec: ExecutionContext): Future[Option[Asset]] =
     fetchOptional[Asset](
       s"repos/${config.owner}/$repository/releases/assets/$id",
       s"Fetching release asset $id for repository $repository failed"
     )
 
+  /**
+   * @see https://developer.github.com/v3/repos/releases/#delete-a-release-asset
+   * @param repository
+   * @param id
+   * @param ec
+   * @return
+   */
   def deleteAsset(repository: String, id: Long)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/releases/assets/$id"
     val requestBuilder = new Request.Builder().url(url).delete()

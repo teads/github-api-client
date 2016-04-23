@@ -41,21 +41,21 @@ class IssueServiceSpec extends BaseSpec {
   it should "be able to fetch github-api-client Open issues" in {
     val filter = IssueFilter(state = Some(IssueState.open))
 
-    whenReady(teadsClient.issues.byRepository("github-api-client", filter)) { list ⇒
+    whenReady(teadsClient.issues.list("github-api-client", filter)) { list ⇒
       list should not be empty
     }
   }
 
   it should "be able to fetch github-api-client Pull Request (as issue) comments" in {
 
-    whenReady(teadsClient.issues.fetchIssueComments("github-api-client", 115)) { list ⇒
+    whenReady(teadsClient.issues.listIssueComments("github-api-client", 115)) { list ⇒
       list should not be empty
     }
   }
 
   it should "be able to fetch github-api-client issues comments" in {
 
-    whenReady(teadsClient.issues.fetchComments("github-api-client")) { list ⇒
+    whenReady(teadsClient.issues.listComments("github-api-client")) { list ⇒
       list should not be empty
     }
   }
@@ -64,7 +64,7 @@ class IssueServiceSpec extends BaseSpec {
 
     val commentId = 150513228
 
-    whenReady(teadsClient.issues.fetchComment("github-api-client", commentId)) { opt ⇒
+    whenReady(teadsClient.issues.getComment("github-api-client", commentId)) { opt ⇒
       opt should not be empty
     }
   }

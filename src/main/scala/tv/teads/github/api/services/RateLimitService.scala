@@ -11,7 +11,12 @@ class RateLimitService(config: GithubApiClientConfig) extends GithubService(conf
 
   private val DefaultRateLimit = RateLimit(Resources(Core(0, 0, 0), Core(0, 0, 0)))
 
-  def getRateLimit(implicit ec: ExecutionContext): Future[RateLimit] = {
+  /**
+   * @see https://developer.github.com/v3/rate_limit/
+   * @param ec
+   * @return
+   */
+  def get(implicit ec: ExecutionContext): Future[RateLimit] = {
     val requestBuilder = new Request.Builder().url(s"${config.apiUrl}/rate_limit").get()
     baseRequest(requestBuilder).map {
       _.as[RateLimit].fold(

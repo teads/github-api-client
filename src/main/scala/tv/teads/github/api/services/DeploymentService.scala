@@ -46,6 +46,13 @@ class DeploymentService(config: GithubApiClientConfig) extends GithubService(con
 
   import DeploymentService._
 
+  /**
+   * @see https://developer.github.com/v3/repos/deployments/#list-deployments
+   * @param repository
+   * @param filter
+   * @param ec
+   * @return
+   */
   def list(repository: String, filter: DeploymentFilter)(implicit ec: ExecutionContext): Future[List[Deployment]] =
     fetchMultiple[Deployment](
       s"repos/${config.owner}/$repository/deployments",
@@ -53,6 +60,13 @@ class DeploymentService(config: GithubApiClientConfig) extends GithubService(con
       filter.toMapStringified
     )
 
+  /**
+   * @see https://developer.github.com/v3/repos/deployments/#create-a-deployment
+   * @param repository
+   * @param deployment
+   * @param ec
+   * @return
+   */
   def create(repository: String, deployment: DeploymentParam)(implicit ec: ExecutionContext): Future[Option[Deployment]] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/deployments"
     val requestBuilder = new Request.Builder().url(url).post(deployment.toJson)
@@ -64,12 +78,27 @@ class DeploymentService(config: GithubApiClientConfig) extends GithubService(con
     }
   }
 
+  /**
+   * @see https://developer.github.com/v3/repos/deployments/#list-deployment-statuses
+   * @param repository
+   * @param deploymentId
+   * @param ec
+   * @return
+   */
   def listStatuses(repository: String, deploymentId: Long)(implicit ec: ExecutionContext): Future[List[DeploymentStatus]] =
     fetchMultiple[DeploymentStatus](
       s"repos/${config.owner}/$repository/deployments/$deploymentId/statuses",
       s"Fetching repository $repository deployment $deploymentId statuses failed"
     )
 
+  /**
+   * @see https://developer.github.com/v3/repos/deployments/#create-a-deployment-status
+   * @param repository
+   * @param deploymentId
+   * @param deploymentStatus
+   * @param ec
+   * @return
+   */
   def createStatus(repository: String, deploymentId: Long, deploymentStatus: DeploymentStatusParam)(implicit ec: ExecutionContext): Future[Option[DeploymentStatus]] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/deployments/$deploymentId/statuses"
     val requestBuilder = new Request.Builder().url(url).post(deploymentStatus.toJson)

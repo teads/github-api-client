@@ -37,28 +37,50 @@ object ContentService extends GithubApiCodecs {
 class ContentService(config: GithubApiClientConfig) extends GithubService(config) with GithubApiCodecs {
   import ContentService._
 
-  def fetchFile(repository: String, path: String, branch: String = "master")(implicit ec: ExecutionContext): Future[Option[String]] = {
+  /**
+   * @see https://developer.github.com/v3/repos/contents/#get-contents
+   * @param repository
+   * @param path
+   * @param branch
+   * @param ec
+   * @return
+   */
+  def getContents(repository: String, path: String, branch: String = "master")(implicit ec: ExecutionContext): Future[Option[String]] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/contents/$path"
     val httpUrl = HttpUrl.parse(url).newBuilder().addEncodedQueryParameter("ref", branch).build()
     val requestBuilder = new Request.Builder().url(httpUrl).get()
     baseRequest(requestBuilder, GithubMediaTypes.RawContentMediaType).map {
       case response if response.code() == 200 ⇒ Some(withCloseable(response.body())(_.string()))
       case response ⇒
-        failedRequest(s"Fetching file at path $path in $repository failed", response.code(), None)
+        failedRequest(s"Fetching contents at path $path in $repository failed", response.code(), None)
     }
   }
 
-  def fetchReadme(repository: String, branch: String = "master")(implicit ec: ExecutionContext): Future[Option[String]] = {
+  /**
+   * @see https://developer.github.com/v3/repos/contents/#get-the-readme
+   * @param repository
+   * @param branch
+   * @param ec
+   * @return
+   */
+  def getReadme(repository: String, branch: String = "master")(implicit ec: ExecutionContext): Future[Option[String]] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/readme"
     val httpUrl = HttpUrl.parse(url).newBuilder().addEncodedQueryParameter("ref", branch).build()
     val requestBuilder = new Request.Builder().url(httpUrl).get()
     baseRequest(requestBuilder, GithubMediaTypes.RawContentMediaType).map {
       case response if response.code() == 200 ⇒ Some(withCloseable(response.body())(_.string()))
       case response ⇒
-        failedRequest(s"Fetching readme on branch $branch in $repository failed", response.code(), None)
+        failedRequest(s"Fetching README on branch $branch in $repository failed", response.code(), None)
     }
   }
 
+  /**
+   * @see https://developer.github.com/v3/repos/contents/#create-a-file
+   * @param repository
+   * @param file
+   * @param ec
+   * @return
+   */
   def createFile(repository: String, file: FileCreateParam)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/contents/${file.path}"
     val encodedFile = file.copy(content = Base64.getEncoder.encodeToString(file.content.getBytes))
@@ -70,7 +92,14 @@ class ContentService(config: GithubApiClientConfig) extends GithubService(config
     }
   }
 
-  def editFile(repository: String, file: FileEditParam)(implicit ec: ExecutionContext): Future[Boolean] = {
+  /**
+   * @see https://developer.github.com/v3/repos/contents/#update-a-file
+   * @param repository
+   * @param file
+   * @param ec
+   * @return
+   */
+  def updateFile(repository: String, file: FileEditParam)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/contents/${file.path}"
     val encodedFile = file.copy(content = Base64.getEncoder.encodeToString(file.content.getBytes))
     val requestBuilder = new Request.Builder().url(url).put(encodedFile.toJson)
@@ -81,6 +110,13 @@ class ContentService(config: GithubApiClientConfig) extends GithubService(config
     }
   }
 
+  /**
+   * @see https://developer.github.com/v3/repos/contents/#delete-a-file
+   * @param repository
+   * @param file
+   * @param ec
+   * @return
+   */
   def deleteFile(repository: String, file: FileEditParam)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = s"${config.apiUrl}/repos/${config.owner}/$repository/contents/${file.path}"
     val requestBuilder = new Request.Builder().url(url).delete()
