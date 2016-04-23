@@ -2,15 +2,16 @@ package tv.teads.github.api.services
 
 import cats.syntax.option._
 import com.typesafe.scalalogging.StrictLogging
-import io.circe.Decoder
-import okhttp3.{HttpUrl, Request, RequestBody}
+import io.circe.{Decoder, Encoder, Printer}
+import okhttp3.{HttpUrl, MediaType, Request, RequestBody}
 import tv.teads.github.api.GithubApiClientConfig
 import tv.teads.github.api.http.ResponseWrapper
-import tv.teads.github.api.http.Implicits.RichHttpUrlBuilder
 
 import scala.concurrent.{ExecutionContext, Future}
 
 private[services] abstract class AbstractGithubService(config: GithubApiClientConfig) extends StrictLogging {
+
+  private val JsonPrinter = Printer(preserveOrder = true, dropNullKeys = true, indent = "")
 
   protected type EC = ExecutionContext
   protected type FutureResponse = Future[ResponseWrapper]
@@ -21,7 +22,10 @@ private[services] abstract class AbstractGithubService(config: GithubApiClientCo
   private def emptyRequestBody = RequestBody.create(null, new Array[Byte](0))
 
   private def baseRequestBuilder(route: String, mediaType: String, params: Map[String, String]): Request.Builder = {
-    val url = HttpUrl.parse(s"${config.apiUrl}/$route").newBuilder.addAllParams(params).build
+    def addAllParams(builder: HttpUrl.Builder, params: Map[String, String]) =
+      params.foldLeft(builder) { case (b, (k, v)) ⇒ b.addEncodedQueryParameter(k, v) }
+
+    val url = addAllParams(HttpUrl.parse(s"${config.apiUrl}/$route").newBuilder, params).build
     new Request.Builder().url(url).addHeader("Accept", mediaType)
   }
 
@@ -31,6 +35,12 @@ private[services] abstract class AbstractGithubService(config: GithubApiClientCo
     params:    Map[String, String],
     f:         RequestBuilderF
   ): FutureResponse = config.client.executeAsync(f(baseRequestBuilder(route, mediaType, params)))
+
+  protected def jsonRequestBody[T: Encoder](json: T): RequestBody =
+    RequestBody.create(
+      MediaType.parse("application/json"),
+      Encoder[T].apply(json).pretty(JsonPrinter)
+    )
 
   //////////////////
   // HTTP METHODS //
