@@ -3,7 +3,7 @@ package tv.teads.github.api.model.events
 import enumeratum._
 import enumeratum.EnumEntry.Snakecase
 
-sealed trait Event extends EnumEntry with Snakecase
+sealed abstract class Event extends EnumEntry with Snakecase
 
 object Event extends CirceEnum[Event] with Enum[Event] {
   override val values: Seq[Event] = findValues
