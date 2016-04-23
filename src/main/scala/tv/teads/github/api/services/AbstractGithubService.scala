@@ -18,7 +18,6 @@ private[services] abstract class AbstractGithubService(config: GithubApiClientCo
   private val JsonPrinter = Printer(preserveOrder = true, dropNullKeys = true, indent = "")
   private val DefaultMediaType = "application/vnd.github.v3+json"
 
-
   private def emptyRequestBody = RequestBody.create(null, new Array[Byte](0))
 
   private def baseRequestBuilder(route: String, mediaType: String, params: Map[String, String]): Request.Builder = {
