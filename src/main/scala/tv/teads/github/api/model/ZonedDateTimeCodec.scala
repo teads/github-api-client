@@ -1,14 +1,15 @@
-package tv.teads.github.api.json
+package tv.teads.github.api.model
 
 import java.time._
 import java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME
-import java.time.temporal.{TemporalQuery, TemporalAccessor}
+import java.time.temporal.{TemporalAccessor, TemporalQuery}
+
+import cats.data.Xor
+import io.circe._
+import io.circe.syntax._
 
 import scala.language.implicitConversions
 import scala.util.Try
-
-import cats.data.Xor
-import io.circe._, io.circe.syntax._
 
 private[api] trait ZonedDateTimeCodec {
   private implicit def toTemporalQuery[R](f: TemporalAccessor ⇒ R): TemporalQuery[R] = new TemporalQuery[R] {
