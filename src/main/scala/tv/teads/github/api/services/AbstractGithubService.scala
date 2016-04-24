@@ -95,13 +95,16 @@ private[services] abstract class AbstractGithubService(config: GithubApiClientCo
       )
     }
 
-  protected def jsonOptional[T: Decoder](future: FutureResponse, errorMsg: String)(implicit ec: EC): Future[Option[T]] =
+  protected def jsonOptionalIfFailed[T: Decoder](future: FutureResponse, errorMsg: String)(implicit ec: EC): Future[Option[T]] =
     future.map {
       _.as[T].fold(
         code ⇒ failedRequestWithDefaultValue(errorMsg, code, None),
         _.decoded.some
       )
     }
+
+  protected def jsonNilIfFailed[T: Decoder](future: FutureResponse, errorMsg: String)(implicit ec: EC): Future[List[T]] =
+    jsonOptionalIfFailed[List[T]](future, errorMsg).map(_.getOrElse(Nil))
 
   protected def raw(future: FutureResponse)(implicit ec: EC): Future[String] =
     future.map(_.raw)

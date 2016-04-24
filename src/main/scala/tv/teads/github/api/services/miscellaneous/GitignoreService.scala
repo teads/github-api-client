@@ -9,15 +9,15 @@ import scala.concurrent.Future
 class GitignoreService(config: GithubApiClientConfig) extends AbstractGithubService(config)
     with GitignoreTemplateCodec {
 
-  def listAll(implicit ec: EC): Future[Set[String]] =
-    json[Set[String]](
+  def listAll(implicit ec: EC): Future[List[String]] =
+    json[List[String]](
       getCall("gitignore/templates"),
 
       "Could not fetch all gitignore templates"
     )
 
   def get(templateName: String)(implicit ec: EC): Future[Option[GitignoreTemplate]] =
-    jsonOptional[GitignoreTemplate](
+    jsonOptionalIfFailed[GitignoreTemplate](
       getCall(s"gitignore/templates/$templateName"),
       s"Could not fetch Gitignore template $templateName"
     )
