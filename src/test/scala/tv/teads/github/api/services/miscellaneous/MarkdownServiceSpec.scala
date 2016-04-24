@@ -16,13 +16,13 @@ class MarkdownServiceSpec extends AbstractServiceSpec {
     }
 
     "be able to render Github Flavored Markdown" in {
-      val text = "Commit d42f9d85556419a56ac01b5224c388d79470c914"
+      val text = "Commit 6f9082b7d99ba5af109d55ce8972afd4a50b8442"
       val gfm = MarkdownRenderMode.GithubFlavoredMarkdown
       val request = MarkdownRenderingRequest(text, "teads/github-api-client_test", gfm)
 
       whenReady(teadsClient.miscellaneous.markdown.render(request)) { md ⇒
         md shouldBe
-          "<p>Commit <a href=\"https://github.com/teads/github-api-client_test/commit/d42f9d85556419a56ac01b5224c388d79470c914\" class=\"commit-link\"><tt>d42f9d8</tt></a></p>"
+          "<p>Commit <a href=\"https://github.com/teads/github-api-client_test/commit/6f9082b7d99ba5af109d55ce8972afd4a50b8442\" class=\"commit-link\"><tt>6f9082b</tt></a></p>"
       }
     }
   }
