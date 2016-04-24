@@ -17,6 +17,7 @@ private[services] abstract class AbstractGithubService(config: GithubApiClientCo
 
   private val JsonPrinter = Printer(preserveOrder = true, dropNullKeys = true, indent = "")
   private val DefaultMediaType = "application/vnd.github.v3+json"
+  private val PagesNavRegex = """(?:\s*)<(.+)>; rel="(.+)"""".r
 
   private def emptyRequestBody = RequestBody.create(null, new Array[Byte](0))
 
@@ -24,7 +25,7 @@ private[services] abstract class AbstractGithubService(config: GithubApiClientCo
     def addAllParams(builder: HttpUrl.Builder, params: Map[String, String]) =
       params.foldLeft(builder) { case (b, (k, v)) ⇒ b.addEncodedQueryParameter(k, v) }
 
-    val url = addAllParams(HttpUrl.parse(s"${config.apiUrl}/$route").newBuilder, params).build
+    val url = addAllParams(HttpUrl.parse(s"${config.apiUrl}/$route").newBuilder, params).toString
     new Request.Builder().url(url).addHeader("Accept", mediaType)
   }
 
@@ -116,6 +117,44 @@ private[services] abstract class AbstractGithubService(config: GithubApiClientCo
   protected def failedRequestWithDefaultValue[T](errorMessage: String, statusCode: Int, defaultValue: T) = {
     logger.error(s"$errorMessage, status code: $statusCode")
     defaultValue
+  }
+
+  //////////////////////
+  // PAGINATION (GET) //
+  //////////////////////
+
+  protected def singlePageGetCall(
+    route:     String,
+    page:      Int,
+    mediaType: String              = DefaultMediaType,
+    params:    Map[String, String] = Map.empty
+  ): FutureResponse = {
+    require(page > 0, "Page numbers are 1-based (https://developer.github.com/v3/#pagination)")
+    val pageParams = Map("page" → page.toString, "per_page" → config.itemsPerPage.toString)
+    getCall(route, mediaType, params ++ pageParams)
+  }
+
+  protected def allPagesGetCall(
+    route:     String,
+    mediaType: String              = DefaultMediaType,
+    params:    Map[String, String] = Map.empty
+  )(implicit ec: EC): Future[List[ResponseWrapper]] = {
+    def findNextPageUrl(linkHeader: String): Option[String] =
+      linkHeader.split(",")
+        .collectFirst { case PagesNavRegex(link, rel) if rel == "next" ⇒ link }
+
+    def fetchAux(
+      current:        FutureResponse,
+      alreadyFetched: Future[List[ResponseWrapper]]
+    )(implicit ec: EC): Future[List[ResponseWrapper]] =
+      current.flatMap { currentResponse ⇒
+        val linkHeader = Option(currentResponse.response.headers().get("Link"))
+        linkHeader.flatMap(findNextPageUrl)
+          .map(next ⇒ fetchAux(getCall(next, mediaType, params), alreadyFetched))
+          .getOrElse(alreadyFetched)
+      }
+
+    fetchAux(getCall(route, mediaType, params), Future.successful(Nil))
   }
 
 }
