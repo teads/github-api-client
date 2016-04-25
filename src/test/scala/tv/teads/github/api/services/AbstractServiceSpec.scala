@@ -1,7 +1,7 @@
 package tv.teads.github.api.services
 
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.{WordSpec, Matchers, OptionValues}
+import org.scalatest.concurrent.{Eventually, ScalaFutures}
+import org.scalatest.{Matchers, OptionValues, WordSpec}
 import tv.teads.github.api.GithubApiClientBuilder
 
 import scala.concurrent.ExecutionContext
@@ -11,7 +11,8 @@ abstract class AbstractServiceSpec
     extends WordSpec
     with Matchers
     with OptionValues
-    with ScalaFutures {
+    with ScalaFutures
+    with Eventually {
 
   implicit val ec = ExecutionContext.global
 
