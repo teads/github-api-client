@@ -1,14 +1,14 @@
 package tv.teads.github.api.services.miscellaneous
 
+import io.circe.generic.auto._
 import tv.teads.github.api.GithubApiClientConfig
-import tv.teads.github.api.model.miscellaneous.{LicenseFull, LicenseFullCodec, LicenseSummary, LicenseSummaryCodec}
+import tv.teads.github.api.model.miscellaneous.{LicenseFull, LicenseSummary}
 import tv.teads.github.api.services.AbstractGithubService
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 // TODO: get repository's license
-class LicensesService(config: GithubApiClientConfig) extends AbstractGithubService(config)
-    with LicenseSummaryCodec with LicenseFullCodec {
+class LicensesService(config: GithubApiClientConfig) extends AbstractGithubService(config) {
 
   private val licensePreviewMediaType = "application/vnd.github.drax-preview+json"
 

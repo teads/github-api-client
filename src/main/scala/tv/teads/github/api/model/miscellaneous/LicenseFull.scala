@@ -2,8 +2,8 @@ package tv.teads.github.api.model.miscellaneous
 
 import io.circe._
 
-trait LicenseFullCodec {
-  implicit val licenseFullDecoder =
+object LicenseFull {
+  implicit final val LicenseFullDecoder =
     Decoder.forProduct11(
       "key", "name", "html_url", "featured", "description", "category",
       "implementation", "required", "permitted", "forbidden", "body"

@@ -1,7 +1,6 @@
 package tv.teads.github.api.model.miscellaneous
 
 import enumeratum._
-import io.circe.generic.semiauto._
 import tv.teads.github.api.model.JsonEnum
 
 sealed abstract class MarkdownRenderMode(name: String) extends EnumEntry {
@@ -15,9 +14,6 @@ object MarkdownRenderMode extends JsonEnum[MarkdownRenderMode] {
   case object GithubFlavoredMarkdown extends MarkdownRenderMode("gfm")
 }
 
-trait MarkdownRenderingRequestCodec {
-  implicit val markdownRenderingRequestEncoder = deriveEncoder[MarkdownRenderingRequest]
-}
 case class MarkdownRenderingRequest(
   text:    String,
   context: String,

@@ -14,9 +14,9 @@ abstract class AbstractServiceSpec
     with ScalaFutures
     with Eventually {
 
-  implicit val ec = ExecutionContext.global
+  implicit final val ec = ExecutionContext.global
 
   val teadsClient = GithubApiClientBuilder().disableCache.apiToken(sys.env("GITHUB_TOKEN")).owner("teads").build
 
-  override implicit val patienceConfig = PatienceConfig(10.seconds, 1.second)
+  override implicit final val patienceConfig = PatienceConfig(10.seconds, 1.second)
 }

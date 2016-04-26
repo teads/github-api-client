@@ -2,8 +2,8 @@ package tv.teads.github.api.model.miscellaneous
 
 import io.circe._
 
-trait GithubApiInfoCodec {
-  implicit val githubApiInfoDecoder =
+object GithubApiInfo {
+  implicit final val githubApiInfoDecoder =
     Decoder.forProduct6(
       "verifiable_password_authentication", "github_services_sha",
       "hooks", "git", "pages", "importer"

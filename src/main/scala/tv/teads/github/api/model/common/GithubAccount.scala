@@ -12,8 +12,8 @@ object AccountType extends JsonEnum[AccountType] {
   case object Organization extends AccountType
 }
 
-trait GithubAccountCodec {
-  implicit val githubAccountDecoder = Decoder.forProduct17(
+object GithubAccount {
+  implicit final val GithubAccountDecoder = Decoder.forProduct17(
     "login", "id", "avatar_url", "gravatar_id", "url", "html_url", "followers_url",
     "following_url", "gists_url", "starred_url", "subscriptions_url", "organizations_url",
     "repos_url", "events_url", "received_events_url", "type", "site_admin"

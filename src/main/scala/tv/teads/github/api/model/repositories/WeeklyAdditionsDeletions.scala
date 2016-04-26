@@ -5,8 +5,8 @@ import java.time.ZonedDateTime
 import io.circe._
 import tv.teads.github.api.model.DateTimeCodecs.timestampSecondsDecoder
 
-trait WeeklyAdditionsDeletionsCodec {
-  implicit val weeklyAdditionsDeletionsDecoder = Decoder.instance[WeeklyAdditionsDeletions] { cursor ⇒
+object WeeklyAdditionsDeletions {
+  implicit final val WeeklyAdditionsDeletionsDecoder = Decoder.instance[WeeklyAdditionsDeletions] { cursor ⇒
     for {
       weekStart ← cursor.downN(0).as(timestampSecondsDecoder)
       additions ← cursor.downN(1).as[Int]

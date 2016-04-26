@@ -1,14 +1,13 @@
 package tv.teads.github.api.services.repositories
 
+import io.circe.generic.auto._
 import tv.teads.github.api.GithubApiClientConfig
 import tv.teads.github.api.model.repositories._
 import tv.teads.github.api.services.AbstractGithubService
 
 import scala.concurrent.Future
 
-class RepositoriesStatisticsService(config: GithubApiClientConfig) extends AbstractGithubService(config)
-    with ContributorStatisticsCodec with WeeklyAdditionsDeletionsCodec with HourlyCommitCountCodec
-    with YearlyWeeklyCommitCountCodec with WeeklyCommitCountCodec {
+class RepositoriesStatisticsService(config: GithubApiClientConfig) extends AbstractGithubService(config) {
 
   def contributorsStatistics(repository: String)(implicit ec: EC): Future[List[ContributorStatistics]] =
     jsonNilIfFailed[ContributorStatistics](

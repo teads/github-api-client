@@ -4,9 +4,9 @@ import java.time.DayOfWeek
 import io.circe._
 import tv.teads.github.api.model.DateTimeCodecs.weekDayDecoder
 
-trait HourlyCommitCountCodec {
+object HourlyCommitCount {
 
-  implicit val hourlyCommitCountDecoder = Decoder.instance[HourlyCommitCount] { cursor ⇒
+  implicit final val HourlyCommitCountDecoder = Decoder.instance[HourlyCommitCount] { cursor ⇒
     for {
       dayOfWeek ← cursor.downN(0).as[DayOfWeek](weekDayDecoder)
       hour ← cursor.downN(1).as[Int]

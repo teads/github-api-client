@@ -4,8 +4,8 @@ import io.circe._
 import java.time.ZonedDateTime
 import tv.teads.github.api.model.DateTimeCodecs.timestampSecondsDecoder
 
-trait WeeklyCommitCountCodec {
-  implicit val weeklyCommitCountDecoder =
+object WeeklyCommitCount {
+  implicit final val WeeklyCommitCountDecoder =
     Decoder.forProduct3("days", "total", "week")(WeeklyCommitCount.apply)
 }
 case class WeeklyCommitCount(
