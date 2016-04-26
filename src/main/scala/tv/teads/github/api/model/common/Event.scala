@@ -1,7 +1,7 @@
-package tv.teads.github.api.model.events
+package tv.teads.github.api.model.common
 
-import enumeratum._
 import enumeratum.EnumEntry.Snakecase
+import enumeratum._
 import tv.teads.github.api.model.JsonEnum
 
 sealed abstract class Event extends EnumEntry with Snakecase
