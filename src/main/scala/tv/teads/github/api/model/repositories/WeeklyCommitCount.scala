@@ -2,7 +2,7 @@ package tv.teads.github.api.model.repositories
 
 import io.circe._
 import java.time.ZonedDateTime
-import tv.teads.github.api.model.DateTimeCodecs.timestampSecondsDecoder
+import tv.teads.github.api.model.DateTimeCodecs.TimestampSecondsDecoder
 
 object WeeklyCommitCount {
   implicit final val WeeklyCommitCountDecoder =

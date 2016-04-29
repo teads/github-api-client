@@ -9,6 +9,7 @@ val enumeratumVersion = "1.4.1"
 libraryDependencies += "io.circe"                   %% "circe-core"       % circeVersion
 libraryDependencies += "io.circe"                   %% "circe-generic"    % circeVersion
 libraryDependencies += "io.circe"                   %% "circe-parser"     % circeVersion
+libraryDependencies += "io.circe"                   %% "circe-java8"      % circeVersion
 libraryDependencies += "com.squareup.okhttp3"        % "okhttp"           % "3.2.0"
 libraryDependencies += "com.typesafe.scala-logging" %% "scala-logging"    % "3.4.0"
 libraryDependencies += "com.beachape"               %% "enumeratum"       % enumeratumVersion

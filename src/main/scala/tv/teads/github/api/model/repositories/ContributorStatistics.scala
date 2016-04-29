@@ -4,7 +4,7 @@ import java.time.ZonedDateTime
 
 import io.circe._
 import tv.teads.github.api.model.common.GithubAccount
-import tv.teads.github.api.model.DateTimeCodecs.timestampSecondsDecoder
+import tv.teads.github.api.model.DateTimeCodecs.TimestampSecondsDecoder
 
 object ContributorWeeklyStats {
   implicit final val ContributorWeeklyStatsDecoder =
