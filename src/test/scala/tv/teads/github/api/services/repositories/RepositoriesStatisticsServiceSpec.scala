@@ -8,7 +8,7 @@ class RepositoriesStatisticsServiceSpec extends AbstractServiceSpec {
     "be able to fetch statistics for github-api-client_test" in {
       eventually {
         whenReady(teadsClient.repositories.statistics.contributorsStatistics("github-api-client_test")) { stats ⇒
-          stats.find(_.author.login == "pdalpra") should not be empty
+          stats.value.find(_.author.login == "pdalpra") should not be empty
         }
       }
     }
@@ -27,7 +27,7 @@ class RepositoriesStatisticsServiceSpec extends AbstractServiceSpec {
       eventually {
         whenReady(teadsClient.repositories.statistics.lastYearCommitActivity("github-api-client_test")) { stats ⇒
           // Check that data is well formed
-          stats.foreach { weekStats ⇒
+          stats.value.foreach { weekStats ⇒
             weekStats.days.sum shouldBe weekStats.total
           }
         }
@@ -48,7 +48,7 @@ class RepositoriesStatisticsServiceSpec extends AbstractServiceSpec {
       eventually {
         whenReady(teadsClient.repositories.statistics.weeklyAdditionsDeletions("github-api-client_test")) { stats ⇒
           // Check that data is well formed
-          stats.foreach { weekStats ⇒
+          stats.value.foreach { weekStats ⇒
             weekStats.additions should be >= 0
             weekStats.deletions should be >= 0
           }
@@ -89,7 +89,7 @@ class RepositoriesStatisticsServiceSpec extends AbstractServiceSpec {
       eventually {
         whenReady(teadsClient.repositories.statistics.hourlyCommitCount("github-api-client_test")) { stats ⇒
           // Check that data is well formed
-          val statsByDay = stats.groupBy(_.dayOfWeek)
+          val statsByDay = stats.value.groupBy(_.dayOfWeek)
           statsByDay.keys should have size 7
           statsByDay.values foreach { dailyStats ⇒
             dailyStats should have size 24

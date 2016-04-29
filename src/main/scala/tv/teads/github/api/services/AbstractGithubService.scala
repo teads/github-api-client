@@ -1,6 +1,6 @@
 package tv.teads.github.api.services
 
-import cats.syntax.option._
+import cats.implicits._
 import com.typesafe.scalalogging.StrictLogging
 import io.circe.{Decoder, Encoder, Printer}
 import okhttp3.{HttpUrl, MediaType, Request, RequestBody}
@@ -103,9 +103,6 @@ private[services] abstract class AbstractGithubService(config: GithubApiClientCo
       )
     }
 
-  protected def jsonNilIfFailed[T: Decoder](future: FutureResponse, errorMsg: String)(implicit ec: EC): Future[List[T]] =
-    jsonOptionalIfFailed[List[T]](future, errorMsg).map(_.getOrElse(Nil))
-
   protected def raw(future: FutureResponse)(implicit ec: EC): Future[String] =
     future.map(_.raw)
 
@@ -137,27 +134,29 @@ private[services] abstract class AbstractGithubService(config: GithubApiClientCo
     getCall(route, mediaType, params ++ pageParams)
   }
 
-  protected def allPagesGetCall(
-    route:     String,
-    mediaType: String              = DefaultMediaType,
-    params:    Map[String, String] = Map.empty
-  )(implicit ec: EC): Future[List[ResponseWrapper]] = {
+  protected def getAllPages[T: Decoder](
+    route:        String,
+    errorMessage: String,
+    mediaType:    String              = DefaultMediaType,
+    params:       Map[String, String] = Map.empty
+  )(implicit ec: EC) = {
     def findNextPageUrl(linkHeader: String): Option[String] =
       linkHeader.split(",")
         .collectFirst { case PagesNavRegex(link, rel) if rel == "next" ⇒ link }
 
     def fetchAux(
       current:        FutureResponse,
-      alreadyFetched: Future[List[ResponseWrapper]]
-    )(implicit ec: EC): Future[List[ResponseWrapper]] =
+      alreadyFetched: Future[Option[List[T]]]
+    )(implicit ec: EC): Future[Option[List[T]]] =
       current.flatMap { currentResponse ⇒
         val linkHeader = Option(currentResponse.response.headers().get("Link"))
+        val decoded = json[Option[List[T]]](Future.successful(currentResponse), errorMessage)
         linkHeader.flatMap(findNextPageUrl)
-          .map(next ⇒ fetchAux(getCall(next, mediaType, params), alreadyFetched))
+          .map(next ⇒ fetchAux(getCall(next, mediaType, params), decoded |+| alreadyFetched))
           .getOrElse(alreadyFetched)
       }
 
-    fetchAux(getCall(route, mediaType, params), Future.successful(Nil))
+    fetchAux(getCall(route, mediaType, params), Future.successful(Nil.some))
   }
 
 }
