@@ -149,14 +149,14 @@ private[services] abstract class AbstractGithubService(config: GithubApiClientCo
       alreadyFetched: Future[Option[List[T]]]
     )(implicit ec: EC): Future[Option[List[T]]] =
       current.flatMap { currentResponse ⇒
+        val decoded = jsonOptionalIfFailed[List[T]](Future.successful(currentResponse), errorMessage)
         val linkHeader = Option(currentResponse.response.headers().get("Link"))
-        val decoded = json[Option[List[T]]](Future.successful(currentResponse), errorMessage)
-        linkHeader.flatMap(findNextPageUrl)
-          .map(next ⇒ fetchAux(getCall(next, mediaType, params), decoded |+| alreadyFetched))
-          .getOrElse(alreadyFetched)
+        linkHeader.flatMap(findNextPageUrl).foldLeft(decoded |+| alreadyFetched) {
+          case (fetched, nextUrl) ⇒ fetchAux(getCall(nextUrl, mediaType, params), fetched)
+        }
       }
 
-    fetchAux(getCall(route, mediaType, params), Future.successful(Nil.some))
+    fetchAux(getCall(route, mediaType, params), Future.successful(None))
   }
 
 }
