@@ -15,7 +15,7 @@ private[services] abstract class AbstractGithubService(config: GithubApiClientCo
   protected type FutureResponse = Future[ResponseWrapper]
   protected type RequestBuilderF = Request.Builder ⇒ Request.Builder
 
-  private val JsonPrinter = Printer(preserveOrder = true, dropNullKeys = true, indent = "")
+  private val JsonPrinter = Printer.noSpaces.copy(dropNullKeys = true)
   private val DefaultMediaType = "application/vnd.github.v3+json"
   private val PagesNavRegex = """(?:\s*)<(.+)>; rel="(.+)"""".r
 
@@ -36,11 +36,10 @@ private[services] abstract class AbstractGithubService(config: GithubApiClientCo
     f:         RequestBuilderF
   ): FutureResponse = config.client.executeAsync(f(baseRequestBuilder(route, mediaType, params)))
 
+  protected def printJson[T: Encoder](json: T): String = JsonPrinter.pretty(Encoder[T].apply(json))
+
   protected def jsonRequestBody[T: Encoder](json: T): RequestBody =
-    RequestBody.create(
-      MediaType.parse("application/json"),
-      Encoder[T].apply(json).pretty(JsonPrinter)
-    )
+    RequestBody.create(MediaType.parse("application/json"), printJson(json))
 
   //////////////////
   // HTTP METHODS //

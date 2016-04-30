@@ -8,15 +8,13 @@ import okhttp3.Response
 import tv.teads.github.api.util.IO.withCloseable
 
 private[api] class ResponseWrapper(val response: Response) extends LazyLogging {
+  private val bodyString = withCloseable(response.body())(_.string())
 
   def isSuccessful = response.isSuccessful
-  def raw: String = withCloseable(response.body())(_.string())
+  def raw: String = bodyString
   def rawIfExists: Validated[Int, String] =
     if (response.isSuccessful) Validated.Valid(raw)
-    else {
-      response.body().close() // Response body must always be closed
-      Validated.invalid(response.code())
-    }
+    else Validated.invalid(response.code())
 
   def as[T: Decoder]: Validated[Int, DecodedResponse[T]] = {
     rawIfExists.andThen { raw ⇒
