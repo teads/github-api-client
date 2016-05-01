@@ -2,15 +2,13 @@ package tv.teads.github.api.services
 
 import org.scalatest.concurrent.{Eventually, ScalaFutures}
 import org.scalatest.{Matchers, OptionValues, WordSpec}
-import tv.teads.github.api.GithubApiClientBuilder
+import tv.teads.github.api.{AbstractSpec, GithubApiClientBuilder}
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 
 abstract class AbstractServiceSpec
-    extends WordSpec
-    with Matchers
-    with OptionValues
+    extends AbstractSpec
     with ScalaFutures
     with Eventually {
 
