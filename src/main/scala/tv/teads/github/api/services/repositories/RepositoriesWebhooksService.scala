@@ -10,7 +10,7 @@ import scala.concurrent.Future
 
 class RepositoriesWebhooksService(config: GithubApiClientConfig) extends AbstractGithubService(config) {
 
-  def listAll(repository: String)(implicit ec: EC) =
+  def listAll(repository: String)(implicit ec: EC): Future[Option[List[RepositoryWebhook]]] =
     getAllPages[RepositoryWebhook](
       s"repos/${config.owner}/$repository/hooks",
       s"Could not fetch repository webhooks list for repository $repository"
@@ -22,7 +22,7 @@ class RepositoriesWebhooksService(config: GithubApiClientConfig) extends Abstrac
       s"Could not fetch page $page of repository webhooks list for repository $repository"
     )
 
-  def get(repository: String, hookId: Int)(implicit ec: EC) =
+  def get(repository: String, hookId: Int)(implicit ec: EC): Future[Option[RepositoryWebhook]] =
     jsonOptionalIfFailed[RepositoryWebhook](
       getCall(s"repos/${config.owner}/$repository/hooks/$hookId"),
       s"Could not fetch webhooks with id $hookId for repository $repository"
@@ -37,7 +37,7 @@ class RepositoriesWebhooksService(config: GithubApiClientConfig) extends Abstrac
       s"Could not create webhook ${printJson(request)} for repository $repository"
     )
 
-  def edit(repository: String, hookId: Int, request: EditWebhookRequest)(implicit ec: EC) =
+  def edit(repository: String, hookId: Int, request: EditWebhookRequest)(implicit ec: EC): Future[Option[RepositoryWebhook]] =
     jsonOptionalIfFailed[RepositoryWebhook](
       patchCall(
         s"repos/${config.owner}/$repository/hooks/$hookId",
