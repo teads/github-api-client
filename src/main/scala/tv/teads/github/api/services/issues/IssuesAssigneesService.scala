@@ -8,7 +8,7 @@ import scala.concurrent.Future
 
 class IssuesAssigneesService(config: GithubApiClientConfig) extends AbstractGithubService(config) {
 
-  def listAvailableAssignees(repository: String)(implicit ec: EC) =
+  def listAvailableAssignees(repository: String)(implicit ec: EC): Future[Option[List[GithubAccount]]] =
     jsonOptionalIfFailed[List[GithubAccount]](
       getCall(s"repos/${config.owner}/$repository/assignees"),
       s"Could not fetch list of available assignees for repository $repository"
