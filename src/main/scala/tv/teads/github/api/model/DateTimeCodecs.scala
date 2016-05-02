@@ -17,6 +17,7 @@ object DateTimeCodecs {
     _.as[Long].map(Instant.ofEpochSecond).map(instant ⇒ ZonedDateTime.ofInstant(instant, UtcZoneId))
   )
 
-  implicit val IsoOffsetToZoneDateTimeDecoder = decodeZonedDateTime(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+  implicit final val IsoOffsetToZoneDateTimeDecoder = decodeZonedDateTime(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+  implicit final val ZoneDateTimeToIsoOffsetEncoder = encodeZonedDateTime(DateTimeFormatter.ISO_OFFSET_DATE_TIME)
 
 }
