@@ -2,7 +2,7 @@ package tv.teads.github.api.http
 
 import okhttp3.{Credentials ⇒ OkHttpCredentials}
 
-object Authenticators {
+private[api] object Authenticators {
 
   def apiTokenAuthenticator(apiToken: String) =
     Authenticator.fromFunction(_.addHeader("Authorization", s"token $apiToken"))

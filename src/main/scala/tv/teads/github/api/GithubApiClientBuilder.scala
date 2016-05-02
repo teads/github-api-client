@@ -37,6 +37,9 @@ class GithubApiClientBuilder private[api] (builder: GithubApiClientConfigBuilder
   def userCredentials(username: String, password: String, twoFactorAuthCode: Option[String] = None) =
     new GithubApiClientBuilder(builder.copy(credentials = Some(Credentials(username, password, twoFactorAuthCode))))
 
+  def disableCache =
+    new GithubApiClientBuilder(builder.copy(maxCacheSize = 0))
+
   def maxCacheSize(maxCacheSize: Long) =
     new GithubApiClientBuilder(builder.copy(maxCacheSize = maxCacheSize))
 
@@ -44,7 +47,15 @@ class GithubApiClientBuilder private[api] (builder: GithubApiClientConfigBuilder
     if (builder.owner.isEmpty) throw new IllegalStateException("User/Organization has not been configured.")
     val authenticator = builder.apiToken.map(apiTokenAuthenticator) orElse builder.credentials.map(credentialsAuthenticator)
 
-    val config = GithubApiClientConfig(builder.owner.get, builder.apiUrl, authenticator, builder.itemsPerPage, builder.maxCacheSize, builder.cacheRoot)
-    GithubApiClient(config)
+    GithubApiClient(
+      GithubApiClientConfig(
+        builder.owner.get,
+        builder.apiUrl,
+        authenticator,
+        builder.itemsPerPage,
+        builder.maxCacheSize,
+        builder.cacheRoot
+      )
+    )
   }
 }
