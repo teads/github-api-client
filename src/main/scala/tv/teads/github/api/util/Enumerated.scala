@@ -16,5 +16,5 @@ abstract class Enumerated[T: ClassTag] {
     }
   }
 
-  lazy implicit val enumEncoder = Encoder.instance[T](v ⇒ Json.string(v.toString))
+  lazy implicit val enumEncoder = Encoder.instance[T](v ⇒ Json.fromString(v.toString))
 }
