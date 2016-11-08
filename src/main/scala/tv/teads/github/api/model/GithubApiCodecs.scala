@@ -4,6 +4,7 @@ import tv.teads.github.api.json.ZonedDateTimeCodec
 
 trait GithubApiCodecs
   extends RepositoryCodec
+  with RepositoryPushCodec
   with UserCodec
   with TagCodec
   with TagCommitCodec

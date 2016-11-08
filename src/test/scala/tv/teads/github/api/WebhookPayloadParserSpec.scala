@@ -14,8 +14,13 @@ class WebhookPayloadParserSpec extends BaseSpec {
     WebhookPayloadParser.parsePayload("issues", lines).toOption.value shouldBe a[IssuePayload]
   }
 
-  it should "parse Push payload " in {
+  it should "parse Push payload" in {
     val lines = loadFile(s"files/push.json")
+    WebhookPayloadParser.parsePayload("push", lines).toOption.value shouldBe a[PushPayload]
+  }
+
+  it should "parse Push payload with Organization" in {
+    val lines = loadFile(s"files/push_orga.json")
     WebhookPayloadParser.parsePayload("push", lines).toOption.value shouldBe a[PushPayload]
   }
 
