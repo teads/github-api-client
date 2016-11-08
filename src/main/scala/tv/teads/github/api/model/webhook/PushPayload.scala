@@ -5,7 +5,7 @@ import io.circe._
 import tv.teads.github.api.model._
 
 trait PushPayloadCodec {
-  self: UserCodec with RepositoryCodec with CommitCodec with AuthorCodec ⇒
+  self: UserCodec with RepositoryPushCodec with CommitCodec with AuthorCodec ⇒
 
   implicit lazy val pushPayloadDecoder = Decoder.instance { cursor ⇒
     for {
@@ -19,7 +19,7 @@ trait PushPayloadCodec {
       compare ← cursor.downField("compare").as[String]
       commits ← cursor.downField("commits").as[List[Commit]]
       headCommit ← cursor.downField("head_commit").as[Option[Commit]]
-      repository ← cursor.downField("repository").as[Repository]
+      repository ← cursor.downField("repository").as[RepositoryPush]
       pusher ← cursor.downField("pusher").as[Author]
       sender ← cursor.downField("sender").as[User]
     } yield PushPayload(
@@ -39,7 +39,7 @@ case class PushPayload(
   compare:    String,
   commits:    List[Commit],
   headCommit: Option[Commit],
-  repository: Repository,
+  repository: RepositoryPush,
   pusher:     Author,
   sender:     User
 ) extends Payload

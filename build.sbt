@@ -3,7 +3,7 @@ name            := "github-api-client"
 scalaVersion    := "2.11.8"
 scalacOptions   := Seq("-feature", "-deprecation", "-Xlint")
 
-val circeVersion = "0.5.1"
+val circeVersion = "0.5.4"
 
 libraryDependencies += "io.circe"                   %% "circe-core"       % circeVersion
 libraryDependencies += "io.circe"                   %% "circe-generic"    % circeVersion
