@@ -27,4 +27,18 @@ class PullRequestServiceSpec extends BaseSpec {
     }
   }
 
+  it should "be able to fetch a github-api-client Open Pull Requests" in {
+
+    whenReady(teadsClient.pullRequests.fetchOpenPullRequests("github-api-client")) { list ⇒
+      list should not be empty
+    }
+  }
+
+  it should "be able to fetch a github-api-client Closed Pull Requests" in {
+
+    whenReady(teadsClient.pullRequests.fetchClosedPullRequests("github-api-client")) { list ⇒
+      list should not be empty
+    }
+  }
+
 }

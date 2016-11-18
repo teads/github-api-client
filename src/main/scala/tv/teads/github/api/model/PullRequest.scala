@@ -90,7 +90,7 @@ trait PullRequestCodec {
       locked ← cursor.downField("locked").as[Boolean]
       title ← cursor.downField("title").as[String]
       user ← cursor.downField("user").as[User]
-      body ← cursor.downField("body").as[String]
+      body ← cursor.downField("body").as[Option[String]]
       assignee ← cursor.downField("assignee").as[Option[User]]
       milestone ← cursor.downField("milestone").as[Option[Milestone]]
       head ← cursor.downField("head").as[Head]
@@ -118,7 +118,7 @@ case class PullRequest(
     locked:         Boolean,
     title:          String,
     user:           User,
-    body:           String,
+    body:           Option[String],
     assignee:       Option[User],
     milestone:      Option[Milestone],
     head:           Head,
