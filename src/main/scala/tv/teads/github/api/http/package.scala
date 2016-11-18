@@ -1,5 +1,7 @@
 package tv.teads.github.api
 
+import cats.Show
+import cats.syntax.show._
 import cats.data.Xor
 import okhttp3._
 import com.typesafe.scalalogging.LazyLogging
@@ -21,7 +23,7 @@ package object http extends LazyLogging {
     }
 
     private def logFailedDecoding(error: Error, uri: String, body: String, statusCode: Int) = {
-      logger.error(s"Failed to unmarshal response body from $uri: ${error.getMessage}")
+      logger.error(s"Failed to unmarshal response body from $uri: ${error.show}")
       logger.debug(s"Response body was: $body")
       underlying.code()
     }
