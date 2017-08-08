@@ -28,7 +28,7 @@ trait IssueCodec {
       createdAt ← cursor.downField("created_at").as[ZonedDateTime]
       updatedAt ← cursor.downField("updated_at").as[ZonedDateTime]
       closedAt ← cursor.downField("closed_at").as[Option[ZonedDateTime]]
-      body ← cursor.downField("body").as[String]
+      body ← cursor.downField("body").as[Option[String]]
     } yield Issue(
       url, labelsUrl, commentsUrl, eventsUrl, htmlUrl, id, number, title, user,
       labels, state, locked, assignee, milestone, comments, createdAt, updatedAt, closedAt, body
@@ -55,5 +55,5 @@ case class Issue(
   createdAt:   ZonedDateTime,
   updatedAt:   ZonedDateTime,
   closedAt:    Option[ZonedDateTime],
-  body:        String
+  body:        Option[String]
 )
